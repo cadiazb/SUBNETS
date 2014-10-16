@@ -252,7 +252,7 @@ if ~dat.OutcomeID
 
         if ~posStartOk && isempty(dat.ReactionTime)
             dat.ReactionTime = b5.time_o - t_start;
-        elseif (b5.time_o - t_start) > Params.ReactionTimeDelay
+        elseif (b5.time_o - t_start) > Params.ReactionTimeDelay && posStartOk
             dat.ReactionTime = b5.time_o - t_start;
             dat.MovementTime = NaN;
             done            = true;

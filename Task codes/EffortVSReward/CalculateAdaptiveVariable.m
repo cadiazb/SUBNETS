@@ -11,7 +11,7 @@ function [Params, dat] = CalculateAdaptiveVariable(Params, dat, b5)
     switch dat.TrialType
         case {1}
             switch dat.TrialChoice
-                case 'Reference Effort'
+                case {'Reference Effort', 'Pass'}
                     Params.AdaptiveReward(Params.AdaptiveReward(:,1) == dat.ProbeEffort,2) ...
                         = ceil(dat.ProbeReward * Params.AdaptiveStepUp);
 
