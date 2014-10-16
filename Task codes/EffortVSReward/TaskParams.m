@@ -26,6 +26,11 @@ bmi5_cmd('make ring StartTarget 0.05');
 bmi5_cmd('make square ProbeEffortTarget');
 bmi5_cmd('make square ReferenceTarget');
 
+Params.effortLineDots = 150;
+for ii = 1:Params.effortLineDots
+    bmi5_cmd(sprintf('make circle effortLine%03d',ii))
+end
+
 bmi5_cmd('make square StartAxis');
 bmi5_cmd('make square ProbeEffortAxis');
 bmi5_cmd('make square ReferenceAxis');
@@ -166,6 +171,7 @@ Params.ReactionTimeDelay      	= 2.7;
 Params.ErrPenalty               = 0;
 Params.TimeoutReachStartTarget  = 0.1; % max time to acquire start target
 Params.TimeoutReachTarget       = 1.3; % max time to reach reaching target
+Params.MovementWindow           = 0.2; % For effort line, time to move [s]
 Params.TrialLength              = 4;   % Fixed trial length [s]
 
 %%  Inter-trial Stuff
@@ -177,7 +183,7 @@ Params.WsCenter 				= mean(Params.WsBounds,1);
 % Params.WsCenter 				= [0 0];
 
 
-b5.Frame_color  = [1 1 1 0.75];
+b5.Frame_color  = [1 1 1 1];
 b5.Frame_scale  = range(Params.WsBounds);
 b5.Frame_pos    = Params.WsCenter;
 if DEBUG
@@ -208,6 +214,12 @@ Params.ProbeEffortTarget.EffortVector       = ...
                             [0.1 0.2 0.3 0.4 0.6 0.7 0.8 0.9];
 Params.ProbeEffortTarget.RewardVector       = [90 95 105 110];
 
+%% Effort Line
+for ii = 1:Params.effortLineDots
+    b5.(sprintf('EffortLine%03d_color',ii))       = [0 0 1 1];
+    b5.(sprintf('EffortLine%03d_scale',ii))       = [3 3];
+end
+
 %% Reference Target
 b5.ReferenceTarget_color                    = [0 0 1 1];
 b5.ReferenceTarget_scale                    = [395 60];
@@ -226,7 +238,7 @@ b5.ReferenceAxis_scale                  = [290 1];
 b5.TimerBar_color             	= [0.8 0.8 0.8 1];
 b5.TimerBar_scale           	= [b5.Frame_scale(1) 40];
 b5.TimerBar_pos                 = [Params.WsCenter(1), ...
-                            Params.WsBounds(2,2)-b5.TimerBar_scale/2];
+                            Params.WsBounds(2,2)+b5.TimerBar_scale/2];
 
 b5.ReachTimeout_color        	= [0.8 0 0 1];
 b5.ReachTimeout_scale          	= [2 40];

@@ -38,7 +38,11 @@ dfields = {
     'TotalPoints'
     'ReactionTime'
     'MovementTime'
-    'AlwaysReward' % for yes/no trials
+    'AlwaysReward'
+    'EffortLine'
+    'ActualEffort'
+    'ActualReward' 
+    'finalCursorPos'
 };
 dinit = cell(size(dfields));
 dtmp  = cell2struct(dinit,dfields,1);
