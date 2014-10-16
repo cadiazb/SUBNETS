@@ -18,7 +18,7 @@ function [Params, dat, b5] = UpdateCursor(Params, dat, b5)
     itmp = (itmp./n)./(Vin*2e-3);
     
 %     newForce = [itmp(1), itmp(3)];
-    newForce(1) = sign(itmp(1))*(log(1+abs(itmp(1))/tao)*1/log(1+1/tao));
+    newForce(1) = -sign(itmp(1))*(log(1+abs(itmp(1))/tao)*1/log(1+1/tao));
     newForce(2) = sign(itmp(3))*(log(1+abs(itmp(3))/tao)*1/log(1+1/tao));
     
 

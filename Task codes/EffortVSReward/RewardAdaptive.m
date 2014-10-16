@@ -53,11 +53,11 @@ dat.ProbeReward = Params.AdaptiveReward(Params.AdaptiveReward(:,1) == dat.ProbeE
 %% Set reward string position
 b5.ProbeRewardString_pos        = (b5.ProbeEffortTarget_pos - ...
                             (-1)^dat.ProbeEffortUp * [0 25]) + ...
-                            [120 65];
+                            [0 5];
 
 b5.ReferenceRewardString_pos    = (b5.ReferenceTarget_pos + ...
                             (-1)^dat.ProbeEffortUp * [0 25]) + ...
-                            [120 65];
+                            [0 5];
         
                                 
 %% Set reward strings
@@ -80,27 +80,13 @@ b5.ReferenceEffortString_v  = [double(sprintf('%02d Lb',...
     round(dat.ReferenceEffort / ((b5.Frame_scale(2)/2)/50))...
     )) zeros(1,27)]';
 
-b5.ProbeEffortString_pos        = b5.ProbeEffortTarget_pos + [120, 64];
-b5.ReferenceEffortString_pos    = b5.ReferenceTarget_pos + [120, 64];
+b5.ProbeEffortString_pos        = b5.ProbeEffortTarget_pos + [0, 2];
+b5.ReferenceEffortString_pos    = b5.ReferenceTarget_pos + [0, 2];
 
 
 %% Generate delay interval
 dat.ReachDelay = DrawFromInterval(Params.ReachDelayRange);
 fprintf('Delay\t\t\t%.2f\n',dat.ReachDelay);
-
-%% Push ICMS settings to TDT here
-% b5 = ICMS_SetParams(b5, dat.ICMS);
-% fprintf('Laser Power Current\t\t%.2f mW\n',dat.ICMS.AmpUA);
-% fprintf('ICMS Cathode Chans\t[ ');
-% for ch=1:length(dat.ICMS.CathodeVec)
-%     fprintf('%01i ',dat.ICMS.CathodeVec(ch));
-% end
-% fprintf(']\n');
-% fprintf('ICMS Anode Chans\t[ ');
-% for ch=1:length(dat.ICMS.AnodeVec)
-%     fprintf('%01i ',dat.ICMS.AnodeVec(ch));
-% end
-% fprintf(']\n');
 
 %% Misc stuff
 dat.OutcomeID 	= 0;
@@ -121,6 +107,9 @@ b5.ReferenceTarget_draw = DRAW_NONE;
 b5.ReferenceAxis_draw = DRAW_NONE;
 b5.ReferenceRewardString_draw = DRAW_NONE;
 b5.ReferenceEffortString_draw = DRAW_NONE;
+
+b5.TimerBar_draw = DRAW_NONE;
+b5.ReachTimeout_draw = DRAW_NONE;
 
 %% Always show points ON/OFF
 b5.TotalPoints_draw = DRAW_NONE;
@@ -179,7 +168,12 @@ if ~dat.OutcomeID
     b5.ProbeEffortTarget_draw 	= DRAW_BOTH;
     b5.ProbeEffortAxis_draw = DRAW_BOTH; 
     b5.ProbeEffortString_draw = DRAW_BOTH;
-    b5.ProbeRewardString_draw = DRAW_BOTH; 
+    b5.ProbeRewardString_draw = DRAW_BOTH;
+    
+    if Params.TimerOn
+        b5.TimerBar_draw = DRAW_BOTH;
+        b5.ReachTimeout_draw = DRAW_BOTH;
+    end
    
 	b5 = bmi5_mmap(b5);
 
@@ -225,6 +219,7 @@ end
 if ~dat.OutcomeID
     
     b5.StartTarget_draw = DRAW_NONE;
+    b5.StartAxis_draw = DRAW_NONE;
     b5.GoTone_play_io = 1;
     b5 = bmi5_mmap(b5);
 
@@ -236,6 +231,9 @@ if ~dat.OutcomeID
 	while ~done
 
         pos = b5.Cursor_pos;
+        if Params.TimerOn
+            AdjustTimerBar;
+        end
         
         % Check for Reaction Time
         
@@ -390,8 +388,13 @@ end
 
 startpause = b5.time_o;
 while (b5.time_o - startpause) < the_delay
-    [Params, dat, b5] = UpdateCursor(Params, dat, b5); % syncs b5 twice
+    if Params.TimerOn
+        AdjustTimerBar;
+    end
+%     [Params, dat, b5] = UpdateCursor(Params, dat, b5); % syncs b5 twice
 end
+b5.TimerBar_draw = DRAW_NONE;
+b5.ReachTimeout_draw = DRAW_NONE;
 % b5.CheatTarget_draw = DRAW_NONE;
 
 %%% XXX TODO: NEED WAY TO LOG (MORE) INTERESTING TRIAL EVENTS

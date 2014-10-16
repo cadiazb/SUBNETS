@@ -47,7 +47,8 @@ bmi5_cmd('make text ReferenceEffortString 32');
 bmi5_cmd('make text TotalPoints 32');
 
 % timer
-bmi5_cmd('make square timerBar');
+bmi5_cmd('make square TimerBar');
+bmi5_cmd('make square ReachTimeout');
 
 eval(bmi5_cmd('mmap structure'));
 
@@ -125,10 +126,12 @@ Params.SessionCount = ct;
 Params.NumTrials 				= 700;
 
 %%  Trial Type Function Selection
-%  1. Reward adaptation for fixed for
-%  2. Force adaptation for fixed reward
+% 1. Reward adaptation for fixed for
+% 2. Continuous reward scheme. Line slope.
+% 3. One target - Pass/No pass - Reward adaptive
+% 4. One target - Pass/No pass - Fixed effort/reward pairs
 
-Params.TrialTypeProbs 			= [1 0];
+Params.TrialTypeProbs 			= [1 0 0 0];
 Params.TrialTypeProbs           = Params.TrialTypeProbs/sum(Params.TrialTypeProbs);
 
 %% BLOCKS OF TRIALS
@@ -153,6 +156,17 @@ Params.FirstBlockIsType1 		= false;
 % This triggers a keyboard at the end of a block so that paramters can
 % be adjusted (will also play an alarm to notify the operator)
 Params.KeyboardAtBlockEnd 		= true;
+
+%% DELAYS, PENALTIES and TIMEOUTS [sec]
+Params.StartTarget.Hold       	= 0.1;
+Params.ProbeEffortTarget.Hold 	= 0;         
+Params.BigEffortTarget.Hold   	= 0;       
+Params.ReachDelayRange       	= [0 0];	% draw from this interval
+Params.ReactionTimeDelay      	= 2.7;
+Params.ErrPenalty               = 0;
+Params.TimeoutReachStartTarget  = 0.1; % max time to acquire start target
+Params.TimeoutReachTarget       = 1.3; % max time to reach reaching target
+Params.TrialLength              = 4;   % Fixed trial length [s]
 
 %%  Inter-trial Stuff
 Params.InterTrialDelay 			= 0.5;  % delay between each trial [sec]
@@ -190,7 +204,8 @@ Params.StartTarget.Locations 	= {Params.WsCenter + [-40 -40]}; % cell array of l
 %% Probe Effort Target
 b5.ProbeEffortTarget_color                  = [0.2 1 0 1];
 b5.ProbeEffortTarget_scale                  = [395 60];
-Params.ProbeEffortTarget.EffortVector       = [0.1 0.35 0.7 0.9];
+Params.ProbeEffortTarget.EffortVector       = ...
+                            [0.1 0.2 0.3 0.4 0.6 0.7 0.8 0.9];
 Params.ProbeEffortTarget.RewardVector       = [90 95 105 110];
 
 %% Reference Target
@@ -206,6 +221,19 @@ b5.ProbeEffortAxis_scale                = [290 1];
 %% Reference axis
 b5.ReferenceAxis_color               	= b5.ReferenceTarget_color;
 b5.ReferenceAxis_scale                  = [290 1];
+
+%% Timer bar
+b5.TimerBar_color             	= [0.8 0.8 0.8 1];
+b5.TimerBar_scale           	= [b5.Frame_scale(1) 40];
+b5.TimerBar_pos                 = [Params.WsCenter(1), ...
+                            Params.WsBounds(2,2)-b5.TimerBar_scale/2];
+
+b5.ReachTimeout_color        	= [0.8 0 0 1];
+b5.ReachTimeout_scale          	= [2 40];
+b5.ReachTimeout_pos = [b5.frame_scale(1)*...
+    (Params.TrialLength - Params.ReactionTimeDelay) / Params.TrialLength ...
+    + Params.WsCenter(1) - b5.frame_scale(1)/2, ...
+                            Params.WsBounds(2,2)-b5.RwachTimeout_scale/2];
 
 %% Probe Reward String
 b5.ProbeRewardString_color              = [1 1 1 1];
@@ -223,16 +251,6 @@ b5.ReferenceEffortString_color          = [1 1 1 1];
 b5.TotalPoints_color        = [1 1 1 1];
 b5.TotalPoints_pos          = Params.WsCenter;
 b5.TotalPoints_v            = [double(sprintf('Points = %04d',0)) zeros(1,19)]';
-
-%% DELAYS, PENALTIES and TIMEOUTS [sec]
-Params.StartTarget.Hold                 = 0.1;
-Params.ProbeEffortTarget.Hold     		= 0;         
-Params.BigEffortTarget.Hold             = 0;       
-Params.ReachDelayRange                  = [0 0];	% draw from this interval
-Params.ReactionTimeDelay                 = 2.7;
-Params.ErrPenalty                       = 0;
-Params.TimeoutReachStartTarget          = 0.1; % max time to acquire start target
-Params.TimeoutReachTarget               = 1.3; % max time to reach reaching target
 
 %% TONES
 b5.StartTone_freq 			= 500;  % (Hz)
@@ -312,22 +330,20 @@ Params.UseCorrectionTrials          = false; % { both of these
 Params.UseAdaptiveProbability       = false; % { cannot be true
 Params.AdaptiveLookbackLength       = 10;    % num trials to look back
 Params.FixedTrialLength             = true;
-Params.TrialLength                  = 4;   % Fixed trial length [s]
+Params.TimerOn                      = true;
 
 Params.AllowEarlyReach              = true; % { allow subject to start
                                            % { reach before end of delay
 
 Params.MaxForce                     = 40; % Measured max force per subject [N]
+Params.MaxSlope                     = 75; % Degrees
 
 Params.AdaptiveReward(:,1)       = Params.ProbeEffortTarget.EffortVector* ...
                                 Params.MaxForce * (b5.Frame_scale(2)/2)/50;
 for ii=2:11
 Params.AdaptiveReward(:,ii)  = Params.ReferenceTarget.RewardReference + ...
-                                   [-20, -10, 10, 20];
+                                   [-20, -15, -10, -5, 5, 10, 15, 20];
 end
-Params.AdaptiveForce(:,1)       = Params.ProbeEffortTarget.RewardVector;
-Params.AdaptiveForce(:,2:11)  = Params.ReferenceTarget.EffortReference* ...
-                                Params.MaxForce * (b5.Frame_scale(2)/2)/50;
                             
 Params.StepSizeAdaptive     = false;
 Params.AdaptiveStepUp       = 1.04;
@@ -336,9 +352,6 @@ Params.AdaptiveStepDown     = 0.98;
 Params.EffortSampleSpace    = repmat(Params.ProbeEffortTarget.EffortVector, ...
     1, ceil(Params.NumTrials/size(Params.ProbeEffortTarget.EffortVector,2)))* ...
                                 Params.MaxForce * (b5.Frame_scale(2)/2)/50;
-Params.RewardSampleSpace    = repmat(Params.ProbeEffortTarget.RewardVector, ...
-    1, ceil(Params.NumTrials/size(Params.ProbeEffortTarget.RewardVector,2)));
-
                                            
 %% SYNC
 b5 = bmi5_mmap(b5);
