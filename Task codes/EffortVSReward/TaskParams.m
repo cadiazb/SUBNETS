@@ -46,9 +46,6 @@ bmi5_cmd('make text ProbeEffortString 32');
 bmi5_cmd('make text ReferenceEffortString 32');
 bmi5_cmd('make text TotalPoints 32');
 
-% timer
-bmi5_cmd('make square timerBar');
-
 eval(bmi5_cmd('mmap structure'));
 
 %% Calibrate Display
