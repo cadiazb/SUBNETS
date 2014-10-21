@@ -14,6 +14,11 @@ DRAW_BOTH     = 3;
 %% Generate a StartTarget position
 b5.StartTarget_pos = Params.WsCenter;
 
+%% Set initial timer bare length
+b5.TimerBar_scale(1) = b5.Frame_scale(1);
+
+b5.TimerBar_pos(1) = Params.WsCenter(1) - b5.Frame_scale(1)/2 + ...
+                        b5.TimerBar_scale(1)/2;
 %% Draw Probe effort from vector
 
 dat.ProbeEffort         = DrawFromVec(Params.EffortSampleSpace);
@@ -266,7 +271,7 @@ if ~dat.OutcomeID
 			end
 			if (b5.time_o - starthold) > Params.ProbeEffortTarget.Hold
 				done = true;
-
+                dat.TrialChoice = 'Pass';
                 dat.TrialChoice = 'Probe Effort';
                 dat.MovementTime = b5.time_o - t_start - dat.ReactionTime;
                 dat.OutcomeID 	= 0;
@@ -279,6 +284,7 @@ if ~dat.OutcomeID
         if ~isempty(dat.ReactionTime)
             if (b5.time_o - t_start - dat.ReactionTime) > Params.TimeoutReachTarget
                 dat.MovementTime = b5.time_o - t_start - dat.ReactionTime;
+                
                 done            = true;
                 dat.OutcomeID 	= 4;
                 dat.OutcomeStr 	= 'cancel @ reach movement timeout';

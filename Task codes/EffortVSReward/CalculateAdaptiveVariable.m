@@ -9,7 +9,7 @@ function [Params, dat] = CalculateAdaptiveVariable(Params, dat, b5)
         end
     end
     switch dat.TrialType
-        case {1}
+        case {1,3}
             switch dat.TrialChoice
                 case {'Reference Effort', 'Pass'}
                     Params.AdaptiveReward(Params.AdaptiveReward(:,1) == dat.ProbeEffort,2) ...
@@ -19,7 +19,7 @@ function [Params, dat] = CalculateAdaptiveVariable(Params, dat, b5)
                     Params.AdaptiveReward(Params.AdaptiveReward(:,1) == dat.ProbeEffort,2) ...
                             = floor(dat.ProbeReward * Params.AdaptiveStepDown);
             end
-        case {2}
+        case {10}
             switch dat.TrialChoice
                 case 'Reference Effort'
                     Params.AdaptiveForce(Params.AdaptiveForce(:,1) == dat.ProbeReward,2) ...

@@ -26,9 +26,9 @@ bmi5_cmd('make ring StartTarget 0.05');
 bmi5_cmd('make square ProbeEffortTarget');
 bmi5_cmd('make square ReferenceTarget');
 
-Params.effortLineDots = 150;
+Params.effortLineDots = 4;
 for ii = 1:Params.effortLineDots
-    bmi5_cmd(sprintf('make circle effortLine%03d',ii))
+    bmi5_cmd(sprintf('make circle EffortLine%03d',ii));
 end
 
 bmi5_cmd('make square StartAxis');
@@ -136,7 +136,7 @@ Params.NumTrials 				= 700;
 % 3. One target - Pass/No pass - Reward adaptive
 % 4. One target - Pass/No pass - Fixed effort/reward pairs
 
-Params.TrialTypeProbs 			= [1 0 0 0];
+Params.TrialTypeProbs 			= [0 0 1 0];
 Params.TrialTypeProbs           = Params.TrialTypeProbs/sum(Params.TrialTypeProbs);
 
 %% BLOCKS OF TRIALS
@@ -208,7 +208,7 @@ Params.StartTarget.Win  		= 20; % radius
 Params.StartTarget.Locations 	= {Params.WsCenter + [-40 -40]}; % cell array of locations
 
 %% Probe Effort Target
-b5.ProbeEffortTarget_color                  = [0.2 1 0 1];
+b5.ProbeEffortTarget_color                  = [0 0.8 0 1];
 b5.ProbeEffortTarget_scale                  = [395 60];
 Params.ProbeEffortTarget.EffortVector       = ...
                             [0.1 0.2 0.3 0.4 0.6 0.7 0.8 0.9];
@@ -236,16 +236,16 @@ b5.ReferenceAxis_scale                  = [290 1];
 
 %% Timer bar
 b5.TimerBar_color             	= [0.8 0.8 0.8 1];
-b5.TimerBar_scale           	= [b5.Frame_scale(1) 40];
+b5.TimerBar_scale           	= [b5.Frame_scale(1) 10];
 b5.TimerBar_pos                 = [Params.WsCenter(1), ...
-                            Params.WsBounds(2,2)+b5.TimerBar_scale/2];
+                            Params.WsBounds(2,2)+b5.TimerBar_scale(2)/2];
 
 b5.ReachTimeout_color        	= [0.8 0 0 1];
-b5.ReachTimeout_scale          	= [2 40];
-b5.ReachTimeout_pos = [b5.frame_scale(1)*...
+b5.ReachTimeout_scale          	= [2 10];
+b5.ReachTimeout_pos = [b5.Frame_scale(1)*...
     (Params.TrialLength - Params.ReactionTimeDelay) / Params.TrialLength ...
-    + Params.WsCenter(1) - b5.frame_scale(1)/2, ...
-                            Params.WsBounds(2,2)-b5.RwachTimeout_scale/2];
+    + Params.WsCenter(1) - b5.Frame_scale(1)/2, ...
+                            Params.WsBounds(2,2)+b5.ReachTimeout_scale(2)/2];
 
 %% Probe Reward String
 b5.ProbeRewardString_color              = [1 1 1 1];
@@ -364,6 +364,10 @@ Params.AdaptiveStepDown     = 0.98;
 Params.EffortSampleSpace    = repmat(Params.ProbeEffortTarget.EffortVector, ...
     1, ceil(Params.NumTrials/size(Params.ProbeEffortTarget.EffortVector,2)))* ...
                                 Params.MaxForce * (b5.Frame_scale(2)/2)/50;
+                            
+Params.SlopeSampleSpace    = repmat(Params.ProbeEffortTarget.EffortVector, ...
+    1, ceil(Params.NumTrials/size(Params.ProbeEffortTarget.EffortVector,2)));
+
                                            
 %% SYNC
 b5 = bmi5_mmap(b5);

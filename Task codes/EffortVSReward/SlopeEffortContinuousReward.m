@@ -12,25 +12,31 @@ DRAW_BOTH     = 3;
 %% Generate a StartTarget position
 b5.StartTarget_pos = Params.WsBounds(1,:);
 
+%% Set initial timer bare length
+b5.TimerBar_scale(1) = b5.Frame_scale(1);
+
+b5.TimerBar_pos(1) = Params.WsCenter(1) - b5.Frame_scale(1)/2 + ...
+                        b5.TimerBar_scale(1)/2;
+
 %% Draw Probe effort from vector
 
-dat.ProbeEffort         = DrawFromVec(Params.EffortSampleSpace);
+dat.ProbeEffort         = DrawFromVec(Params.SlopeSampleSpace);
 
 %% Generate ProbeEffortTarget and Reference Target positions
 
-EffortLine = zeros(2,Params.effortLineDots); %Array for line coordinates
-EffortLine(1,:) = 1:Params.effortLineDots;
+dat.EffortLine = zeros(2,Params.effortLineDots); %Array for line coordinates
+dat.EffortLine(1,:) = 1:Params.effortLineDots;
 m = tan(dat.ProbeEffort * Params.MaxSlope * pi() / 180);
-EffortLine(2,:) = m .* EffortLine(1,:);
-EffortLine(1,:) = EffortLine(1,:) + 10*Params.effortLineDots/100; % X intersect = [1/10,0]
+dat.EffortLine(2,:) = m .* dat.EffortLine(1,:);
+dat.EffortLine(1,:) = dat.EffortLine(1,:) + 10*Params.effortLineDots/100; % X intersect = [1/10,0]
 
 % Translate line to bottom left corner of b5.frame
-EffortLine(1,:) = EffortLine(1,:) + Params.WsCenter(1) - b5.frame_scale(1)/2;
-EffortLine(2,:) = EffortLine(2,:) + Params.WsCenter(2) - b5.frame_scale(2)/2;
+dat.EffortLine(1,:) = dat.EffortLine(1,:) + Params.WsCenter(1) - b5.Frame_scale(1)/2;
+dat.EffortLine(2,:) = dat.EffortLine(2,:) + Params.WsCenter(2) - b5.Frame_scale(2)/2;
 
 for ii = 1:Params.effortLineDots
    b5.(sprintf('EffortLine%03d_pos',ii))  = ...
-       EffortLine(:,ii);
+       dat.EffortLine(:,ii);
 end
 
 clear m
@@ -49,8 +55,8 @@ clear m
 b5.ProbeRewardString_v = [double(sprintf('1c')) zeros(1,30)]';
 b5.ReferenceRewardString_v = [double(sprintf('5c')) zeros(1,30)]';
 
-b5.ProbeRewardString_pos = Params.WsCenter + [-1 1] .* b5.frame_scale(2)/2;
-b5.ReferenceRewardString_pos = Params.WsCenter - [1 0.9].* b5.frame_scale(2)/2;
+b5.ProbeRewardString_pos = Params.WsCenter + [-1 1] .* b5.Frame_scale(2)/2;
+b5.ReferenceRewardString_pos = Params.WsCenter - [1 0.9].* b5.Frame_scale(2)/2;
 
 b5 = bmi5_mmap(b5);
 
@@ -59,7 +65,7 @@ b5.ProbeEffortString_v      = ...
     [double(sprintf('0%% 10%%  30%%  50%%  70%%  90%% 100%%' ...
     ))]';
 
-b5.ProbeEffortString_pos  = Params.WsCenter - [0, b5.frame_scale(2)/2];
+b5.ProbeEffortString_pos  = Params.WsCenter - [0, b5.Frame_scale(2)/2];
 
 
 %% Generate delay interval
@@ -283,8 +289,8 @@ if dat.OutcomeID == 0
     
     b5.TotalPoints_v = [double(sprintf('You got it! Points = %05.0f',dat.TotalPoints)) zeros(1,6)]';
     
-    Params.EffortSampleSpace(...
-        find(Params.EffortSampleSpace == dat.ProbeEffort, 1)) = [];
+    Params.SlopeSampleSpace(...
+        find(Params.SlopeSampleSpace == dat.ProbeEffort, 1)) = [];
     
     fprintf('Effort\t\t%f \n',dat.ActualEffort);
     fprintf('Total points\t\t%d \n',dat.TotalPoints);

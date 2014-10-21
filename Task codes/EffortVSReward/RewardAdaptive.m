@@ -14,6 +14,11 @@ DRAW_BOTH     = 3;
 %% Generate a StartTarget position
 b5.StartTarget_pos = Params.WsCenter;
 
+%% Set initial timer bare length
+b5.TimerBar_scale(1) = b5.Frame_scale(1);
+
+b5.TimerBar_pos(1) = Params.WsCenter(1) - b5.Frame_scale(1)/2 + ...
+                        b5.TimerBar_scale(1)/2;
 %% Draw Probe effort from vector
 
 dat.ProbeEffort         = DrawFromVec(Params.EffortSampleSpace);
