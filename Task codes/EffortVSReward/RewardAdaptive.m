@@ -58,11 +58,11 @@ dat.ProbeReward = Params.AdaptiveReward(Params.AdaptiveReward(:,1) == dat.ProbeE
 %% Set reward string position
 b5.ProbeRewardString_pos        = (b5.ProbeEffortTarget_pos - ...
                             (-1)^dat.ProbeEffortUp * [0 25]) + ...
-                            [0 5];
+                            [-10 -5];
 
 b5.ReferenceRewardString_pos    = (b5.ReferenceTarget_pos + ...
                             (-1)^dat.ProbeEffortUp * [0 25]) + ...
-                            [0 5];
+                            [-10 -5];
         
                                 
 %% Set reward strings
@@ -85,8 +85,8 @@ b5.ReferenceEffortString_v  = [double(sprintf('%02d Lb',...
     round(dat.ReferenceEffort / ((b5.Frame_scale(2)/2)/50))...
     )) zeros(1,27)]';
 
-b5.ProbeEffortString_pos        = b5.ProbeEffortTarget_pos + [0, 2];
-b5.ReferenceEffortString_pos    = b5.ReferenceTarget_pos + [0, 2];
+b5.ProbeEffortString_pos        = b5.ProbeEffortTarget_pos + [-15, -2];
+b5.ReferenceEffortString_pos    = b5.ReferenceTarget_pos + [-15, -2];
 
 
 %% Generate delay interval

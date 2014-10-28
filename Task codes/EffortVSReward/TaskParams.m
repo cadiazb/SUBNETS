@@ -25,11 +25,7 @@ bmi5_cmd('make ring StartTarget 0.05');
 
 bmi5_cmd('make square ProbeEffortTarget');
 bmi5_cmd('make square ReferenceTarget');
-
-Params.effortLineDots = 4;
-for ii = 1:Params.effortLineDots
-    bmi5_cmd(sprintf('make circle EffortLine%03d',ii));
-end
+bmi5_cmd('make triangle EffortLine');
 
 bmi5_cmd('make square StartAxis');
 bmi5_cmd('make square ProbeEffortAxis');
@@ -50,6 +46,7 @@ bmi5_cmd('make text ReferenceRewardString 32');
 bmi5_cmd('make text ProbeEffortString 32');
 bmi5_cmd('make text ReferenceEffortString 32');
 bmi5_cmd('make text TotalPoints 32');
+bmi5_cmd('make text ProbeAxisLabel 94');
 
 % timer
 bmi5_cmd('make square TimerBar');
@@ -136,7 +133,7 @@ Params.NumTrials 				= 700;
 % 3. One target - Pass/No pass - Reward adaptive
 % 4. One target - Pass/No pass - Fixed effort/reward pairs
 
-Params.TrialTypeProbs 			= [0 0 1 0];
+Params.TrialTypeProbs 			= [0 1 0 0];
 Params.TrialTypeProbs           = Params.TrialTypeProbs/sum(Params.TrialTypeProbs);
 
 %% BLOCKS OF TRIALS
@@ -171,14 +168,14 @@ Params.ReactionTimeDelay      	= 2.7;
 Params.ErrPenalty               = 0;
 Params.TimeoutReachStartTarget  = 0.1; % max time to acquire start target
 Params.TimeoutReachTarget       = 1.3; % max time to reach reaching target
-Params.MovementWindow           = 0.2; % For effort line, time to move [s]
-Params.TrialLength              = 4;   % Fixed trial length [s]
+Params.MovementWindow           = 0.6; % For effort line, time to move [s]
+Params.TrialLength              = 3;   % Fixed trial length [s]
 
 %%  Inter-trial Stuff
 Params.InterTrialDelay 			= 0.5;  % delay between each trial [sec]
 
 %%  WORKSPACE, in mm
-Params.WsBounds             	= [-120 -120 ; 175 175]; % [Xmin Ymin; Xmax Ymax]
+Params.WsBounds             	= [-150 -150 ; 150 150]; % [Xmin Ymin; Xmax Ymax]
 Params.WsCenter 				= mean(Params.WsBounds,1);
 % Params.WsCenter 				= [0 0];
 
@@ -194,7 +191,7 @@ end
 
 %% Cursor
 b5.Cursor_color 				= [1 1 1 0.75]; % RGBA 
-b5.Cursor_scale 				= [6 6];        % [mm] % note: diameter!
+b5.Cursor_scale 				= [8 8];        % [mm] % note: diameter!
 
 %% Start Axis
 b5.StartAxis_color			= [1 1 1 0.75];
@@ -208,17 +205,16 @@ Params.StartTarget.Win  		= 20; % radius
 Params.StartTarget.Locations 	= {Params.WsCenter + [-40 -40]}; % cell array of locations
 
 %% Probe Effort Target
-b5.ProbeEffortTarget_color                  = [0 0.8 0 1];
+b5.ProbeEffortTarget_color                  = [0 0.6 0 1];
 b5.ProbeEffortTarget_scale                  = [395 60];
 Params.ProbeEffortTarget.EffortVector       = ...
                             [0.1 0.2 0.3 0.4 0.6 0.7 0.8 0.9];
 Params.ProbeEffortTarget.RewardVector       = [90 95 105 110];
 
 %% Effort Line
-for ii = 1:Params.effortLineDots
-    b5.(sprintf('EffortLine%03d_color',ii))       = [0 0 1 1];
-    b5.(sprintf('EffortLine%03d_scale',ii))       = [3 3];
-end
+b5.EffortLine_color     = [0 0 1 1];
+b5.EffortLine_scale     = b5.Frame_scale;
+b5.EffortLine_pos       = Params.WsCenter;
 
 %% Reference Target
 b5.ReferenceTarget_color                    = [0 0 1 1];
@@ -258,6 +254,9 @@ b5.ProbeEffortString_color              = [1 1 1 1];
 
 %% Big Effort String
 b5.ReferenceEffortString_color          = [1 1 1 1];
+
+%% Probe Axis label
+b5.ProbeAxisLabel_color              = [1 1 1 1];
 
 %% Total Points String
 b5.TotalPoints_color        = [1 1 1 1];
@@ -368,7 +367,7 @@ Params.EffortSampleSpace    = repmat(Params.ProbeEffortTarget.EffortVector, ...
 Params.SlopeSampleSpace    = repmat(Params.ProbeEffortTarget.EffortVector, ...
     1, ceil(Params.NumTrials/size(Params.ProbeEffortTarget.EffortVector,2)));
 
-                                           
+Params.ZeroEffortOffset = 40; % Zero effort offset in % of max force
 %% SYNC
 b5 = bmi5_mmap(b5);
                                            

@@ -1,4 +1,4 @@
-function [Params, dat, b5] = UpdateCursor(Params, dat, b5)
+function [Params, dat, b5] = UpdateCursorOnLine(Params, dat, b5)
     
     %% Sync
     b5 = bmi5_mmap(b5);
@@ -18,13 +18,14 @@ function [Params, dat, b5] = UpdateCursor(Params, dat, b5)
     itmp = (itmp./n)./(Vin*2e-3);
     
 %     newForce = [itmp(1), itmp(3)];
-    newForce(1) = -sign(itmp(1))*(log(1+abs(itmp(1))/tao)*1/log(1+1/tao));
-    newForce(2) = sign(itmp(3))*(log(1+abs(itmp(3))/tao)*1/log(1+1/tao));
+    newForce(2) = -sign(itmp(1))*(log(1+abs(itmp(1))/tao)*1/log(1+1/tao));
+    newForce(1) =  sign(itmp(3))*(log(1+abs(itmp(3))/tao)*1/log(1+1/tao));
     
 
-    newPosX = (b5.Frame_scale(1))*newForce(1)/maxLoad + b5.StartTarget_pos(1);
+    newPosX = min((b5.Frame_scale(1))*newForce(1) + b5.StartTarget_pos(1), ...
+        b5.Frame_scale(1) + b5.StartTarget_pos(1));
     try
-        newPosY = dat.EffortLine(2,find(dat.EffortLine(1,:) <= newPosX,1,'last'));
+        newPosY = min(dat.EffortLine(2,find(dat.EffortLine(1,:) >= newPosX,1,'first')), Params.WsBounds(2,2));
     catch
         newPosY = 0 + Params.WsCenter(2) - b5.Frame_scale(2)/2;
     end

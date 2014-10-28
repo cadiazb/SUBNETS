@@ -24,20 +24,31 @@ dat.ProbeEffort         = DrawFromVec(Params.SlopeSampleSpace);
 
 %% Generate ProbeEffortTarget and Reference Target positions
 
-dat.EffortLine = zeros(2,Params.effortLineDots); %Array for line coordinates
-dat.EffortLine(1,:) = 1:Params.effortLineDots;
+dat.EffortLine = zeros(2,2*ceil(sqrt(sumsqr(b5.Frame_scale)))); %Array for line coordinates
+dat.EffortLine(1,:) = 1:size(dat.EffortLine,2);
 m = tan(dat.ProbeEffort * Params.MaxSlope * pi() / 180);
 dat.EffortLine(2,:) = m .* dat.EffortLine(1,:);
-dat.EffortLine(1,:) = dat.EffortLine(1,:) + 10*Params.effortLineDots/100; % X intersect = [1/10,0]
 
 % Translate line to bottom left corner of b5.frame
 dat.EffortLine(1,:) = dat.EffortLine(1,:) + Params.WsCenter(1) - b5.Frame_scale(1)/2;
-dat.EffortLine(2,:) = dat.EffortLine(2,:) + Params.WsCenter(2) - b5.Frame_scale(2)/2;
+dat.EffortLine(2,:) = dat.EffortLine(2,:) + ...
+    Params.WsCenter(2) - b5.Frame_scale(2)/2;
 
-for ii = 1:Params.effortLineDots
-   b5.(sprintf('EffortLine%03d_pos',ii))  = ...
-       dat.EffortLine(:,ii);
+dat.EffortLine(1,:) = dat.EffortLine(1,:) + Params.ZeroEffortOffset;
+
+if dat.ProbeEffort * Params.MaxSlope <= 45
+    b5.EffortLine_scale(1) = b5.Frame_scale(1) - Params.ZeroEffortOffset;
+    b5.EffortLine_scale(2) = ...
+        tan(dat.ProbeEffort * Params.MaxSlope * pi() / 180) * ...
+        b5.EffortLine_scale(1);
+else
+    b5.EffortLine_scale(2) = b5.Frame_scale(2);
+    b5.EffortLine_scale(1) = b5.EffortLine_scale(2) / ...
+        tan(dat.ProbeEffort * Params.MaxSlope * pi() / 180);
 end
+
+b5.EffortLine_pos = [Params.ZeroEffortOffset, 0];
+b5.EffortLine_pos = b5.EffortLine_pos - b5.Frame_scale/2;
 
 clear m
 
@@ -55,17 +66,19 @@ clear m
 b5.ProbeRewardString_v = [double(sprintf('1c')) zeros(1,30)]';
 b5.ReferenceRewardString_v = [double(sprintf('5c')) zeros(1,30)]';
 
-b5.ProbeRewardString_pos = Params.WsCenter + [-1 1] .* b5.Frame_scale(2)/2;
-b5.ReferenceRewardString_pos = Params.WsCenter - [1 0.9].* b5.Frame_scale(2)/2;
+b5.ProbeRewardString_pos = ...
+    Params.WsCenter - [1 0.75] .* b5.Frame_scale/2 - [130,-20];
+b5.ReferenceRewardString_pos = ...
+    Params.WsCenter + [-1 0.95].* b5.Frame_scale/2 - [130,0];
 
 b5 = bmi5_mmap(b5);
 
 %% Set effort strings and positions
-b5.ProbeEffortString_v      = ...
-    [double(sprintf('0%% 10%%  30%%  50%%  70%%  90%% 100%%' ...
-    ))]';
+b5.ProbeAxisLabel_v      = ...
+[double(sprintf('0%%            10%%            30%%            50%%            70%%            90%%            100%%' ...
+    )), 0]';
 
-b5.ProbeEffortString_pos  = Params.WsCenter - [0, b5.Frame_scale(2)/2];
+b5.ProbeAxisLabel_pos  = Params.WsCenter -  b5.Frame_scale/2 - [90, 20];
 
 
 %% Generate delay interval
@@ -86,6 +99,7 @@ b5.ProbeEffortTarget_draw 	= DRAW_NONE;
 b5.ProbeEffortAxis_draw = DRAW_NONE; 
 b5.ProbeRewardString_draw = DRAW_NONE; 
 b5.ProbeEffortString_draw = DRAW_NONE; 
+b5.ProbeAxisLabel_draw = DRAW_NONE;
 
 b5.ReferenceTarget_draw = DRAW_NONE;
 b5.ReferenceAxis_draw = DRAW_NONE;
@@ -95,9 +109,7 @@ b5.ReferenceEffortString_draw = DRAW_NONE;
 b5.TimerBar_draw = DRAW_NONE;
 b5.ReachTimeout_draw = DRAW_NONE;
 
-for ii = 1:Params.effortLineDots
-   b5.(sprintf('EffortLine%03d_draw',ii))  = DRAW_NONE;
-end
+b5.EffortLine_draw  = DRAW_NONE;
 
 %% Always show points ON/OFF
 b5.TotalPoints_draw = DRAW_NONE;
@@ -156,24 +168,17 @@ if ~dat.OutcomeID
 % b5 = JuiceStart(b5,Params.Reward/10);
     b5.ReferenceRewardString_draw = DRAW_BOTH; 
     
-    b5.ProbeEffortString_draw = DRAW_BOTH;
+    b5.ProbeAxisLabel_draw = DRAW_BOTH;
     b5.ProbeRewardString_draw = DRAW_BOTH;
     
-    b5.frame_draw = DRAW_BOTH;
+    b5.Frame_draw = DRAW_BOTH;
     
     if Params.TimerOn
         b5.TimerBar_draw = DRAW_BOTH;
         b5.ReachTimeout_draw = DRAW_BOTH;
     end
     
-    for ii = 1:Params.effortLineDots
-        if b5.(sprintf('EffortLine%03d_pos',ii))(1) < Params.WsBounds(1,2)...
-            || b5.(sprintf('EffortLine%03d_pos',ii))(2) < Params.WsBounds(2,2)
-                b5.(sprintf('EffortLine%03d_draw',ii))  = DRAW_BOTH;
-        else
-            break
-        end
-    end
+    b5.EffortLine_draw  = DRAW_BOTH;
    
 	b5 = bmi5_mmap(b5);
 
@@ -272,22 +277,24 @@ b5.ProbeEffortTarget_draw 	= DRAW_NONE;
 b5.ProbeEffortAxis_draw = DRAW_NONE; 
 b5.ProbeRewardString_draw = DRAW_NONE; 
 b5.ProbeEffortString_draw = DRAW_NONE; 
+b5.ProbeAxisLabel_draw = DRAW_NONE;
 
 b5.ReferenceTarget_draw = DRAW_NONE;
 b5.ReferenceAxis_draw = DRAW_NONE;
 b5.ReferenceRewardString_draw = DRAW_NONE;
 b5.ReferenceEffortString_draw = DRAW_NONE;
 
-b5.frame_draw = DRAW_NONE;
-for ii = 1:Params.effortLineDots
-    b5.(sprintf('EffortLine%03d_draw',ii))  = DRAW_NONE;
-end
+b5.Frame_draw = DRAW_NONE;
+b5.EffortLine_draw  = DRAW_NONE;
 
 if dat.OutcomeID == 0
-
-    dat.TotalPoints = dat.TotalPoints + dat.FinalCursorPos(2);
     
-    b5.TotalPoints_v = [double(sprintf('You got it! Points = %05.0f',dat.TotalPoints)) zeros(1,6)]';
+    tmpTrialPoints = (dat.FinalCursorPos(2) -Params.WsCenter(2) + b5.Frame_scale(2)/2)*5/b5.Frame_scale(2);
+    dat.TotalPoints = dat.TotalPoints + ...
+        tmpTrialPoints;
+    
+    tmpStringZeros = 32 - numel(double(sprintf('Earned = %04.2f',tmpTrialPoints)));
+    b5.TotalPoints_v = [double(sprintf('Earned = %04.2f',tmpTrialPoints)) zeros(1,tmpStringZeros)]';
     
     Params.SlopeSampleSpace(...
         find(Params.SlopeSampleSpace == dat.ProbeEffort, 1)) = [];
@@ -298,7 +305,8 @@ if dat.OutcomeID == 0
     b5.RewardTone_play_io = 1;
 
 else
-    b5.TotalPoints_v = [double(sprintf('Let''s try again. Points = %05d',dat.TotalPoints)) zeros(1,1)]';
+    tmpStringZeros = 32 - numel(double(sprintf('Earned =%04.2f',0)));
+    b5.TotalPoints_v = [double(sprintf('Earned =%04.2f',0)) zeros(1,tmpStringZeros)]';
     Params.NumTrials 		= Params.NumTrials + 1;
     
 end
@@ -319,7 +327,7 @@ while (b5.time_o - startpause) < the_delay
     if Params.TimerOn
         AdjustTimerBar;
     end
-%     [Params, dat, b5] = UpdateCursor(Params, dat, b5); % syncs b5 twice
+    b5 = bmi5_mmap(b5);
 end
 b5.TimerBar_draw = DRAW_NONE;
 b5.ReachTimeout_draw = DRAW_NONE;

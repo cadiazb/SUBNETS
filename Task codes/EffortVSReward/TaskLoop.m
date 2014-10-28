@@ -42,7 +42,7 @@ dfields = {
     'EffortLine'
     'ActualEffort'
     'ActualReward' 
-    'finalCursorPos'
+    'FinalCursorPos'
 };
 dinit = cell(size(dfields));
 dtmp  = cell2struct(dinit,dfields,1);
