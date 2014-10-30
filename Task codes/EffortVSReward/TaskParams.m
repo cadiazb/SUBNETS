@@ -26,6 +26,8 @@ bmi5_cmd('make ring StartTarget 0.05');
 bmi5_cmd('make square ProbeEffortTarget');
 bmi5_cmd('make square ReferenceTarget');
 bmi5_cmd('make triangle EffortLine');
+bmi5_cmd('make triangle FillingEffort');
+bmi5_cmd('make square RewardFeedback');
 
 bmi5_cmd('make square StartAxis');
 bmi5_cmd('make square ProbeEffortAxis');
@@ -125,7 +127,7 @@ fprintf('BMI5 structure data will be stored to %s\n\n',fname);
 Params.BMI5FileName = fname;
 Params.SessionCount = ct;
 
-Params.NumTrials 				= 700;
+Params.NumTrials 				= 2000;
 
 %%  Trial Type Function Selection
 % 1. Reward adaptation for fixed for
@@ -163,12 +165,12 @@ Params.KeyboardAtBlockEnd 		= true;
 Params.StartTarget.Hold       	= 0.1;
 Params.ProbeEffortTarget.Hold 	= 0;         
 Params.BigEffortTarget.Hold   	= 0;       
-Params.ReachDelayRange       	= [1 1];	% draw from this interval
-Params.ReactionTimeDelay      	= 2.7;
+Params.ReachDelayRange       	= [0.5 0.5];	% draw from this interval
+Params.ReactionTimeDelay      	= 2;
 Params.ErrPenalty               = 0;
 Params.TimeoutReachStartTarget  = 0.1; % max time to acquire start target
 Params.TimeoutReachTarget       = 1.3; % max time to reach reaching target
-Params.MovementWindow           = 0.6; % For effort line, time to move [s]
+Params.MovementWindow           = 0.3; % For effort line, time to move [s]
 Params.TrialLength              = 3;   % Fixed trial length [s]
 
 %%  Inter-trial Stuff
@@ -191,7 +193,7 @@ end
 
 %% Cursor
 b5.Cursor_color 				= [1 1 1 0.75]; % RGBA 
-b5.Cursor_scale 				= [8 8];        % [mm] % note: diameter!
+b5.Cursor_scale 				= [6 6];        % [mm] % note: diameter!
 
 %% Start Axis
 b5.StartAxis_color			= [1 1 1 0.75];
@@ -215,6 +217,16 @@ Params.ProbeEffortTarget.RewardVector       = [90 95 105 110];
 b5.EffortLine_color     = [0 0 1 1];
 b5.EffortLine_scale     = b5.Frame_scale;
 b5.EffortLine_pos       = Params.WsCenter;
+
+%% Filling Effort
+b5.FillingEffort_color     = [1 1 0 1];
+b5.FillingEffort_scale     = b5.Frame_scale;
+b5.FillingEffort_pos       = Params.WsCenter;
+
+%% Reward Feedback
+b5.RewardFeedback_color     = [1 1 0 1];
+b5.RewardFeedback_scale     = [b5.Frame_scale(1), 0.5];
+b5.RewardFeedback_pos       = Params.WsCenter - [0, b5.Frame_scale(2)/2 ];
 
 %% Reference Target
 b5.ReferenceTarget_color                    = [0 0 1 1];
@@ -346,8 +358,10 @@ Params.TimerOn                      = true;
 Params.AllowEarlyReach              = true; % { allow subject to start
                                            % { reach before end of delay
 
+Params.MaxReward                    = 5;  % Max reward per trial
 Params.MaxForce                     = 40; % Measured max force per subject [N]
-Params.MaxSlope                     = 75; % Degrees
+% Params.MaxSlope                     = Params.MaxReward/Params.MaxForce; % Degrees
+Params.MaxSlope                     = 45; % Degrees
 
 Params.AdaptiveReward(:,1)       = Params.ProbeEffortTarget.EffortVector* ...
                                 Params.MaxForce * (b5.Frame_scale(2)/2)/50;
@@ -367,7 +381,7 @@ Params.EffortSampleSpace    = repmat(Params.ProbeEffortTarget.EffortVector, ...
 Params.SlopeSampleSpace    = repmat(Params.ProbeEffortTarget.EffortVector, ...
     1, ceil(Params.NumTrials/size(Params.ProbeEffortTarget.EffortVector,2)));
 
-Params.ZeroEffortOffset = 40; % Zero effort offset in % of max force
+Params.ZeroEffortOffset = 0; % Zero effort offset in % of max force
 %% SYNC
 b5 = bmi5_mmap(b5);
                                            

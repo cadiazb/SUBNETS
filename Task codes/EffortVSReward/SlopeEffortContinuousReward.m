@@ -28,13 +28,14 @@ dat.EffortLine = zeros(2,2*ceil(sqrt(sumsqr(b5.Frame_scale)))); %Array for line 
 dat.EffortLine(1,:) = 1:size(dat.EffortLine,2);
 m = tan(dat.ProbeEffort * Params.MaxSlope * pi() / 180);
 dat.EffortLine(2,:) = m .* dat.EffortLine(1,:);
+dat.EffortLine(1,:) = dat.EffortLine(1,:) + Params.ZeroEffortOffset;
+dat.EffortLine = [ 1:(dat.EffortLine(1,1)-1), dat.EffortLine(1,:); ...
+    zeros(1,dat.EffortLine(1,1)-1), dat.EffortLine(2,:)];
 
 % Translate line to bottom left corner of b5.frame
 dat.EffortLine(1,:) = dat.EffortLine(1,:) + Params.WsCenter(1) - b5.Frame_scale(1)/2;
 dat.EffortLine(2,:) = dat.EffortLine(2,:) + ...
     Params.WsCenter(2) - b5.Frame_scale(2)/2;
-
-dat.EffortLine(1,:) = dat.EffortLine(1,:) + Params.ZeroEffortOffset;
 
 if dat.ProbeEffort * Params.MaxSlope <= 45
     b5.EffortLine_scale(1) = b5.Frame_scale(1) - Params.ZeroEffortOffset;
@@ -49,6 +50,10 @@ end
 
 b5.EffortLine_pos = [Params.ZeroEffortOffset, 0];
 b5.EffortLine_pos = b5.EffortLine_pos - b5.Frame_scale/2;
+
+% init Filling Effort
+b5.FillingEffort_scale = [0,0];
+b5.FillingEffort_pos = b5.EffortLine_pos;
 
 clear m
 
@@ -110,6 +115,8 @@ b5.TimerBar_draw = DRAW_NONE;
 b5.ReachTimeout_draw = DRAW_NONE;
 
 b5.EffortLine_draw  = DRAW_NONE;
+b5.FillingEffort_draw  = DRAW_NONE;
+b5.RewardFeedback_draw = DRAW_NONE;
 
 %% Always show points ON/OFF
 b5.TotalPoints_draw = DRAW_NONE;
@@ -225,6 +232,9 @@ if ~dat.OutcomeID
     
     b5.StartTarget_draw = DRAW_NONE;
 %     b5.StartAxis_draw = DRAW_NONE;
+    b5.FillingEffort_draw  = DRAW_BOTH;
+    b5.RewardFeedback_draw = DRAW_BOTH;
+    
     b5.GoTone_play_io = 1;
     b5 = bmi5_mmap(b5);
 
@@ -238,6 +248,18 @@ if ~dat.OutcomeID
 
         pos = b5.Cursor_pos;
         dat.FinalCursorPos(1) = max(dat.FinalCursorPos(1), pos(1));
+        dat.FinalCursorPos(2) = min(dat.EffortLine(2,find(dat.EffortLine(1,:) >= dat.FinalCursorPos(1),1,'first')),...
+            Params.WsBounds(2,2));
+        b5.FillingEffort_scale(1) = min(max(dat.FinalCursorPos(1)-Params.WsCenter(1) + b5.Frame_scale(1)/2 - Params.ZeroEffortOffset,0), ...
+            b5.EffortLine_scale(1));
+        b5.FillingEffort_scale(2) = min(dat.FinalCursorPos(2)-Params.WsCenter(2) + b5.Frame_scale(2)/2,...
+            Params.WsBounds(2,2)-Params.WsCenter(2) + b5.Frame_scale(2)/2);
+        
+        b5.RewardFeedback_scale(1) = b5.FillingEffort_scale(1) + Params.ZeroEffortOffset;
+        b5.RewardFeedback_pos = b5.StartTarget_pos;
+        b5.RewardFeedback_pos(1) = b5.RewardFeedback_pos(1) + b5.RewardFeedback_scale(1)/2;
+        b5.RewardFeedback_pos(2) = b5.RewardFeedback_pos(2) + b5.FillingEffort_scale(2);
+
         if Params.TimerOn
             AdjustTimerBar;
         end
@@ -248,19 +270,23 @@ if ~dat.OutcomeID
             dat.ReactionTime = b5.time_o - t_start;
         end
         
-        if (b5.time_o - t_start) > Params.MovementWindow
-            if isempty(dat.ReactionTime)
+        if ~isempty(dat.ReactionTime)
+            if (b5.time_o - (dat.ReactionTime + t_start)) > Params.MovementWindow
+%                 dat.MovementTime = NaN;
+                dat.ActualEffort = (pos(1) - b5.StartTarget_pos(1)) /...
+                                        b5.Frame_scale(1); % Force as %of Max
+    %             dat.FinalCursorPos = pos;
+                done            = true;
+                dat.OutcomeID 	= 0;
+                dat.OutcomeStr 	= 'success';
+            end
+        else
+            if (b5.time_o - t_start) > Params.ReactionTimeDelay
+                done = true;
                 dat.ReactionTime = NaN;
                 dat.OutcomeID 	= 4;
                 dat.OutcomeStr 	= 'cancel @ reaction';
             end
-            dat.MovementTime = NaN;
-            dat.ActualEffort = (pos(1) - b5.StartTarget_pos(1)) /...
-                                    b5.Frame_scale(1); % Force as %of Max
-%             dat.FinalCursorPos = pos;
-            done            = true;
-            dat.OutcomeID 	= 0;
-            dat.OutcomeStr 	= 'success';
         end
             
         
@@ -288,12 +314,12 @@ b5.ReferenceEffortString_draw = DRAW_NONE;
 
 b5.Frame_draw = DRAW_NONE;
 b5.EffortLine_draw  = DRAW_NONE;
+b5.FillingEffort_draw  = DRAW_NONE;
+b5.RewardFeedback_draw = DRAW_NONE;
 
 if dat.OutcomeID == 0
-    
-    dat.FinalCursorPos(2) = min(dat.EffortLine(2,find(dat.EffortLine(1,:) >= dat.FinalCursorPos(1),1,'first')),...
-        Params.WsBounds(2,2));
-    tmpTrialPoints = (dat.FinalCursorPos(2) -Params.WsCenter(2) + b5.Frame_scale(2)/2)*5/b5.Frame_scale(2);
+  
+    tmpTrialPoints = (dat.FinalCursorPos(2) -Params.WsCenter(2) + b5.Frame_scale(2)/2)*Params.MaxReward/b5.Frame_scale(2);
     dat.TotalPoints = dat.TotalPoints + ...
         tmpTrialPoints;
     
