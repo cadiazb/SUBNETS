@@ -231,11 +231,13 @@ if ~dat.OutcomeID
 	done            = false;
 	gotPos          = false;
     gotIntention    = 0;
+    dat.FinalCursorPos = b5.StartTarget_pos;
 
 	t_start = b5.time_o;
 	while ~done
 
         pos = b5.Cursor_pos;
+        dat.FinalCursorPos(1) = max(dat.FinalCursorPos(1), pos(1));
         if Params.TimerOn
             AdjustTimerBar;
         end
@@ -255,7 +257,7 @@ if ~dat.OutcomeID
             dat.MovementTime = NaN;
             dat.ActualEffort = (pos(1) - b5.StartTarget_pos(1)) /...
                                     b5.Frame_scale(1); % Force as %of Max
-            dat.FinalCursorPos = pos;
+%             dat.FinalCursorPos = pos;
             done            = true;
             dat.OutcomeID 	= 0;
             dat.OutcomeStr 	= 'success';
@@ -289,6 +291,8 @@ b5.EffortLine_draw  = DRAW_NONE;
 
 if dat.OutcomeID == 0
     
+    dat.FinalCursorPos(2) = min(dat.EffortLine(2,find(dat.EffortLine(1,:) >= dat.FinalCursorPos(1),1,'first')),...
+        Params.WsBounds(2,2));
     tmpTrialPoints = (dat.FinalCursorPos(2) -Params.WsCenter(2) + b5.Frame_scale(2)/2)*5/b5.Frame_scale(2);
     dat.TotalPoints = dat.TotalPoints + ...
         tmpTrialPoints;
