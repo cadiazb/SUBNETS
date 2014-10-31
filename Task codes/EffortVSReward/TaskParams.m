@@ -21,12 +21,12 @@ PathAdder('Lib/ThresholdFinder');
 bmi5_cmd('clear_all');
 bmi5_cmd('delete_all');
 
-bmi5_cmd('make ring StartTarget 0.05');
+bmi5_cmd('make circle StartTarget');
 
 bmi5_cmd('make square ProbeEffortTarget');
 bmi5_cmd('make square ReferenceTarget');
-bmi5_cmd('make triangle EffortLine');
-bmi5_cmd('make triangle FillingEffort');
+bmi5_cmd('make open_square EffortLine 0.01');
+bmi5_cmd('make square FillingEffort');
 bmi5_cmd('make square RewardFeedback');
 
 bmi5_cmd('make square StartAxis');
@@ -48,7 +48,16 @@ bmi5_cmd('make text ReferenceRewardString 32');
 bmi5_cmd('make text ProbeEffortString 32');
 bmi5_cmd('make text ReferenceEffortString 32');
 bmi5_cmd('make text TotalPoints 32');
-bmi5_cmd('make text ProbeAxisLabel 94');
+
+bmi5_cmd('make text EffortLabel10 16');
+bmi5_cmd('make text EffortLabel25 16');
+bmi5_cmd('make text EffortLabel50 16');
+bmi5_cmd('make text EffortLabel75 16');
+bmi5_cmd('make text EffortLabel100 17');
+
+for ii=1:5
+    bmi5_cmd(['make text RewardLabel' num2str(ii) ' 16']);
+end
 
 % timer
 bmi5_cmd('make square TimerBar');
@@ -201,8 +210,8 @@ b5.StartAxis_scale 			= [290 0.5];
 b5.StartAxis_pos            = Params.WsCenter;
 
 %% Start Target
-b5.StartTarget_color			= [0 1 0 0.75];
-b5.StartTarget_scale 			= [10 10];
+b5.StartTarget_color			= [1 0 0 1];
+b5.StartTarget_scale 			= [20 20];
 Params.StartTarget.Win  		= 20; % radius
 Params.StartTarget.Locations 	= {Params.WsCenter + [-40 -40]}; % cell array of locations
 
@@ -212,21 +221,28 @@ b5.ProbeEffortTarget_scale                  = [395 60];
 Params.ProbeEffortTarget.EffortVector       = ...
                             [0.1 0.2 0.3 0.4 0.6 0.7 0.8 0.9];
 Params.ProbeEffortTarget.RewardVector       = [90 95 105 110];
+Params.VerticalRewardsMatrix = ...
+    [1 2 3 4 5;
+     1 3 5 7 9;
+     2 4 6 8 10;
+     3 6 9 12 15];
 
 %% Effort Line
 b5.EffortLine_color     = [0 0 1 1];
-b5.EffortLine_scale     = b5.Frame_scale;
+b5.EffortLine_scale     = b5.Frame_scale.* [0.25, 1];
 b5.EffortLine_pos       = Params.WsCenter;
 
 %% Filling Effort
 b5.FillingEffort_color     = [1 1 0 1];
-b5.FillingEffort_scale     = b5.Frame_scale;
-b5.FillingEffort_pos       = Params.WsCenter;
+b5.FillingEffort_scale     = b5.Frame_scale .* [0.25, 1];
+b5.FillingEffort_pos       = Params.WsCenter - [0, b5.Frame_scale(2)/2] + ...
+                    [0, b5.FillingEffort_scale(2)/2];
 
 %% Reward Feedback
 b5.RewardFeedback_color     = [1 1 0 1];
 b5.RewardFeedback_scale     = [b5.Frame_scale(1), 0.5];
-b5.RewardFeedback_pos       = Params.WsCenter - [0, b5.Frame_scale(2)/2 ];
+b5.RewardFeedback_pos       = Params.WsCenter - [0, b5.Frame_scale(2)/2] + ...
+                    [0, b5.RewardFeedback_scale(2)/2];
 
 %% Reference Target
 b5.ReferenceTarget_color                    = [0 0 1 1];
@@ -267,8 +283,17 @@ b5.ProbeEffortString_color              = [1 1 1 1];
 %% Big Effort String
 b5.ReferenceEffortString_color          = [1 1 1 1];
 
-%% Probe Axis label
-b5.ProbeAxisLabel_color              = [1 1 1 1];
+%% Effort labels
+b5.EffortLabel10_color              = [1 1 1 1];
+b5.EffortLabel25_color              = [1 1 1 1];
+b5.EffortLabel50_color              = [1 1 1 1];
+b5.EffortLabel75_color              = [1 1 1 1];
+b5.EffortLabel100_color              = [1 1 1 1];
+
+%% Reward labels
+for ii=1:5
+    b5.(['RewardLabel' num2str(ii) '_color']) = [1 1 1 1];
+end
 
 %% Total Points String
 b5.TotalPoints_color        = [1 1 1 1];

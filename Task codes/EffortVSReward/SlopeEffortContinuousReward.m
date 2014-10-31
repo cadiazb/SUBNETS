@@ -24,36 +24,36 @@ dat.ProbeEffort         = DrawFromVec(Params.SlopeSampleSpace);
 
 %% Generate ProbeEffortTarget and Reference Target positions
 
-dat.EffortLine = zeros(2,2*ceil(sqrt(sumsqr(b5.Frame_scale)))); %Array for line coordinates
-dat.EffortLine(1,:) = 1:size(dat.EffortLine,2);
-m = tan(dat.ProbeEffort * Params.MaxSlope * pi() / 180);
-dat.EffortLine(2,:) = m .* dat.EffortLine(1,:);
-dat.EffortLine(1,:) = dat.EffortLine(1,:) + Params.ZeroEffortOffset;
-dat.EffortLine = [ 1:(dat.EffortLine(1,1)-1), dat.EffortLine(1,:); ...
-    zeros(1,dat.EffortLine(1,1)-1), dat.EffortLine(2,:)];
+% dat.EffortLine = zeros(2,2*ceil(sqrt(sumsqr(b5.Frame_scale)))); %Array for line coordinates
+% dat.EffortLine(1,:) = 1:size(dat.EffortLine,2);
+% m = tan(dat.ProbeEffort * Params.MaxSlope * pi() / 180);
+% dat.EffortLine(2,:) = m .* dat.EffortLine(1,:);
+% dat.EffortLine(1,:) = dat.EffortLine(1,:) + Params.ZeroEffortOffset;
+% dat.EffortLine = [ 1:(dat.EffortLine(1,1)-1), dat.EffortLine(1,:); ...
+%     zeros(1,dat.EffortLine(1,1)-1), dat.EffortLine(2,:)];
+% 
+% % Translate line to bottom left corner of b5.frame
+% dat.EffortLine(1,:) = dat.EffortLine(1,:) + Params.WsCenter(1) - b5.Frame_scale(1)/2;
+% dat.EffortLine(2,:) = dat.EffortLine(2,:) + ...
+%     Params.WsCenter(2) - b5.Frame_scale(2)/2;
+% 
+% if dat.ProbeEffort * Params.MaxSlope <= 45
+%     b5.EffortLine_scale(1) = b5.Frame_scale(1) - Params.ZeroEffortOffset;
+%     b5.EffortLine_scale(2) = ...
+%         tan(dat.ProbeEffort * Params.MaxSlope * pi() / 180) * ...
+%         b5.EffortLine_scale(1);
+% else
+%     b5.EffortLine_scale(2) = b5.Frame_scale(2);
+%     b5.EffortLine_scale(1) = b5.EffortLine_scale(2) / ...
+%         tan(dat.ProbeEffort * Params.MaxSlope * pi() / 180);
+% end
 
-% Translate line to bottom left corner of b5.frame
-dat.EffortLine(1,:) = dat.EffortLine(1,:) + Params.WsCenter(1) - b5.Frame_scale(1)/2;
-dat.EffortLine(2,:) = dat.EffortLine(2,:) + ...
-    Params.WsCenter(2) - b5.Frame_scale(2)/2;
-
-if dat.ProbeEffort * Params.MaxSlope <= 45
-    b5.EffortLine_scale(1) = b5.Frame_scale(1) - Params.ZeroEffortOffset;
-    b5.EffortLine_scale(2) = ...
-        tan(dat.ProbeEffort * Params.MaxSlope * pi() / 180) * ...
-        b5.EffortLine_scale(1);
-else
-    b5.EffortLine_scale(2) = b5.Frame_scale(2);
-    b5.EffortLine_scale(1) = b5.EffortLine_scale(2) / ...
-        tan(dat.ProbeEffort * Params.MaxSlope * pi() / 180);
-end
-
-b5.EffortLine_pos = [Params.ZeroEffortOffset, 0];
-b5.EffortLine_pos = b5.EffortLine_pos - b5.Frame_scale/2;
+% b5.EffortLine_pos = [Params.ZeroEffortOffset, 0];
+% b5.EffortLine_pos = b5.EffortLine_pos - b5.Frame_scale/2;
 
 % init Filling Effort
-b5.FillingEffort_scale = [0,0];
-b5.FillingEffort_pos = b5.EffortLine_pos;
+% b5.FillingEffort_scale = [0,0];
+% b5.FillingEffort_pos = b5.EffortLine_pos;
 
 clear m
 
@@ -68,22 +68,19 @@ clear m
 % dat.ProbeReward = Params.AdaptiveReward(Params.AdaptiveReward(:,1) == dat.ProbeEffort,2);        
                                 
 %% Set reward strings and position
-b5.ProbeRewardString_v = [double(sprintf('1c')) zeros(1,30)]';
-b5.ReferenceRewardString_v = [double(sprintf('5c')) zeros(1,30)]';
+%% Set effort strings and positions
 
-b5.ProbeRewardString_pos = ...
-    Params.WsCenter - [1 0.75] .* b5.Frame_scale/2 - [130,-20];
-b5.ReferenceRewardString_pos = ...
-    Params.WsCenter + [-1 0.95].* b5.Frame_scale/2 - [130,0];
-
-b5 = bmi5_mmap(b5);
+tmpRand = ceil(4*rand(1,1));
+for ii = 1:size(Params.VerticalRewardsMatrix,2)
+    b5.(['RewardLabel' num2str(ii) '_v'])      = [double(sprintf('%02dc',Params.VerticalRewardsMatrix(tmpRand,ii))), zeros(1,13)]';
+    b5.(['RewardLabel' num2str(ii) '_pos'])  = Params.WsCenter -  [0,b5.Frame_scale(2)/2] + [-80, ii*20*b5.Frame_scale(2)/100];
+end
 
 %% Set effort strings and positions
-b5.ProbeAxisLabel_v      = ...
-[double(sprintf('0%%            10%%            30%%            50%%            70%%            90%%            100%%' ...
-    )), 0]';
-
-b5.ProbeAxisLabel_pos  = Params.WsCenter -  b5.Frame_scale/2 - [90, 20];
+for ii = [10 25 50 75 100]
+    b5.(['EffortLabel' num2str(ii) '_v'])      = [double([num2str(ii) '%']), zeros(1,13)]';
+    b5.(['EffortLabel' num2str(ii) '_pos'])  = Params.WsCenter -  [0,b5.Frame_scale(2)/2] + [65, ii*b5.Frame_scale(2)/100];
+end
 
 
 %% Generate delay interval
@@ -103,8 +100,15 @@ b5.Frame_draw = DRAW_NONE;
 b5.ProbeEffortTarget_draw 	= DRAW_NONE;
 b5.ProbeEffortAxis_draw = DRAW_NONE; 
 b5.ProbeRewardString_draw = DRAW_NONE; 
-b5.ProbeEffortString_draw = DRAW_NONE; 
-b5.ProbeAxisLabel_draw = DRAW_NONE;
+b5.ProbeEffortString_draw = DRAW_NONE;
+
+for ii = [10 25 50 75 100]
+    b5.(['EffortLabel' num2str(ii) '_draw'])      = DRAW_NONE;
+end
+
+for ii = 1:5
+    b5.(['RewardLabel' num2str(ii) '_draw'])      = DRAW_NONE;
+end
 
 b5.ReferenceTarget_draw = DRAW_NONE;
 b5.ReferenceAxis_draw = DRAW_NONE;
@@ -129,7 +133,7 @@ Params.TimerOn = false;
 
 %% 1. ACQUIRE START TARGET
 b5.StartTone_play_io = 1;
-b5.Cursor_draw = DRAW_BOTH;
+% b5.Cursor_draw = DRAW_BOTH;
 b5.StartTarget_draw = DRAW_BOTH;
 % b5.StartAxis_draw = DRAW_BOTH;
 b5 = bmi5_mmap(b5);
@@ -173,12 +177,17 @@ end
 %% 2. INSTRUCTED DELAY PHASE
 if ~dat.OutcomeID
 % b5 = JuiceStart(b5,Params.Reward/10);
-    b5.ReferenceRewardString_draw = DRAW_BOTH; 
+%     b5.ReferenceRewardString_draw = DRAW_BOTH; 
     
-    b5.ProbeAxisLabel_draw = DRAW_BOTH;
-    b5.ProbeRewardString_draw = DRAW_BOTH;
+    for ii = [10  100]
+        b5.(['EffortLabel' num2str(ii) '_draw'])      = DRAW_BOTH;
+    end
+    for ii = 1:5
+        b5.(['RewardLabel' num2str(ii) '_draw'])      = DRAW_BOTH;
+    end
+%     b5.ProbeRewardString_draw = DRAW_BOTH;
     
-    b5.Frame_draw = DRAW_BOTH;
+%     b5.Frame_draw = DRAW_BOTH;
     
     if Params.TimerOn
         b5.TimerBar_draw = DRAW_BOTH;
@@ -233,7 +242,7 @@ if ~dat.OutcomeID
     b5.StartTarget_draw = DRAW_NONE;
 %     b5.StartAxis_draw = DRAW_NONE;
     b5.FillingEffort_draw  = DRAW_BOTH;
-    b5.RewardFeedback_draw = DRAW_BOTH;
+%     b5.RewardFeedback_draw = DRAW_BOTH;
     
     b5.GoTone_play_io = 1;
     b5 = bmi5_mmap(b5);
@@ -248,17 +257,17 @@ if ~dat.OutcomeID
 
         pos = b5.Cursor_pos;
         dat.FinalCursorPos(1) = max(dat.FinalCursorPos(1), pos(1));
-        dat.FinalCursorPos(2) = min(dat.EffortLine(2,find(dat.EffortLine(1,:) >= dat.FinalCursorPos(1),1,'first')),...
-            Params.WsBounds(2,2));
-        b5.FillingEffort_scale(1) = min(max(dat.FinalCursorPos(1)-Params.WsCenter(1) + b5.Frame_scale(1)/2 - Params.ZeroEffortOffset,0), ...
-            b5.EffortLine_scale(1));
-        b5.FillingEffort_scale(2) = min(dat.FinalCursorPos(2)-Params.WsCenter(2) + b5.Frame_scale(2)/2,...
-            Params.WsBounds(2,2)-Params.WsCenter(2) + b5.Frame_scale(2)/2);
+        dat.FinalCursorPos(2) = 0;
+        b5.FillingEffort_scale(1) = b5.EffortLine_scale(1);
+        b5.FillingEffort_scale(2) = max(dat.FinalCursorPos(1)-Params.WsCenter(1) + b5.Frame_scale(1)/2,...
+            0);
+        b5.FillingEffort_pos       = Params.WsCenter - [0, b5.Frame_scale(2)/2] + ...
+                    [0, b5.FillingEffort_scale(2)/2];
         
-        b5.RewardFeedback_scale(1) = b5.FillingEffort_scale(1) + Params.ZeroEffortOffset;
-        b5.RewardFeedback_pos = b5.StartTarget_pos;
-        b5.RewardFeedback_pos(1) = b5.RewardFeedback_pos(1) + b5.RewardFeedback_scale(1)/2;
-        b5.RewardFeedback_pos(2) = b5.RewardFeedback_pos(2) + b5.FillingEffort_scale(2);
+%         b5.RewardFeedback_scale(1) = b5.FillingEffort_scale(1) + Params.ZeroEffortOffset;
+%         b5.RewardFeedback_pos = b5.StartTarget_pos;
+%         b5.RewardFeedback_pos(1) = b5.RewardFeedback_pos(1) + b5.RewardFeedback_scale(1)/2;
+%         b5.RewardFeedback_pos(2) = b5.RewardFeedback_pos(2) + b5.FillingEffort_scale(2);
 
         if Params.TimerOn
             AdjustTimerBar;
@@ -305,7 +314,14 @@ b5.ProbeEffortTarget_draw 	= DRAW_NONE;
 b5.ProbeEffortAxis_draw = DRAW_NONE; 
 b5.ProbeRewardString_draw = DRAW_NONE; 
 b5.ProbeEffortString_draw = DRAW_NONE; 
-b5.ProbeAxisLabel_draw = DRAW_NONE;
+
+for ii = [10 25 50 75 100]
+    b5.(['EffortLabel' num2str(ii) '_draw'])      = DRAW_NONE;
+end
+
+for ii = 1:5
+    b5.(['RewardLabel' num2str(ii) '_draw'])      = DRAW_NONE;
+end
 
 b5.ReferenceTarget_draw = DRAW_NONE;
 b5.ReferenceAxis_draw = DRAW_NONE;
@@ -323,8 +339,11 @@ if dat.OutcomeID == 0
     dat.TotalPoints = dat.TotalPoints + ...
         tmpTrialPoints;
     
-    tmpStringZeros = 32 - numel(double(sprintf('Earned = %04.2f',tmpTrialPoints)));
-    b5.TotalPoints_v = [double(sprintf('Earned = %04.2f',tmpTrialPoints)) zeros(1,tmpStringZeros)]';
+%     tmpStringZeros = 32 - numel(double(sprintf('Earned = %04.2f',tmpTrialPoints)));
+%     b5.TotalPoints_v = [double(sprintf('Earned = %04.2f',tmpTrialPoints)) zeros(1,tmpStringZeros)]';
+    
+    tmpStringZeros = 32 - numel(double(sprintf('Earned = %04.2f',0)));
+    b5.TotalPoints_v = [double(sprintf('Earned = %04.2f',0)) zeros(1,tmpStringZeros)]';
     
     Params.SlopeSampleSpace(...
         find(Params.SlopeSampleSpace == dat.ProbeEffort, 1)) = [];
@@ -341,7 +360,7 @@ else
     
 end
 
-b5.TotalPoints_draw = DRAW_BOTH;
+% b5.TotalPoints_draw = DRAW_BOTH;
 b5 = bmi5_mmap(b5);
 
 % Pause at end of trials
