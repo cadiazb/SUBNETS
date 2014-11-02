@@ -25,9 +25,6 @@ bmi5_cmd('make ring StartTarget 0.05');
 
 bmi5_cmd('make square ProbeEffortTarget');
 bmi5_cmd('make square ReferenceTarget');
-bmi5_cmd('make triangle EffortLine');
-bmi5_cmd('make triangle FillingEffort');
-bmi5_cmd('make square RewardFeedback');
 
 bmi5_cmd('make square StartAxis');
 bmi5_cmd('make square ProbeEffortAxis');
@@ -42,13 +39,15 @@ bmi5_cmd('make tone PairTone');
 bmi5_cmd('make store int 1 Trial');
 bmi5_cmd('make open_square Frame 0.01');
 
-bmi5_cmd('make text ProbeRewardString 32');
-bmi5_cmd('make text ReferenceRewardString 32');
-
 bmi5_cmd('make text ProbeEffortString 32');
 bmi5_cmd('make text ReferenceEffortString 32');
 bmi5_cmd('make text TotalPoints 32');
-bmi5_cmd('make text ProbeAxisLabel 94');
+
+for ii = 1:2
+    for jj = 1:6
+        bmi5_cmd(sprintf('make circle Coin0%d_0%d', ii,jj));
+    end
+end
 
 % timer
 bmi5_cmd('make square TimerBar');
@@ -130,12 +129,11 @@ Params.SessionCount = ct;
 Params.NumTrials 				= 2000;
 
 %%  Trial Type Function Selection
-% 1. Reward adaptation for fixed for
-% 2. Continuous reward scheme. Line slope.
-% 3. One target - Pass/No pass - Reward adaptive
-% 4. One target - Pass/No pass - Fixed effort/reward pairs
+% Choose here between:
+% Probe vs Reward no reward adaptation: [1 0]
+% Probe only no reward adaptation:      [0 1]
 
-Params.TrialTypeProbs 			= [1 0 0 0];
+Params.TrialTypeProbs 			= [1 0];
 Params.TrialTypeProbs           = Params.TrialTypeProbs/sum(Params.TrialTypeProbs);
 
 %% BLOCKS OF TRIALS
@@ -166,12 +164,12 @@ Params.StartTarget.Hold       	= 0.1;
 Params.ProbeEffortTarget.Hold 	= 0;         
 Params.BigEffortTarget.Hold   	= 0;       
 Params.ReachDelayRange       	= [0.5 0.5];	% draw from this interval
-Params.ReactionTimeDelay      	= 2;
+Params.ReactionTimeDelay      	= 2.6;
 Params.ErrPenalty               = 0;
 Params.TimeoutReachStartTarget  = 0.1; % max time to acquire start target
-Params.TimeoutReachTarget       = 1.3; % max time to reach reaching target
+Params.TimeoutReachTarget       = 1; % max time to reach reaching target
 Params.MovementWindow           = 0.3; % For effort line, time to move [s]
-Params.TrialLength              = 3;   % Fixed trial length [s]
+Params.TrialLength              = 4;   % Fixed trial length [s]
 
 %%  Inter-trial Stuff
 Params.InterTrialDelay 			= 0.5;  % delay between each trial [sec]
@@ -211,28 +209,13 @@ b5.ProbeEffortTarget_color                  = [0 0.6 0 1];
 b5.ProbeEffortTarget_scale                  = [395 60];
 Params.ProbeEffortTarget.EffortVector       = ...
                             [0.1 0.2 0.3 0.4 0.6 0.7 0.8 0.9];
-Params.ProbeEffortTarget.RewardVector       = [90 95 105 110];
-
-%% Effort Line
-b5.EffortLine_color     = [0 0 1 1];
-b5.EffortLine_scale     = b5.Frame_scale;
-b5.EffortLine_pos       = Params.WsCenter;
-
-%% Filling Effort
-b5.FillingEffort_color     = [1 1 0 1];
-b5.FillingEffort_scale     = b5.Frame_scale;
-b5.FillingEffort_pos       = Params.WsCenter;
-
-%% Reward Feedback
-b5.RewardFeedback_color     = [1 1 0 1];
-b5.RewardFeedback_scale     = [b5.Frame_scale(1), 0.5];
-b5.RewardFeedback_pos       = Params.WsCenter - [0, b5.Frame_scale(2)/2 ];
+Params.ProbeEffortTarget.RewardVector       = [1:25];
 
 %% Reference Target
 b5.ReferenceTarget_color                    = [0 0 1 1];
 b5.ReferenceTarget_scale                    = [395 60];
 Params.ReferenceTarget.EffortReference      = 0.5;
-Params.ReferenceTarget.RewardReference        = 100;
+Params.ReferenceTarget.RewardReference        = 12;
 
 %% Probe effort axis
 b5.ProbeEffortAxis_color                = b5.ProbeEffortTarget_color;
@@ -255,20 +238,11 @@ b5.ReachTimeout_pos = [b5.Frame_scale(1)*...
     + Params.WsCenter(1) - b5.Frame_scale(1)/2, ...
                             Params.WsBounds(2,2)+b5.ReachTimeout_scale(2)/2];
 
-%% Probe Reward String
-b5.ProbeRewardString_color              = [1 1 1 1];
-
-%% Reference Reward String
-b5.ReferenceRewardString_color          = [1 1 1 1];
-
 %% Probe Effort String
 b5.ProbeEffortString_color              = [1 1 1 1];
 
 %% Big Effort String
 b5.ReferenceEffortString_color          = [1 1 1 1];
-
-%% Probe Axis label
-b5.ProbeAxisLabel_color              = [1 1 1 1];
 
 %% Total Points String
 b5.TotalPoints_color        = [1 1 1 1];
@@ -296,92 +270,26 @@ b5.PairTone_scale         = 1;    % (units?)
 Params.Reward 				=300;  %(msec)
 Params.TempPerf				=0.5;  %(msec)
 
-%% ICMS Params
-% Params.ICMS.TargetID                = 0; % 0 - stim for left; 1 - right
-% Params.ICMS.FreqHz                  = 0;
-% Params.ICMS.PWUs                    = 1000000;%500
-% Params.ICMS.AmpUA                   = 1;% 6.5 mW
-% Params.ICMS.InterphaseUs            = 200;% I don't need this
-% Params.ICMS.TrainLengthSec          =1;
-% 
-% % twelve channels; hopefully he can detect this set :-\
-% % each catholde is paired with an anode 400 um away
-% % see spreadhseet
-% % THESE ARE 1-INDEXED!!!
-% Params.ICMS.CathodeVec = [10 14 16 90 73 55 75 95 03 96 61 59];% I don't need this
-% Params.ICMS.AnodeVec   = [12 18 20 49 77 53 79 83 54 57 92 65]; % I don't need this
-% 
-% Params.ICMS.CathodeVec = [95 03 96 61 59];% I don't need this
-% Params.ICMS.AnodeVec   = [83 54 57 92 65]; % I don't need this
-% 
-% % The Putative-Two
-% Params.ICMS.CathodeVec = [95 61];% I don't need this
-% Params.ICMS.AnodeVec   = [83 92];  % I don't need this 
-% 
-% Params.ICMS.CathodeVec = [95];% I don't need this
-% Params.ICMS.AnodeVec   = [83];  % I don't need this 
-
 %% FOR CONVENIENCE DEFINE BLOCKSIZE HERE
 % Params.BlockSize 				= 35;
 Params.BlockSize 				=1000;
-
-%% ICMS Psychometric Quest
-% Params.ICMSQUEST.InitialGuessUA     = 30;
-% Params.ICMSQUEST.MaxAmpUA           = 60;
-% Params.ICMSQUEST.ThreshLevel        = 0.90;
-% Params.ICMSQUEST.RoundNearestUA     = true;
-% Params.ICMSQUEST.ClampToVec         = false;
-% Params.ICMSQUEST.AmpVecUA           = [0 5 10 15 20 25 30 35 40 45 50 55 60];
-% 
-% Params.ICMSQUEST.ResetQOnNewBlock   = true;
-% 
-% % Note: the ICMSQUEST param set is used both for Questy calculation of
-% %       thresholds as well as more traditional psychometric testing.
-% %
-% % * For all block-types, the Quest estimate of threshold is updated on
-% %   completion of any trial where Pr(left) = 0.5
-% % * For block-type-2 (psychometric-current-basic), the amplitude current
-% %   for each trial is uniformly drawn from the ICMSQUEST.AMPVecUA vector
-% % * For block-type-3 (psychometric-current-quest), the amplitude current
-% %   for each trial is generated from the Quest estimate. If the boolean
-% %   ICMSQUEST.RoundNearestUA is true, then the estimate is rounded to the
-% %   nearest uA. If ICMSQUEST.ClampToVec is true, then the estimate is
-% %   clamped to the nearest value contained in ICMSQUEST.AmpVecUA.
 
 %% OTHER
 Params.UseCorrectionTrials          = false; % { both of these
 Params.UseAdaptiveProbability       = false; % { cannot be true
 Params.AdaptiveLookbackLength       = 10;    % num trials to look back
 Params.FixedTrialLength             = true;
-Params.TimerOn                      = true;
+Params.TimerOn                      = false;
 
-Params.AllowEarlyReach              = true; % { allow subject to start
+Params.AllowEarlyReach              = false; % { allow subject to start
                                            % { reach before end of delay
-
-Params.MaxReward                    = 5;  % Max reward per trial
 Params.MaxForce                     = 40; % Measured max force per subject [N]
-% Params.MaxSlope                     = Params.MaxReward/Params.MaxForce; % Degrees
-Params.MaxSlope                     = 45; % Degrees
 
-Params.AdaptiveReward(:,1)       = Params.ProbeEffortTarget.EffortVector* ...
-                                Params.MaxForce * (b5.Frame_scale(2)/2)/50;
-for ii=2:11
-Params.AdaptiveReward(:,ii)  = Params.ReferenceTarget.RewardReference + ...
-                                   [-20, -15, -10, -5, 5, 10, 15, 20];
-end
-                            
-Params.StepSizeAdaptive     = false;
-Params.AdaptiveStepUp       = 1.04;
-Params.AdaptiveStepDown     = 0.98;
 
 Params.EffortSampleSpace    = repmat(Params.ProbeEffortTarget.EffortVector, ...
-    1, ceil(Params.NumTrials/size(Params.ProbeEffortTarget.EffortVector,2)))* ...
+    1, ceil(300/size(Params.ProbeEffortTarget.EffortVector,2)))* ...
                                 Params.MaxForce * (b5.Frame_scale(2)/2)/50;
-                            
-Params.SlopeSampleSpace    = repmat(Params.ProbeEffortTarget.EffortVector, ...
-    1, ceil(Params.NumTrials/size(Params.ProbeEffortTarget.EffortVector,2)));
 
-Params.ZeroEffortOffset = 0; % Zero effort offset in % of max force
 %% SYNC
 b5 = bmi5_mmap(b5);
                                            
