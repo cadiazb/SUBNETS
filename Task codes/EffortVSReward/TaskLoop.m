@@ -227,7 +227,7 @@ for itrial = startTrial : Params.NumTrials
         RewardAdaptive( Params, Data(trial), b5 );
     case 2
 		[Params, Data(trial), b5] = ...
-        SlopeEffortContinuousReward( Params, Data(trial), b5 );
+        VerticalFillingBar( Params, Data(trial), b5 );
     case 3
 		[Params, Data(trial), b5] = ...
         ProbeOnlyRewardAdaptive( Params, Data(trial), b5 );
@@ -314,8 +314,12 @@ NcorrectP = 10 - NerrorsP;
 			KEYBOARD_FLAG = false;
 		end
 		pause(.1);
-	end
-
+    end
+    
+    if isempty(Params.RewardSampleSpace)
+        done = true;
+    end
+    
 	if done
 		break;
 	end
