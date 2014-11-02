@@ -135,7 +135,7 @@ Params.NumTrials 				= 2000;
 % 3. One target - Pass/No pass - Reward adaptive
 % 4. One target - Pass/No pass - Fixed effort/reward pairs
 
-Params.TrialTypeProbs 			= [0 1 0 0];
+Params.TrialTypeProbs 			= [1 0 0 0];
 Params.TrialTypeProbs           = Params.TrialTypeProbs/sum(Params.TrialTypeProbs);
 
 %% BLOCKS OF TRIALS
