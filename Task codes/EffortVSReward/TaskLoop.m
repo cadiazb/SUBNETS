@@ -227,10 +227,10 @@ for itrial = startTrial : Params.NumTrials
         RewardAdaptive( Params, Data(trial), b5 );
     case 2
 		[Params, Data(trial), b5] = ...
-        VerticalFillingBar( Params, Data(trial), b5 );
+        ProbeOnlyRewardAdaptive( Params, Data(trial), b5 );
     case 3
 		[Params, Data(trial), b5] = ...
-        ProbeOnlyRewardAdaptive( Params, Data(trial), b5 );
+        VerticalFillingBar( Params, Data(trial), b5 );
 	otherwise
 		error('Unknown Trial Type');
 	end
@@ -289,7 +289,7 @@ NcorrectP = 10 - NerrorsP;
         DATA = Data;
         DATA(trial+1:end) = []; % kill excess
         fprintf('-> saving DATA structure\n'); 
-%         save(Params.DataFileName, 'DATA');
+        save(Params.DataFileName, 'DATA');
         clear DATA;
     end
 
@@ -298,7 +298,7 @@ NcorrectP = 10 - NerrorsP;
     tmpdata = sprintf('DATA_%03d',trial);
     tmpfile = fullfile(Params.DataTrialDir,tmpdata);
     fprintf('-> saving DATA structure (partial)\n');
-%     save(tmpfile, tmpdata);
+    save(tmpfile, tmpdata);
     clear(tmpdata);
   
     % trigger bmi5 save event
