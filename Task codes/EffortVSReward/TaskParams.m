@@ -150,7 +150,7 @@ Params.BlockTypes = {
 };
 Params.DoSequentialBlocks       = true; % 0 - Probabalistic; 1 - Sequential
 Params.BlockSequence            = [1 ]; % overflows to start
-Params.BlockProbs 				= [0 0 1 0]; % make sure these add to 1 exactly
+Params.BlockProbs 				= [0 0 z1 0]; % make sure these add to 1 exactly
 
 % this option forces the first block to be type-1 (irrespective of prob)
 Params.FirstBlockIsType1 		= false;
