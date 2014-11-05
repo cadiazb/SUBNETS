@@ -44,7 +44,7 @@ b5.ReferenceTarget_pos(2)       = b5.ReferenceTarget_pos(2) + ...
 
 b5.ProbeEffortAxis_pos  = b5.ProbeEffortTarget_pos;
 b5.ReferenceAxis_pos    = b5.ReferenceTarget_pos;
-%% Update target width according
+%% Update target width accordingly
 
  b5.ProbeEffortTarget_scale             = [dat.ProbeEffort + 20, 15];
  b5.ReferenceTarget_scale               = [dat.ReferenceEffort + 20, 15];
@@ -52,16 +52,8 @@ b5.ReferenceAxis_pos    = b5.ReferenceTarget_pos;
 
 %% Generate the amounts of reward
 dat.ReferenceReward = Params.ReferenceTarget.RewardReference;
-if dat.TrialNum < 20
-    if dat.ProbeEffort <= dat.ReferenceEffort
-        dat.ProbeReward = ...
-            DrawFromVec(Params.ProbeEffortTarget.RewardVector(Params.ProbeEffortTarget.RewardVector <= dat.ReferenceReward));
-    else
-        dat.ProbeReward = ...
-            DrawFromVec(Params.ProbeEffortTarget.RewardVector(Params.ProbeEffortTarget.RewardVector > dat.ReferenceReward));
-    end
-else
-end
+dat.ProbeReward = ...
+    Params.RewardAdaptation(Params.RewardAdaptation(:,1) == dat.ProbeEffort, 2);
 
 %% Set reward strings
 b5.ProbeRewardString_pos(2) = ...
@@ -181,7 +173,6 @@ if ~dat.OutcomeID
     b5.ProbeEffortAxis_draw = DRAW_BOTH; 
     b5.ProbeEffortString_draw = DRAW_BOTH;
     b5.ProbeRewardString_draw = DRAW_BOTH;
-    
     
     if Params.TimerOn
         b5.TimerBar_draw = DRAW_BOTH;
@@ -366,13 +357,16 @@ if dat.OutcomeID == 0
 
     if strcmp(dat.TrialChoice, 'Probe Effort')
         dat.TotalPoints = dat.TotalPoints + dat.ProbeReward;
+        tmpTrialPoints = dat.ProbeReward;
     end
 
     if strcmp(dat.TrialChoice, 'Reference Effort')
         dat.TotalPoints = dat.TotalPoints + dat.ReferenceReward;
+        tmpTrialPoints = dat.ReferenceReward;
     end
     
-    b5.TotalPoints_v = [double(sprintf('You got it! Points = %05d',dat.TotalPoints)) zeros(1,6)]';
+    tmpStringZeros = 32 - numel(double(sprintf('Earned = %05d',tmpTrialPoints)));
+    b5.TotalPoints_v = [double(sprintf('Earned = %05d',tmpTrialPoints)) zeros(1,tmpStringZeros)]';
     
     Params.EffortSampleSpace(find(Params.EffortSampleSpace == dat.ProbeEffort, 1)) = [];
     
@@ -382,8 +376,13 @@ if dat.OutcomeID == 0
     b5.RewardTone_play_io = 1;
 
 else
-    b5.TotalPoints_v = [double(sprintf('Let''s try again. Points = %05d',dat.TotalPoints)) zeros(1,1)]';
+    tmpStringZeros = 32 - numel(double(sprintf('Earned = %05d',0)));
+    b5.TotalPoints_v = [double(sprintf('Earned = %05d',0)) zeros(1,tmpStringZeros)]';
     
+end
+
+if dat.TrialNum > 20
+    [Params, dat] = CalculateAdaptiveVariable(Params, dat, b5);
 end
 
 b5.TotalPoints_draw = DRAW_BOTH;

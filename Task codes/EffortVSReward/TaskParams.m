@@ -209,15 +209,15 @@ Params.StartTarget.Locations 	= {Params.WsCenter + [-40 -40]}; % cell array of l
 %% Probe Effort Target
 b5.ProbeEffortTarget_color                  = [0 0.6 0 1];
 b5.ProbeEffortTarget_scale                  = [395 60];
-Params.ProbeEffortTarget.EffortVector       = ...
-                            [0.1 0.2 0.3 0.4 0.6 0.7 0.8 0.9];
-Params.ProbeEffortTarget.RewardVector       = [1:25];
+Params.ProbeEffortTarget.EffortVector       = 0.1:0.1:0.9;
+Params.ProbeEffortTarget.RewardVector       = floor(linspace(1,50,9));
 
 %% Reference Target
 b5.ReferenceTarget_color                    = [0 0 1 1];
 b5.ReferenceTarget_scale                    = [395 60];
 Params.ReferenceTarget.EffortReference      = 0.5;
-Params.ReferenceTarget.RewardReference        = 12;
+Params.ReferenceTarget.RewardReference        = ...
+    Params.ProbeEffortTarget.RewardVector(Params.ProbeEffortTarget.EffortVector == Params.ReferenceTarget.EffortReference );
 
 %% Probe effort axis
 b5.ProbeEffortAxis_color                = b5.ProbeEffortTarget_color;
@@ -278,6 +278,16 @@ Params.TempPerf				=0.5;  %(msec)
 % Params.BlockSize 				= 35;
 Params.BlockSize 				=1000;
 
+%% Reward adaptation
+Params.RewardAdaptation = [Params.ProbeEffortTarget.EffortVector;...
+    Params.ProbeEffortTarget.RewardVector]';
+Params.RewardStepUp     = 2;
+Params.RewardStepDown   = 2;
+Params.RewardRandDist   = [0.15, 0.01]; % Multiplicative adaptation. Choose factor from normal skewed distribution.
+
+Params.MaxReward        = 50;
+Params.MinReward        = 1;
+
 %% OTHER
 Params.UseCorrectionTrials          = false; % { both of these
 Params.UseAdaptiveProbability       = false; % { cannot be true
@@ -293,6 +303,7 @@ Params.MaxForce                     = 40; % Measured max force per subject [N]
 Params.EffortSampleSpace    = repmat(Params.ProbeEffortTarget.EffortVector, ...
     1, ceil(300/size(Params.ProbeEffortTarget.EffortVector,2)))* ...
                                 Params.MaxForce * (b5.Frame_scale(2)/2)/50;
+
 
 %% SYNC
 b5 = bmi5_mmap(b5);

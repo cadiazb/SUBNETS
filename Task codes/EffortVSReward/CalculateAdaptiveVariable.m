@@ -1,39 +1,30 @@
-function [Params, dat] = CalculateAdaptiveVariable(Params, dat, b5)
-    if Params.StepSizeAdaptive
-        adaptStep = false;
-        switch dat.TrialType
-            case {1}
-                Params.AdaptiveReward(:,3:end) = Params.AdaptiveReward(:,2:end-1);
-            case {2}
-                Params.AdaptiveForce(:,3:end) = Params.AdaptiveForce(:,2:end-1);
-        end
-    end
-    switch dat.TrialType
-        case {1,3}
+function [Params, dat] = CalculateAdaptiveVariable(Params, dat, ~)
+    
+    switch randi([1,3],1,1)
+        case 1
             switch dat.TrialChoice
                 case {'Reference Effort', 'Pass'}
-                    Params.AdaptiveReward(Params.AdaptiveReward(:,1) == dat.ProbeEffort,2) ...
-                        = ceil(dat.ProbeReward * Params.AdaptiveStepUp);
+                    Params.RewardAdaptation(Params.RewardAdaptation(:,1) == dat.ProbeEffort,2) ...
+                        = min(Params.MaxReward,...
+                        dat.ProbeReward + Params.RewardStepUp);
 
                 case 'Probe Effort'
-                    Params.AdaptiveReward(Params.AdaptiveReward(:,1) == dat.ProbeEffort,2) ...
-                            = floor(dat.ProbeReward * Params.AdaptiveStepDown);
+                    Params.RewardAdaptation(Params.RewardAdaptation(:,1) == dat.ProbeEffort,2) ...
+                        = max(Params.MinReward,...
+                        dat.ProbeReward - Params.RewardStepDown);
             end
-        case {10}
+        case 2
             switch dat.TrialChoice
-                case 'Reference Effort'
-                    Params.AdaptiveForce(Params.AdaptiveForce(:,1) == dat.ProbeReward,2) ...
-                        = dat.ProbeEffort * Params.AdaptiveStepDown;
+                case {'Reference Effort', 'Pass'}
+                    Params.RewardAdaptation(Params.RewardAdaptation(:,1) == dat.ProbeEffort,2) ...
+                        = min(Params.MaxReward,...
+                        ceil(dat.ProbeReward * normrnd(1+Params.RewardRandDist(1), Params.RewardRandDist(2),1)));
+
                 case 'Probe Effort'
-                    Params.AdaptiveForce(Params.AdaptiveForce(:,1) == dat.ProbeReward,2) ...
-                            = dat.ProbeEffort * Params.AdaptiveStepUp;
+                    Params.RewardAdaptation(Params.RewardAdaptation(:,1) == dat.ProbeEffort,2) ...
+                        = max(Params.MinReward,...
+                        floor(dat.ProbeReward * normrnd(1-Params.RewardRandDist(1), Params.RewardRandDist(2),1)));
             end
-        for kk = 1:size(Params.AdaptiveForce,1)
-            if Params.AdaptiveForce(kk,2) < Params.ProbeEffortTarget.EffortVector(1)*Params.MaxForce * (b5.Frame_scale(2)/2)/50
-                Params.AdaptiveForce(kk,2) = Params.ProbeEffortTarget.EffortVector(1)*Params.MaxForce * (b5.Frame_scale(2)/2)/50;
-            end
-            if Params.AdaptiveForce(kk,2) > Params.ProbeEffortTarget.EffortVector(end)*Params.MaxForce * (b5.Frame_scale(2)/2)/50
-                Params.AdaptiveForce(kk,2) = Params.ProbeEffortTarget.EffortVector(end)*Params.MaxForce * (b5.Frame_scale(2)/2)/50;
-            end
-        end
+        case 3
+            display('No adaptation in this trial')
     end

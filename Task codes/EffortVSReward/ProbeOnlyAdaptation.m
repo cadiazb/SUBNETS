@@ -36,11 +36,11 @@ b5.ReferenceTarget_pos          = b5.StartTarget_pos;
 
 b5.ProbeEffortTarget_pos(2) 	= b5.ProbeEffortTarget_pos(2) - ...
                                 (-1)^dat.ProbeEffortUp...
-                                        * 50;
+                                        * dat.ProbeEffort;
 
 b5.ReferenceTarget_pos(2)       = b5.ReferenceTarget_pos(2) + ...
                                 (-1)^dat.ProbeEffortUp...
-                                        * 50;
+                                        * dat.ReferenceEffort;
 
 b5.ProbeEffortAxis_pos  = b5.ProbeEffortTarget_pos;
 b5.ReferenceAxis_pos    = b5.ReferenceTarget_pos;
@@ -52,27 +52,25 @@ b5.ReferenceAxis_pos    = b5.ReferenceTarget_pos;
 
 %% Generate the amounts of reward
 dat.ReferenceReward = Params.ReferenceTarget.RewardReference;
-if dat.ProbeEffort <= dat.ReferenceEffort
-    dat.ProbeReward = ...
-        DrawFromVec(Params.ProbeEffortTarget.RewardVector(Params.ProbeEffortTarget.RewardVector <= dat.ReferenceReward));
-else
-    dat.ProbeReward = ...
-        DrawFromVec(Params.ProbeEffortTarget.RewardVector(Params.ProbeEffortTarget.RewardVector > dat.ReferenceReward));
-end
+dat.ProbeReward = ...
+    Params.RewardAdaptation(Params.RewardAdaptation(:,1) == dat.ProbeEffort, 2);
 
-%% Set coins Y position and initizlize X position
-for jj = 1:6
-    b5.(sprintf('Coin0%d_0%d_pos', 1, jj))(2) = ...
-        Params.WsCenter(2) - (-1)^dat.ProbeEffortUp * 80;
-    b5.(sprintf('Coin0%d_0%d_pos', 1, jj))(1) = ...
-        Params.WsCenter(1);
-    
-    b5.(sprintf('Coin0%d_0%d_pos', 2, jj))(2) = ...
-        Params.WsCenter(2) + (-1)^dat.ProbeEffortUp * 80;
-    b5.(sprintf('Coin0%d_0%d_pos', 2, jj))(1) = ...
-        Params.WsCenter(1);
-end
+%% Set reward strings
+b5.ProbeRewardString_pos(2) = ...
+    b5.ProbeEffortTarget_pos(2) - (-1)^dat.ProbeEffortUp * 40;
+b5.ProbeRewardString_pos(1) = ...
+    b5.ProbeEffortTarget_pos(1);
 
+b5.ReferenceRewardString_pos(2) = ...
+    b5.ReferenceTarget_pos(2) + (-1)^dat.ProbeEffortUp * 40;
+b5.ReferenceRewardString_pos(1) = ...
+    b5.ReferenceTarget_pos(1);
+
+tmpStringZeros = 8 - numel(double(sprintf('%.0fcents', dat.ProbeReward)));
+b5.ProbeRewardString_v = [double(sprintf('%.0fcents', dat.ProbeReward)) zeros(1,tmpStringZeros)]';
+
+tmpStringZeros = 8 - numel(double(sprintf('%.0fcents', dat.ReferenceReward)));
+b5.ReferenceRewardString_v = [double(sprintf('%.0fcents', dat.ReferenceReward)) zeros(1,tmpStringZeros)]';
 
 fprintf('Probe Effort \t\t%d\n',dat.ProbeEffort);
 fprintf('Probe reward \t\t%d\n',dat.ProbeReward);
@@ -107,17 +105,12 @@ b5.Frame_draw = DRAW_NONE;
 b5.ProbeEffortTarget_draw 	= DRAW_NONE;
 b5.ProbeEffortAxis_draw = DRAW_NONE; 
 b5.ProbeEffortString_draw = DRAW_NONE; 
+b5.ProbeRewardString_draw = DRAW_NONE;
 
 b5.ReferenceTarget_draw = DRAW_NONE;
 b5.ReferenceAxis_draw = DRAW_NONE;
 b5.ReferenceEffortString_draw = DRAW_NONE;
-
-for ii = 1:2
-    for jj = 1:6
-        b5.(sprintf('Coin0%d_0%d_draw', ii, jj)) = ...
-            DRAW_NONE;
-    end
-end
+b5.ReferenceRewardString_draw = DRAW_NONE;
 
 b5.TimerBar_draw = DRAW_NONE;
 b5.ReachTimeout_draw = DRAW_NONE;
@@ -178,9 +171,8 @@ if ~dat.OutcomeID
     b5.ProbeEffortTarget_draw 	= DRAW_BOTH;
     b5.ProbeEffortAxis_draw = DRAW_BOTH; 
     b5.ProbeEffortString_draw = DRAW_BOTH;
-    
-    b5 = CoinLookUp([dat.ProbeReward, 0], b5);
-    
+    b5.ProbeRewardString_draw = DRAW_BOTH;
+        
     if Params.TimerOn
         b5.TimerBar_draw = DRAW_BOTH;
         b5.ReachTimeout_draw = DRAW_BOTH;
@@ -265,6 +257,7 @@ if ~dat.OutcomeID
             dat.ReactionTime = b5.time_o - t_start;
         elseif (b5.time_o - t_start) > Params.ReactionTimeDelay && posStartOk
             dat.ReactionTime = b5.time_o - t_start;
+            dat.TrialChoice = '';
             dat.MovementTime = NaN;
             done            = true;
             dat.OutcomeID 	= 4;
@@ -321,10 +314,10 @@ if ~dat.OutcomeID
 			if (b5.time_o - starthold) > Params.BigEffortTarget.Hold
 				done = true;
 
-                dat.TrialChoice = 'Reference Effort';
+                dat.TrialChoice = 'Pass';
                 dat.MovementTime = b5.time_o - t_start - dat.ReactionTime;
                 dat.OutcomeID 	= 0;
-                dat.OutcomeStr 	= 'Succes'; 
+                dat.OutcomeStr 	= 'Succes';
 			end
 		end
 
@@ -352,29 +345,24 @@ b5.Frame_draw = DRAW_NONE;
 b5.ProbeEffortTarget_draw 	= DRAW_NONE;
 b5.ProbeEffortAxis_draw = DRAW_NONE; 
 b5.ProbeEffortString_draw = DRAW_NONE; 
+b5.ProbeRewardString_draw = DRAW_NONE;
 
 b5.ReferenceTarget_draw = DRAW_NONE;
 b5.ReferenceAxis_draw = DRAW_NONE;
 b5.ReferenceEffortString_draw = DRAW_NONE;
-
-for ii = 1:2
-    for jj = 1:6
-        b5.(sprintf('Coin0%d_0%d_draw', ii, jj)) = ...
-            DRAW_NONE;
-    end
-end
+b5.ReferenceRewardString_draw = DRAW_NONE;
 
 if dat.OutcomeID == 0
 
     if strcmp(dat.TrialChoice, 'Probe Effort')
         dat.TotalPoints = dat.TotalPoints + dat.ProbeReward;
-    end
-
-    if strcmp(dat.TrialChoice, 'Reference Effort')
-        dat.TotalPoints = dat.TotalPoints + dat.ReferenceReward;
+        tmpTrialPoints = dat.ProbeReward;
+    else
+        tmpTrialPoints = 0;
     end
     
-    b5.TotalPoints_v = [double(sprintf('You got it! Points = %05d',dat.TotalPoints)) zeros(1,6)]';
+    tmpStringZeros = 32 - numel(double(sprintf('Earned = %05d',tmpTrialPoints)));
+    b5.TotalPoints_v = [double(sprintf('Earned = %05d',tmpTrialPoints)) zeros(1,tmpStringZeros)]';
     
     Params.EffortSampleSpace(find(Params.EffortSampleSpace == dat.ProbeEffort, 1)) = [];
     
@@ -384,8 +372,12 @@ if dat.OutcomeID == 0
     b5.RewardTone_play_io = 1;
 
 else
-    b5.TotalPoints_v = [double(sprintf('Let''s try again. Points = %05d',dat.TotalPoints)) zeros(1,1)]';
-    
+    tmpStringZeros = 32 - numel(double(sprintf('Earned = %05d',0)));
+    b5.TotalPoints_v = [double(sprintf('Earned = %05d',0)) zeros(1,tmpStringZeros)]';
+end
+
+if dat.TrialNum > 20
+    [Params, dat] = CalculateAdaptiveVariable(Params, dat, b5);
 end
 
 b5.TotalPoints_draw = DRAW_BOTH;
