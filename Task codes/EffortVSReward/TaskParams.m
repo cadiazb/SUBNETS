@@ -300,7 +300,7 @@ Params.TimerOn                      = false;
 Params.AllowEarlyReach              = false; % { allow subject to start
                                            % { reach before end of delay
 Params.MaxForce                     = 40; % Measured max force per subject [N]
-Params.NoGoTap                      = 0.1 * (Params.MaxForce/50) * b5.Frame_scale(2)/2;
+Params.NoGoTap                      = 0.05 * (Params.MaxForce/50) * b5.Frame_scale(2)/2;
 
 
 Params.EffortSampleSpace    = repmat(Params.ProbeEffortTarget.EffortVector, ...
