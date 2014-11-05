@@ -304,6 +304,7 @@ Params.AllowEarlyReach              = false; % { allow subject to start
 Params.UseRewardAdaptation          = true;
 
 Params.MaxForce                     = 40; % Measured max force per subject [N]
+Params.NoGoTap                      = 0.2 * (Params.MaxForce/50) * b5.Frame_scale(2)/2;
 
 Params.RewardSampleSpace = repmat(1:size(Params.VerticalRewardsMatrix,1), ...
                             1, round(400/size(Params.VerticalRewardsMatrix,1)));

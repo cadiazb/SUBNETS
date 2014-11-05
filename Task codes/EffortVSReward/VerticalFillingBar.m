@@ -236,6 +236,14 @@ if ~dat.OutcomeID
         if ~posOk && isempty(dat.ReactionTime)
             dat.ReactionTime = b5.time_o - t_start;
         end
+        if ~isempty(dat.ReactionTime)
+            if abs(abs(pos(2)) - abs(b5.StartTarget_pos(2))) > Params.NoGoTap
+                dat.TrialChoice = 'Pass';
+                done = true;
+                dat.OutcomeID 	= 0;
+                dat.OutcomeStr 	= 'success';
+            end
+        end
         
         if ~isempty(dat.ReactionTime)
             if (b5.time_o - (dat.ReactionTime + t_start)) > Params.MovementWindow
@@ -243,6 +251,7 @@ if ~dat.OutcomeID
                 dat.ActualEffort = (pos(1) - b5.StartTarget_pos(1)) /...
                                         b5.Frame_scale(1); % Force as %of Max
     %             dat.FinalCursorPos = pos;
+                dat.TrialChoice = 'Probe Effort';
                 done            = true;
                 dat.OutcomeID 	= 0;
                 dat.OutcomeStr 	= 'success';
@@ -288,8 +297,12 @@ b5.FillingEffort_draw  = DRAW_NONE;
 
 if dat.OutcomeID == 0
 %     if floor(0.05+b5.FillingEffort_scale(2)/b5.Frame_scale(2)*5)
+    if strcmp(dat.TrialChoice, 'Probe Effort')
         tmpTrialPoints = (max(Params.VerticalRewardsMatrix(dat.ProbeReward,:))*0.25) * ...
             floor((0.05+b5.FillingEffort_scale(2)/b5.Frame_scale(2)/0.25));
+    else
+        tmpTrialPoints = 0;
+    end
 %         b5 = CoinLookUp([0 0 0 0 0 tmpTrialPoints], b5);
 %         for jj = 1:6
 %             b5.(sprintf('Coin0%d_0%d_pos', 6, jj))(2) = ...
@@ -304,20 +317,19 @@ if dat.OutcomeID == 0
     tmpStringZeros = 32 - numel(double(sprintf('Earned = %0.1fcents',tmpTrialPoints)));
     b5.TotalPoints_v = [double(sprintf('Earned = %0.1fcents',tmpTrialPoints)) zeros(1,tmpStringZeros)]';
 
+    fprintf('Trial Choice\t\t%s \n',dat.TrialChoice);
     fprintf('Effort\t\t%f \n',dat.ActualEffort);
     fprintf('Total points\t\t%d \n',dat.TotalPoints);
 	
     b5.RewardTone_play_io = 1;
     Params.RewardSampleSpace(find(Params.RewardSampleSpace == dat.ProbeReward, 1)) = [];
-    if Params.UseRewardAdaptation
-        [Params, dat] = CalculateAdaptiveVariable(Params, dat, b5);
-    end
 else
     tmpStringZeros = 32 - numel(double(sprintf('Earned =%0.1f',0)));
     b5.TotalPoints_v = [double(sprintf('Earned =%0.1f',0)) zeros(1,tmpStringZeros)]';  
-    if Params.UseRewardAdaptation
-        [Params, dat] = CalculateAdaptiveVariable(Params, dat, b5);
-    end
+end
+
+if Params.UseRewardAdaptation
+    [Params, dat] = CalculateAdaptiveVariable(Params, dat, b5);
 end
 
 b5.TotalPoints_draw = DRAW_BOTH;
