@@ -36,15 +36,21 @@ bmi5_cmd('make store int 1 Trial');
 
 bmi5_cmd('make text TotalPoints 32');
 
-bmi5_cmd('make text EffortLabel10 16');
+bmi5_cmd('make text EffortLabel25 16');
 bmi5_cmd('make text EffortLabel100 17');
 
-for ii = 1:6
-    for jj = 1:6
-        bmi5_cmd(sprintf('make circle Coin0%d_0%d', ii,jj));
-    end
+bmi5_cmd('make text Reward 8');
+
+for ii = 1:3
+    bmi5_cmd(sprintf('make square effortTick%d',ii));
 end
-bmi5_cmd('make square BlackSquare');
+
+% for ii = 1:6
+%     for jj = 1:6
+%         bmi5_cmd(sprintf('make circle Coin0%d_0%d', ii,jj));
+%     end
+% end
+% bmi5_cmd('make square BlackSquare');
 
 % timer
 bmi5_cmd('make square TimerBar');
@@ -192,23 +198,39 @@ b5.StartTarget_scale 			= [20 20];
 Params.StartTarget.Win  		= 20; % radius
 Params.StartTarget.Locations 	= {Params.WsCenter + [-40 -40]}; % cell array of locations
 
-%% Probe Effort Target
+%% Rewards
 % Each row corresponds to the gradiention of reward offer per trial
+% Params.VerticalRewardsMatrix = ...
+%     [0      0       0.5         0       1;
+%      0.5    0       1           0       2;
+%      0.5    1       2           3       4;
+%      1      2       3           4       5;
+%      1      2       3           5       6;
+%      1      2       4           5       7;
+%      1      2       4           6       8;
+%      2      4       6           8       10;
+%      1      3       6           9       12;
+%      3      6       9           12      14;
+%      2      6       10          14      18;
+%      4      8       12          16      20;
+%      3      8       13          18      23;
+%      5      10      15          20      25];
+
 Params.VerticalRewardsMatrix = ...
-    [0      0       0.5         0       1;
-     0.5    0       1           0       2;
+    [0.5    0       1           0       2;
      0.5    1       2           3       4;
-     1      2       3           4       5;
      1      2       3           5       6;
-     1      2       4           5       7;
      1      2       4           6       8;
      2      4       6           8       10;
      1      3       6           9       12;
      3      6       9           12      14;
      2      6       10          14      18;
      4      8       12          16      20;
-     3      8       13          18      23;
-     5      10      15          20      25];
+     4      8       12          16      22;
+     4      8       12          16      24];
+
+b5.Reward_color = [1 1 1 1];
+b5.Reward_pos = Params.WsCenter + [-25, b5.Frame_scale(2)/2 + 10];
 
 %% Effort Line
 b5.EffortLine_color     = [0 0 1 1];
@@ -220,6 +242,16 @@ b5.FillingEffort_color     = [1 1 0 1];
 b5.FillingEffort_scale     = b5.Frame_scale .* [0.25, 1];
 b5.FillingEffort_pos       = Params.WsCenter - [0, b5.Frame_scale(2)/2] + ...
                     [0, b5.FillingEffort_scale(2)/2];
+                
+%% Effort ticks
+for ii = 1:3
+    b5.(sprintf('effortTick%d_color',ii))   = b5.EffortLine_color;
+    b5.(sprintf('effortTick%d_scale',ii))   = [6,2];
+    b5.(sprintf('effortTick%d_pos',ii))(1)     = ...
+        Params.WsCenter(1) + b5.EffortLine_scale(1)/2 - b5.(sprintf('effortTick%d_scale',ii))(1)/2;
+    b5.(sprintf('effortTick%d_pos',ii))(2)     = ...
+        Params.WsCenter(2) - b5.EffortLine_scale(2)/2 + ii*b5.EffortLine_scale(2)/4;
+end
 
 %% Timer bar
 b5.TimerBar_color             	= [0.8 0.8 0.8 1];
@@ -236,7 +268,7 @@ b5.ReachTimeout_pos = [b5.Frame_scale(1)*...
 
 
 %% Effort labels
-b5.EffortLabel10_color              = [1 1 1 1];
+b5.EffortLabel25_color              = [1 1 1 1];
 b5.EffortLabel100_color              = [1 1 1 1];
 
 %% Total Points String

@@ -1,39 +1,25 @@
 function [Params, dat] = CalculateAdaptiveVariable(Params, dat, b5)
-    if Params.StepSizeAdaptive
-        adaptStep = false;
-        switch dat.TrialType
-            case {1}
-                Params.AdaptiveReward(:,3:end) = Params.AdaptiveReward(:,2:end-1);
-            case {2}
-                Params.AdaptiveForce(:,3:end) = Params.AdaptiveForce(:,2:end-1);
-        end
-    end
-    switch dat.TrialType
-        case {1,3}
-            switch dat.TrialChoice
-                case {'Reference Effort', 'Pass'}
-                    Params.AdaptiveReward(Params.AdaptiveReward(:,1) == dat.ProbeEffort,2) ...
-                        = ceil(dat.ProbeReward * Params.AdaptiveStepUp);
+stairCaseUp = 2;
+stairCaseDown = 1;
 
-                case 'Probe Effort'
-                    Params.AdaptiveReward(Params.AdaptiveReward(:,1) == dat.ProbeEffort,2) ...
-                            = floor(dat.ProbeReward * Params.AdaptiveStepDown);
-            end
-        case {10}
-            switch dat.TrialChoice
-                case 'Reference Effort'
-                    Params.AdaptiveForce(Params.AdaptiveForce(:,1) == dat.ProbeReward,2) ...
-                        = dat.ProbeEffort * Params.AdaptiveStepDown;
-                case 'Probe Effort'
-                    Params.AdaptiveForce(Params.AdaptiveForce(:,1) == dat.ProbeReward,2) ...
-                            = dat.ProbeEffort * Params.AdaptiveStepUp;
-            end
-        for kk = 1:size(Params.AdaptiveForce,1)
-            if Params.AdaptiveForce(kk,2) < Params.ProbeEffortTarget.EffortVector(1)*Params.MaxForce * (b5.Frame_scale(2)/2)/50
-                Params.AdaptiveForce(kk,2) = Params.ProbeEffortTarget.EffortVector(1)*Params.MaxForce * (b5.Frame_scale(2)/2)/50;
-            end
-            if Params.AdaptiveForce(kk,2) > Params.ProbeEffortTarget.EffortVector(end)*Params.MaxForce * (b5.Frame_scale(2)/2)/50
-                Params.AdaptiveForce(kk,2) = Params.ProbeEffortTarget.EffortVector(end)*Params.MaxForce * (b5.Frame_scale(2)/2)/50;
-            end
-        end
+if dat.TrialNum > 20
+    if dat.OutcomeID == 0 % Adapt reward down
+        tmpRewards = Params.VerticalRewardsMatrix(:,end);
+        tmpRewards(tmpRewards >= tmpRewards(dat.ProbeEffort) - stairCaseDown) = ...
+            tmpRewards(dat.ProbeEffort) - stairCaseDown;
+        Params.VerticalRewardsMatrix(:,end) = tmpRewards;
+    elseif dat.OutcomeID == 4 % Adapt reward up. Trial cancelled @ reach
+        tmpRewards = Params.VerticalRewardsMatrix(:,end);
+        tmpRewards(tmpRewards <= tmpRewards(dat.ProbeEffort) + stairCaseUp) = ...
+            tmpRewards(dat.ProbeEffort) + stairCaseUp;
+        Params.VerticalRewardsMatrix(:,end) = tmpRewards;
     end
+elseif dat.TrialNum > 10
+    if dat.OutcomeID == 4 % Adapt reward up. Trial cancelled @ reach
+        tmpRewards = Params.VerticalRewardsMatrix(:,end);
+        tmpRewards(tmpRewards <= tmpRewards(dat.ProbeEffort) + stairCaseUp) = ...
+            tmpRewards(dat.ProbeEffort) + stairCaseUp;
+        Params.VerticalRewardsMatrix(:,end) = tmpRewards;
+    end
+end
+end

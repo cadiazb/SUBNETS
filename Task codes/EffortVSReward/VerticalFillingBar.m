@@ -12,51 +12,11 @@ DRAW_BOTH     = 3;
 %% Generate a StartTarget position
 b5.StartTarget_pos = Params.WsBounds(1,:);
 
-%% Set initial timer bare length
+%% Set initial timer bar length
 b5.TimerBar_scale(1) = b5.Frame_scale(1);
 
 b5.TimerBar_pos(1) = Params.WsCenter(1) - b5.Frame_scale(1)/2 + ...
                         b5.TimerBar_scale(1)/2;
-
-%% Generate ProbeEffortTarget and Reference Target positions
-
-% dat.EffortLine = zeros(2,2*ceil(sqrt(sumsqr(b5.Frame_scale)))); %Array for line coordinates
-% dat.EffortLine(1,:) = 1:size(dat.EffortLine,2);
-% m = tan(dat.ProbeEffort * Params.MaxSlope * pi() / 180);
-% dat.EffortLine(2,:) = m .* dat.EffortLine(1,:);
-% dat.EffortLine(1,:) = dat.EffortLine(1,:) + Params.ZeroEffortOffset;
-% dat.EffortLine = [ 1:(dat.EffortLine(1,1)-1), dat.EffortLine(1,:); ...
-%     zeros(1,dat.EffortLine(1,1)-1), dat.EffortLine(2,:)];
-% 
-% % Translate line to bottom left corner of b5.frame
-% dat.EffortLine(1,:) = dat.EffortLine(1,:) + Params.WsCenter(1) - b5.Frame_scale(1)/2;
-% dat.EffortLine(2,:) = dat.EffortLine(2,:) + ...
-%     Params.WsCenter(2) - b5.Frame_scale(2)/2;
-% 
-% if dat.ProbeEffort * Params.MaxSlope <= 45
-%     b5.EffortLine_scale(1) = b5.Frame_scale(1) - Params.ZeroEffortOffset;
-%     b5.EffortLine_scale(2) = ...
-%         tan(dat.ProbeEffort * Params.MaxSlope * pi() / 180) * ...
-%         b5.EffortLine_scale(1);
-% else
-%     b5.EffortLine_scale(2) = b5.Frame_scale(2);
-%     b5.EffortLine_scale(1) = b5.EffortLine_scale(2) / ...
-%         tan(dat.ProbeEffort * Params.MaxSlope * pi() / 180);
-% end
-
-% b5.EffortLine_pos = [Params.ZeroEffortOffset, 0];
-% b5.EffortLine_pos = b5.EffortLine_pos - b5.Frame_scale/2;
-
-% init Filling Effort
-% b5.FillingEffort_scale = [0,0];
-% b5.FillingEffort_pos = b5.EffortLine_pos;
-
-clear m
-
-%% Update target width according
-
-%  b5.ProbeEffortTarget_scale             = [dat.ProbeEffort + 20, 15];
-%  b5.ReferenceTarget_scale               = [dat.ReferenceEffort + 20, 15];
          
 
 %% Generate the amounts of reward
@@ -66,31 +26,34 @@ clear m
 %% Draw rewards from vector
 dat.ProbeReward = DrawFromVec(Params.RewardSampleSpace);
 
-%% Set coins Y position and initizlize X position
-for ii = 1:5
-    for jj = 1:6
-        b5.(sprintf('Coin0%d_0%d_pos', ii, jj))(2) = ...
-            Params.WsCenter(2) -  b5.Frame_scale(2)/2 + ii*b5.Frame_scale(2)/5;
-        b5.(sprintf('Coin0%d_0%d_pos', ii, jj))(1) = ...
-            Params.WsCenter(1) - 70;
-    end
-end
+tmpStringZeros = 8 - numel(double(sprintf('%dcents',max(Params.VerticalRewardsMatrix(dat.ProbeReward,:)))));
+b5.Reward_v = [double(sprintf('%dcents',max(Params.VerticalRewardsMatrix(dat.ProbeReward,:)))) zeros(1,tmpStringZeros)]';
 
-for jj = 1:6
-    b5.(sprintf('Coin0%d_0%d_pos', 6, jj))(2) = ...
-        Params.WsCenter(2) -  b5.Frame_scale(2)/2 - 50;
-    b5.(sprintf('Coin0%d_0%d_pos', 6, jj))(1) = ...
-        Params.WsCenter(1) + 40;
-end
-
-b5.BlackSquare_color = [0 0 0 1];
-b5.BlackSquare_scale = [10 b5.Frame_scale(2)];
-b5.BlackSquare_pos   = Params.WsCenter - [50,0];
-b5.BlackSquare_draw  = DRAW_BOTH;
+% %% Set coins Y position and initizlize X position
+% for ii = 1:5
+%     for jj = 1:6
+%         b5.(sprintf('Coin0%d_0%d_pos', ii, jj))(2) = ...
+%             Params.WsCenter(2) -  b5.Frame_scale(2)/2 + ii*b5.Frame_scale(2)/5;
+%         b5.(sprintf('Coin0%d_0%d_pos', ii, jj))(1) = ...
+%             Params.WsCenter(1) - 70;
+%     end
+% end
+% 
+% for jj = 1:6
+%     b5.(sprintf('Coin0%d_0%d_pos', 6, jj))(2) = ...
+%         Params.WsCenter(2) -  b5.Frame_scale(2)/2 - 50;
+%     b5.(sprintf('Coin0%d_0%d_pos', 6, jj))(1) = ...
+%         Params.WsCenter(1) + 40;
+% end
+% 
+% b5.BlackSquare_color = [0 0 0 1];
+% b5.BlackSquare_scale = [10 b5.Frame_scale(2)];
+% b5.BlackSquare_pos   = Params.WsCenter - [50,0];
+% b5.BlackSquare_draw  = DRAW_BOTH;
 
 
 %% Set effort strings and positions
-for ii = [10 100]
+for ii = [25 100]
     b5.(['EffortLabel' num2str(ii) '_v'])      = [double([num2str(ii) '%']), zeros(1,13)]';
     b5.(['EffortLabel' num2str(ii) '_pos'])  = Params.WsCenter -  [0,b5.Frame_scale(2)/2] + [65, ii*b5.Frame_scale(2)/100];
 end
@@ -109,16 +72,21 @@ b5.Cursor_draw 		= DRAW_NONE;
 b5.StartTarget_draw = DRAW_NONE;
 b5.Frame_draw = DRAW_NONE;
 
-for ii = [10 100]
+for ii = [25 100]
     b5.(['EffortLabel' num2str(ii) '_draw'])      = DRAW_NONE;
 end
-
-for ii = 1:5
-    for jj = 1:6
-        b5.(sprintf('Coin0%d_0%d_draw', ii, jj)) = ...
-            DRAW_NONE;
-    end
+for ii = 1:3
+    b5.(sprintf('effortTick%d_draw',ii))   = DRAW_NONE;
 end
+
+b5.Reward_draw      = DRAW_NONE; 
+
+% for ii = 1:5
+%     for jj = 1:6
+%         b5.(sprintf('Coin0%d_0%d_draw', ii, jj)) = ...
+%             DRAW_NONE;
+%     end
+% end
 
 b5.TimerBar_draw = DRAW_NONE;
 b5.ReachTimeout_draw = DRAW_NONE;
@@ -176,11 +144,17 @@ end
 %% 2. INSTRUCTED DELAY PHASE
 if ~dat.OutcomeID 
     
-    for ii = [10  100]
+    for ii = [25  100]
         b5.(['EffortLabel' num2str(ii) '_draw'])      = DRAW_BOTH;
     end
+    for ii = 1:3
+        b5.(sprintf('effortTick%d_draw',ii))   = DRAW_BOTH;
+    end
+    
+    b5.Reward_draw      = DRAW_BOTH;
+    
     % Get and draw coins
-    b5 = CoinLookUp([Params.VerticalRewardsMatrix(dat.ProbeReward,:), 41],b5);
+%     b5 = CoinLookUp([Params.VerticalRewardsMatrix(dat.ProbeReward,:), 41],b5);
     
     if Params.TimerOn
         b5.TimerBar_draw = DRAW_BOTH;
@@ -293,47 +267,53 @@ b5.Cursor_draw 		= DRAW_NONE;
 b5.StartTarget_draw = DRAW_NONE;
 b5.Frame_draw = DRAW_NONE;
 
-for ii = [10 100]
+for ii = [25 100]
     b5.(['EffortLabel' num2str(ii) '_draw'])      = DRAW_NONE;
 end
-
-for ii = 1:6
-    for jj = 1:6
-        b5.(sprintf('Coin0%d_0%d_draw', ii, jj)) = ...
-            DRAW_NONE;
-    end
+for ii = 1:3
+    b5.(sprintf('effortTick%d_draw',ii))   = DRAW_NONE;
 end
+
+b5.Reward_draw      = DRAW_NONE;
+
+% for ii = 1:6
+%     for jj = 1:6
+%         b5.(sprintf('Coin0%d_0%d_draw', ii, jj)) = ...
+%             DRAW_NONE;
+%     end
+% end
 
 b5.EffortLine_draw  = DRAW_NONE;
 b5.FillingEffort_draw  = DRAW_NONE;
 
 if dat.OutcomeID == 0
-    if floor(0.05+b5.FillingEffort_scale(2)/b5.Frame_scale(2)*5)
-        tmpTrialPoints = max(Params.VerticalRewardsMatrix(dat.ProbeReward, ...
-            1:floor(0.05+b5.FillingEffort_scale(2)/b5.Frame_scale(2)*5)));
-        b5 = CoinLookUp([0 0 0 0 0 tmpTrialPoints], b5);
-        for jj = 1:6
-            b5.(sprintf('Coin0%d_0%d_pos', 6, jj))(2) = ...
-                Params.WsCenter(2) - 20;
-        end
-    else
-        tmpTrialPoints = 0;
-    end
+%     if floor(0.05+b5.FillingEffort_scale(2)/b5.Frame_scale(2)*5)
+        tmpTrialPoints = (max(Params.VerticalRewardsMatrix(dat.ProbeReward,:))*0.25) * ...
+            floor((0.05+b5.FillingEffort_scale(2)/b5.Frame_scale(2)/0.25));
+%         b5 = CoinLookUp([0 0 0 0 0 tmpTrialPoints], b5);
+%         for jj = 1:6
+%             b5.(sprintf('Coin0%d_0%d_pos', 6, jj))(2) = ...
+%                 Params.WsCenter(2) - 20;
+%         end
+%     else
+%         tmpTrialPoints = 0;
+%     end
     
     dat.TotalPoints = dat.TotalPoints + tmpTrialPoints;
     
-    tmpStringZeros = 32 - numel(double(sprintf('Earned = %04.2f',tmpTrialPoints)));
-    b5.TotalPoints_v = [double(sprintf('Earned = %04.2f',tmpTrialPoints)) zeros(1,tmpStringZeros)]';
+    tmpStringZeros = 32 - numel(double(sprintf('Earned = %0.1fcents',tmpTrialPoints)));
+    b5.TotalPoints_v = [double(sprintf('Earned = %0.1fcents',tmpTrialPoints)) zeros(1,tmpStringZeros)]';
 
     fprintf('Effort\t\t%f \n',dat.ActualEffort);
     fprintf('Total points\t\t%d \n',dat.TotalPoints);
 	
     b5.RewardTone_play_io = 1;
     Params.RewardSampleSpace(find(Params.RewardSampleSpace == dat.ProbeReward, 1)) = [];
-
+    [Params, dat] = CalculateAdaptiveVariable(Params, dat, b5);
 else
-    tmpStringZeros = 32 - numel(double(sprintf('Earned =%04.2f',0)));
-    b5.TotalPoints_v = [double(sprintf('Earned =%04.2f',0)) zeros(1,tmpStringZeros)]';  
+    tmpStringZeros = 32 - numel(double(sprintf('Earned =%0.1f',0)));
+    b5.TotalPoints_v = [double(sprintf('Earned =%0.1f',0)) zeros(1,tmpStringZeros)]';  
+    [Params, dat] = CalculateAdaptiveVariable(Params, dat, b5);
 end
 
 b5.TotalPoints_draw = DRAW_BOTH;
@@ -356,10 +336,10 @@ while (b5.time_o - startpause) < the_delay
 end
 b5.TimerBar_draw = DRAW_NONE;
 b5.ReachTimeout_draw = DRAW_NONE;
-for jj = 1:6
-    b5.(sprintf('Coin0%d_0%d_draw', 6, jj)) = ...
-            DRAW_NONE;
-end
+% for jj = 1:6
+%     b5.(sprintf('Coin0%d_0%d_draw', 6, jj)) = ...
+%             DRAW_NONE;
+% end
 % b5.CheatTarget_draw = DRAW_NONE;
 
 %%% XXX TODO: NEED WAY TO LOG (MORE) INTERESTING TRIAL EVENTS
