@@ -228,6 +228,12 @@ for itrial = startTrial : Params.NumTrials
     case 2
 		[Params, Data(trial), b5] = ...
         ProbeOnlyNoAdaptation( Params, Data(trial), b5 );
+    case 3 
+		[Params, Data(trial), b5] = ...
+        ProbevsReferenceAdaptation( Params, Data(trial), b5 );
+    case 4
+		[Params, Data(trial), b5] = ...
+        ProbeOnlyAdaptation( Params, Data(trial), b5 );
 	otherwise
 		error('Unknown Trial Type');
 	end

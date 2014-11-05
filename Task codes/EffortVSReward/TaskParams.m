@@ -41,6 +41,8 @@ bmi5_cmd('make open_square Frame 0.01');
 
 bmi5_cmd('make text ProbeEffortString 32');
 bmi5_cmd('make text ReferenceEffortString 32');
+bmi5_cmd('make text ProbeRewardString 8');
+bmi5_cmd('make text ReferenceRewardString 8');
 bmi5_cmd('make text TotalPoints 32');
 
 for ii = 1:2
@@ -133,7 +135,7 @@ Params.NumTrials 				= 2000;
 % Probe vs Reward no reward adaptation: [1 0]
 % Probe only no reward adaptation:      [0 1]
 
-Params.TrialTypeProbs 			= [1 0];
+Params.TrialTypeProbs 			= [0 0 1 0];
 Params.TrialTypeProbs           = Params.TrialTypeProbs/sum(Params.TrialTypeProbs);
 
 %% BLOCKS OF TRIALS
@@ -150,7 +152,7 @@ Params.BlockTypes = {
 };
 Params.DoSequentialBlocks       = true; % 0 - Probabalistic; 1 - Sequential
 Params.BlockSequence            = [1 ]; % overflows to start
-Params.BlockProbs 				= [0 0 z1 0]; % make sure these add to 1 exactly
+Params.BlockProbs 				= [0 0 1 0]; % make sure these add to 1 exactly
 
 % this option forces the first block to be type-1 (irrespective of prob)
 Params.FirstBlockIsType1 		= false;
@@ -238,11 +240,13 @@ b5.ReachTimeout_pos = [b5.Frame_scale(1)*...
     + Params.WsCenter(1) - b5.Frame_scale(1)/2, ...
                             Params.WsBounds(2,2)+b5.ReachTimeout_scale(2)/2];
 
-%% Probe Effort String
+%% Probe String
 b5.ProbeEffortString_color              = [1 1 1 1];
+b5.ProbeRewardString_color              = [1 1 1 1];
 
-%% Big Effort String
+%% Big String
 b5.ReferenceEffortString_color          = [1 1 1 1];
+b5.ReferenceRewardString_color          = [1 1 1 1];
 
 %% Total Points String
 b5.TotalPoints_color        = [1 1 1 1];
