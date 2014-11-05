@@ -132,10 +132,12 @@ Params.NumTrials 				= 2000;
 
 %%  Trial Type Function Selection
 % Choose here between:
-% Probe vs Reward no reward adaptation: [1 0]
-% Probe only no reward adaptation:      [0 1]
+% Probe vs Reward no reward adaptation: [1 0 0 0]
+% Probe only no reward adaptation:      [0 1 0 0]
+% Probe vs Reward with reward adaptation: [0 0 1 0]
+% Probe only with reward adaptation:      [0 0 0 1]
 
-Params.TrialTypeProbs 			= [0 0 1 0];
+Params.TrialTypeProbs 			= [0 0 0 1];
 Params.TrialTypeProbs           = Params.TrialTypeProbs/sum(Params.TrialTypeProbs);
 
 %% BLOCKS OF TRIALS
@@ -209,8 +211,8 @@ Params.StartTarget.Locations 	= {Params.WsCenter + [-40 -40]}; % cell array of l
 %% Probe Effort Target
 b5.ProbeEffortTarget_color                  = [0 0.6 0 1];
 b5.ProbeEffortTarget_scale                  = [395 60];
-Params.ProbeEffortTarget.EffortVector       = 0.1:0.1:0.9;
-Params.ProbeEffortTarget.RewardVector       = floor(linspace(1,50,9));
+Params.ProbeEffortTarget.EffortVector       = 0.2:0.1:1;
+Params.ProbeEffortTarget.RewardVector       = floor(linspace(1,50,numel(Params.ProbeEffortTarget.EffortVector )));
 
 %% Reference Target
 b5.ReferenceTarget_color                    = [0 0 1 1];

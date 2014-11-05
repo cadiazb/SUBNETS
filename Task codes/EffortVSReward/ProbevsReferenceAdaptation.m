@@ -53,7 +53,8 @@ b5.ReferenceAxis_pos    = b5.ReferenceTarget_pos;
 %% Generate the amounts of reward
 dat.ReferenceReward = Params.ReferenceTarget.RewardReference;
 dat.ProbeReward = ...
-    Params.RewardAdaptation(Params.RewardAdaptation(:,1) == dat.ProbeEffort, 2);
+    Params.RewardAdaptation(Params.RewardAdaptation(:,1) == ...
+    (dat.ProbeEffort/(Params.MaxForce * (b5.Frame_scale(2)/2)/50)), 2);
 
 %% Set reward strings
 b5.ProbeRewardString_pos(2) = ...
@@ -150,6 +151,7 @@ while ~done
     if ~posOk  
         gotPos = false;
         if (b5.time_o - t_start) > Params.TimeoutReachStartTarget
+            dat.TrialChoice = '';
             done            = true;
             dat.OutcomeID   = 1;
             dat.OutcomeStr	= 'cancel @ start';
@@ -198,6 +200,7 @@ if ~dat.OutcomeID
         posOk = TrialInBox(pos,b5.StartTarget_pos,Params.StartTarget.Win);
 
         if ~posOk && ~Params.AllowEarlyReach
+            dat.TrialChoice = '';
             done            = true;
             dat.OutcomeID   = 2;
             dat.OutcomeStr 	= 'cancel @ hold';
@@ -258,6 +261,7 @@ if ~dat.OutcomeID
             dat.ReactionTime = b5.time_o - t_start;
         elseif (b5.time_o - t_start) > Params.ReactionTimeDelay && posStartOk
             dat.ReactionTime = b5.time_o - t_start;
+            dat.TrialChoice = '';
             dat.MovementTime = NaN;
             done            = true;
             dat.OutcomeID 	= 4;
@@ -278,12 +282,14 @@ if ~dat.OutcomeID
         else
             if intentionProbe && (gotIntention == 2)
                 dat.MovementTime = b5.time_o - t_start - dat.ReactionTime;
+                dat.TrialChoice = '';
                 done            = true;
                 dat.OutcomeID 	= 4;
                 dat.OutcomeStr 	= 'cancel @ Backtrack for Ref';
             end
             if intentionRef && (gotIntention == 1)
                 dat.MovementTime = b5.time_o - t_start - dat.ReactionTime;
+                dat.TrialChoice = '';
                 done            = true;
                 dat.OutcomeID 	= 4;
                 dat.OutcomeStr 	= 'cancel @ Backtrack for Probe';
@@ -325,6 +331,7 @@ if ~dat.OutcomeID
         if ~isempty(dat.ReactionTime)
             if (b5.time_o - t_start - dat.ReactionTime) > Params.TimeoutReachTarget
                 dat.MovementTime = b5.time_o - t_start - dat.ReactionTime;
+                dat.TrialChoice = '';
                 done            = true;
                 dat.OutcomeID 	= 4;
                 dat.OutcomeStr 	= 'cancel @ reach movement timeout';
@@ -381,7 +388,7 @@ else
     
 end
 
-if dat.TrialNum > 20
+if dat.TrialNum > 2
     [Params, dat] = CalculateAdaptiveVariable(Params, dat, b5);
 end
 
