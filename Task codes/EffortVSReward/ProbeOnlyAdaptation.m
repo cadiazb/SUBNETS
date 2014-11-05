@@ -264,6 +264,15 @@ if ~dat.OutcomeID
             dat.OutcomeID 	= 4;
             dat.OutcomeStr 	= 'cancel @ reaction';
         end
+        
+        if ~isempty(dat.ReactionTime)
+            if pos(1) - b5.StartTarget_pos(1) < -Params.NoGoTap
+                dat.TrialChoice = 'Pass';
+                done = true;
+                dat.OutcomeID 	= 0;
+                dat.OutcomeStr 	= 'success';
+            end
+        end
             
         if ~posRefOk && ~posProbeOk
             gotPos = false;
