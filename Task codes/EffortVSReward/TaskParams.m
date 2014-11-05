@@ -301,6 +301,7 @@ Params.FixedTrialLength             = true;
 Params.TimerOn                      = true;
 Params.AllowEarlyReach              = false; % { allow subject to start
                                            % { reach before end of delay
+Params.UseRewardAdaptation          = true;
 
 Params.MaxForce                     = 40; % Measured max force per subject [N]
 

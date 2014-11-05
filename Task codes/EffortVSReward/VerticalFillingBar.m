@@ -309,11 +309,15 @@ if dat.OutcomeID == 0
 	
     b5.RewardTone_play_io = 1;
     Params.RewardSampleSpace(find(Params.RewardSampleSpace == dat.ProbeReward, 1)) = [];
-    [Params, dat] = CalculateAdaptiveVariable(Params, dat, b5);
+    if Params.UseRewardAdaptation
+        [Params, dat] = CalculateAdaptiveVariable(Params, dat, b5);
+    end
 else
     tmpStringZeros = 32 - numel(double(sprintf('Earned =%0.1f',0)));
     b5.TotalPoints_v = [double(sprintf('Earned =%0.1f',0)) zeros(1,tmpStringZeros)]';  
-    [Params, dat] = CalculateAdaptiveVariable(Params, dat, b5);
+    if Params.UseRewardAdaptation
+        [Params, dat] = CalculateAdaptiveVariable(Params, dat, b5);
+    end
 end
 
 b5.TotalPoints_draw = DRAW_BOTH;
