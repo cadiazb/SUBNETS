@@ -210,14 +210,19 @@ if ~dat.OutcomeID
     b5.FillingEffort_draw  = DRAW_BOTH;
     
     b5.GoTone_play_io = 1;
+    b5.FillingEffort_scale(2) = 0;
+    b5.FillingEffort_pos       = Params.WsCenter - [0, b5.Frame_scale(2)/2] + ...
+                    [0, b5.FillingEffort_scale(2)/2];
     b5 = bmi5_mmap(b5);
+    system('beep');
 
 	done            = false;
     dat.FinalCursorPos = b5.StartTarget_pos;
 
 	t_start = b5.time_o;
 	while ~done
-
+        
+        [Params, dat, b5] = UpdateCursorOnLine(Params, dat, b5); % syncs b5 twice
         pos = b5.Cursor_pos;
         dat.FinalCursorPos(1) = max(dat.FinalCursorPos(1), pos(1));
         dat.FinalCursorPos(2) = 0;
@@ -267,7 +272,6 @@ if ~dat.OutcomeID
             
         
         % update hand
-        [Params, dat, b5] = UpdateCursorOnLine(Params, dat, b5); % syncs b5 twice
 	end
 end
 
