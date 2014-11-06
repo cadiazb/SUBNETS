@@ -301,13 +301,14 @@ Params.TimerOn                      = false;
 Params.AllowEarlyReach              = false; % { allow subject to start
                                            % { reach before end of delay
 Params.MaxForce                     = 20; % Measured max force per subject [N]
-Params.MaxReward                    = repmat(10, numel(Params.ProbeEffortTarget.EffortVector),1); % Max reward for individual trial for each probes
+Params.MaxReward                    = 20;
+Params.MaxReward                    = repmat(Params.MaxReward, numel(Params.ProbeEffortTarget.EffortVector),1); % Max reward for individual trial for each probes
 Params.NoGoTap                      = 0.05 * (Params.MaxForce/50) * b5.Frame_scale(2)/2;
 
 % Create matrix to collect initial data for adaptive sampling
 Params.Npre = 20; % Max number of samples per probe before increasing MaxReward
 Params.RewardRange = zeros(1,numel(Params.ProbeEffortTarget.EffortVector));
-Params.RewardGradients = 5;
+Params.RewardGradients = 10;
 Params.InitialSampling      = Params.ProbeEffortTarget.EffortVector' * ...
                                 Params.MaxForce * (b5.Frame_scale(2)/2)/50;
 Params.InitialSampling(:, 2:(Params.RewardGradients+1)) = ...

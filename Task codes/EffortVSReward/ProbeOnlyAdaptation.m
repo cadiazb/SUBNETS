@@ -318,19 +318,12 @@ if ~dat.OutcomeID
 %         end
         
 		if posProbeOk %&& (gotIntention == 1)
-			if ~gotPos
-				gotPos    = true;
-				starthold = b5.time_o;
-			end
-			if (b5.time_o - starthold) > Params.ProbeEffortTarget.Hold
 				done = true;
 
                 dat.TrialChoice = 'Probe Effort';
                 dat.MovementTime = b5.time_o - t_start - dat.ReactionTime;
                 dat.OutcomeID 	= 0;
                 dat.OutcomeStr 	= 'Succes';
-                    
-			end
 		end
 
 % 		if posRefOk %&& (gotIntention == 2)
