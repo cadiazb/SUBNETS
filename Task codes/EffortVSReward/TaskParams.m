@@ -39,7 +39,7 @@ bmi5_cmd('make text TotalPoints 32');
 bmi5_cmd('make text EffortLabel25 16');
 bmi5_cmd('make text EffortLabel100 17');
 
-bmi5_cmd('make text Reward 8');
+bmi5_cmd('make text Reward 9');
 
 for ii = 1:3
     bmi5_cmd(sprintf('make square effortTick%d',ii));
@@ -303,7 +303,7 @@ Params.AllowEarlyReach              = false; % { allow subject to start
                                            % { reach before end of delay
 Params.UseRewardAdaptation          = true;
 
-Params.MaxForce                     = 40; % Measured max force per subject [N]
+Params.MaxForce                     = 20; % Measured max force per subject [N]
 Params.NoGoTap                      = 0.2 * (Params.MaxForce/50) * b5.Frame_scale(2)/2;
 
 Params.RewardSampleSpace = repmat(1:size(Params.VerticalRewardsMatrix,1), ...

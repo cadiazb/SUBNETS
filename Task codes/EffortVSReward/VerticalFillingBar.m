@@ -26,8 +26,8 @@ b5.TimerBar_pos(1) = Params.WsCenter(1) - b5.Frame_scale(1)/2 + ...
 %% Draw rewards from vector
 dat.ProbeReward = DrawFromVec(Params.RewardSampleSpace);
 
-tmpStringZeros = 8 - numel(double(sprintf('%dcents',max(Params.VerticalRewardsMatrix(dat.ProbeReward,:)))));
-b5.Reward_v = [double(sprintf('%dcents',max(Params.VerticalRewardsMatrix(dat.ProbeReward,:)))) zeros(1,tmpStringZeros)]';
+tmpStringZeros = 9 - numel(double(sprintf('%d cents',max(Params.VerticalRewardsMatrix(dat.ProbeReward,:)))));
+b5.Reward_v = [double(sprintf('%d cents',max(Params.VerticalRewardsMatrix(dat.ProbeReward,:)))) zeros(1,tmpStringZeros)]';
 
 % %% Set coins Y position and initizlize X position
 % for ii = 1:5
@@ -144,7 +144,7 @@ end
 %% 2. INSTRUCTED DELAY PHASE
 if ~dat.OutcomeID 
     
-    for ii = [25  100]
+    for ii = [  100]
         b5.(['EffortLabel' num2str(ii) '_draw'])      = DRAW_BOTH;
     end
     for ii = 1:3
@@ -314,8 +314,8 @@ if dat.OutcomeID == 0
     
     dat.TotalPoints = dat.TotalPoints + tmpTrialPoints;
     
-    tmpStringZeros = 32 - numel(double(sprintf('Earned = %0.1fcents',tmpTrialPoints)));
-    b5.TotalPoints_v = [double(sprintf('Earned = %0.1fcents',tmpTrialPoints)) zeros(1,tmpStringZeros)]';
+    tmpStringZeros = 32 - numel(double(sprintf('Earned = %0.1f cents',tmpTrialPoints)));
+    b5.TotalPoints_v = [double(sprintf('Earned = %0.1f cents',tmpTrialPoints)) zeros(1,tmpStringZeros)]';
 
     fprintf('Trial Choice\t\t%s \n',dat.TrialChoice);
     fprintf('Effort\t\t%f \n',dat.ActualEffort);
