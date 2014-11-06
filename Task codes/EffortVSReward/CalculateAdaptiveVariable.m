@@ -1,4 +1,5 @@
-function [Params, dat] = CalculateAdaptiveVariable(Params, dat, b5)
+function [Params, dat] = CalculateAdaptiveVariable(Params, Data, b5, trial)
+    dat = Data(trial);
     if isempty(dat.TrialChoice)
         display('No trial choice recorded')
         return
@@ -34,7 +35,11 @@ function [Params, dat] = CalculateAdaptiveVariable(Params, dat, b5)
                         floor(dat.ProbeReward * normrnd(1-Params.RewardRandDist(1), Params.RewardRandDist(2),1)));
             end
         case 3
-            
+            iTrialSucces = [Data(:).ProbeEffort] == dat.ProbeEffort & ...
+                [Data(:).OutcomeID]; % Get indeces for trials with same probe effort and success outcome
+            if all(strcmp(Data(iTrialSucces).TrialChoice, 'Probe Effort')) || ...
+                    all(strcmp(Data(iTrialSucces).TrialChoice, 'Pass'))
+            end
         case 4
             display('No adaptation in this trial')
     end

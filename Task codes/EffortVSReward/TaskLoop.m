@@ -283,6 +283,11 @@ NerrorsP = sum(errlistP~=0);
 NcorrectP = 10 - NerrorsP;
     
     Params.TempPerf=NcorrectP/10;
+        end
+    
+    %% Calculate adaptive variable
+    if Params.UseRewardAdaptation
+        [Params, ~] = CalculateAdaptiveVariable(Params, Data, b5, trial);
     end
     
     %% Save Data
