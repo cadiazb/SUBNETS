@@ -281,7 +281,7 @@ Params.TempPerf				=0.5;  %(msec)
 Params.BlockSize 				=1000;
 
 %% Reward adaptation. Staircase
-Params.UseRewardAdaptation = true;
+Params.UseRewardAdaptation = false;
 Params.RewardAdaptation = [Params.ProbeEffortTarget.EffortVector;...
     Params.ProbeEffortTarget.RewardVector]';
 Params.RewardStepUp     = 2;
@@ -314,7 +314,7 @@ Params.InitialSampling(:, 2:(Params.RewardGradients+1)) = ...
     repmat(Params.MaxReward, 1,numel(1:Params.RewardGradients)) .* repmat([1:Params.RewardGradients]/Params.RewardGradients, numel(Params.MaxReward), 1);
 Params.InitialSampling = repmat(Params.InitialSampling,1,1, Params.Npre);
 
-for ii = 1:numel(numel(Params.ProbeEffortTarget.EffortVector))
+for ii = 1:numel(Params.ProbeEffortTarget.EffortVector)
     Params.ProbeModels.(['Effort' num2str(ii)]) = [];
 end
 
