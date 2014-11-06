@@ -3,7 +3,8 @@ function [Params, dat] = CalculateAdaptiveVariable(Params, dat, b5)
         display('No trial choice recorded')
         return
     end
-    switch randi([1,3],1,1)
+%     switch randi([1,3],1,1)
+    switch 3
         case 1
             display('Reward adaptation 1')
             tmpEffort = (dat.ProbeEffort/(Params.MaxForce * (b5.Frame_scale(2)/2)/50));
@@ -33,5 +34,7 @@ function [Params, dat] = CalculateAdaptiveVariable(Params, dat, b5)
                         floor(dat.ProbeReward * normrnd(1-Params.RewardRandDist(1), Params.RewardRandDist(2),1)));
             end
         case 3
+            
+        case 4
             display('No adaptation in this trial')
     end

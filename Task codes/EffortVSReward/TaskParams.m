@@ -41,7 +41,7 @@ bmi5_cmd('make open_square Frame 0.01');
 
 bmi5_cmd('make text ProbeEffortString 32');
 bmi5_cmd('make text ReferenceEffortString 32');
-bmi5_cmd('make text ProbeRewardString 8');
+bmi5_cmd('make text ProbeRewardString 9');
 bmi5_cmd('make text ReferenceRewardString 8');
 bmi5_cmd('make text TotalPoints 32');
 
@@ -171,7 +171,7 @@ Params.ReachDelayRange       	= [0.5 0.5];	% draw from this interval
 Params.ReactionTimeDelay      	= 2.6;
 Params.ErrPenalty               = 0;
 Params.TimeoutReachStartTarget  = 0.1; % max time to acquire start target
-Params.TimeoutReachTarget       = 1; % max time to reach reaching target
+Params.TimeoutReachTarget       = 0.5; % max time to reach reaching target
 Params.MovementWindow           = 0.3; % For effort line, time to move [s]
 Params.TrialLength              = 4;   % Fixed trial length [s]
 
@@ -210,7 +210,7 @@ Params.StartTarget.Locations 	= {Params.WsCenter + [-40 -40]}; % cell array of l
 
 %% Probe Effort Target
 b5.ProbeEffortTarget_color                  = [0 0.6 0 1];
-b5.ProbeEffortTarget_scale                  = [395 60];
+b5.ProbeEffortTarget_scale                  = [395 1];
 Params.ProbeEffortTarget.EffortVector       = 0.2:0.1:1;
 Params.ProbeEffortTarget.RewardVector       = floor(linspace(1,50,numel(Params.ProbeEffortTarget.EffortVector )));
 
@@ -281,6 +281,7 @@ Params.TempPerf				=0.5;  %(msec)
 Params.BlockSize 				=1000;
 
 %% Reward adaptation
+Params.UseRewardAdaptation = true;
 Params.RewardAdaptation = [Params.ProbeEffortTarget.EffortVector;...
     Params.ProbeEffortTarget.RewardVector]';
 Params.RewardStepUp     = 2;
@@ -299,7 +300,8 @@ Params.TimerOn                      = false;
 
 Params.AllowEarlyReach              = false; % { allow subject to start
                                            % { reach before end of delay
-Params.MaxForce                     = 40; % Measured max force per subject [N]
+Params.MaxForce                     = 20; % Measured max force per subject [N]
+Params.MaxReward                    = repmat(10,1, numel(Params.ProbeEffortTarget.EffortVector)); % Max reward for individual trial for each probes
 Params.NoGoTap                      = 0.05 * (Params.MaxForce/50) * b5.Frame_scale(2)/2;
 
 

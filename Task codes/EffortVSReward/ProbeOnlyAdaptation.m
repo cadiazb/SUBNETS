@@ -46,8 +46,8 @@ b5.ProbeEffortAxis_pos  = b5.ProbeEffortTarget_pos;
 b5.ReferenceAxis_pos    = b5.ReferenceTarget_pos;
 %% Update target width according
 
- b5.ProbeEffortTarget_scale             = [dat.ProbeEffort + 20, 15];
- b5.ReferenceTarget_scale               = [dat.ReferenceEffort + 20, 15];
+ b5.ProbeEffortTarget_scale             = [dat.ProbeEffort + 20, 1];
+ b5.ReferenceTarget_scale               = [dat.ReferenceEffort + 20, 1];
          
 
 %% Generate the amounts of reward
@@ -67,11 +67,11 @@ b5.ReferenceRewardString_pos(2) = ...
 b5.ReferenceRewardString_pos(1) = ...
     b5.ReferenceTarget_pos(1);
 
-tmpStringZeros = 8 - numel(double(sprintf('%.0fcents', dat.ProbeReward)));
-b5.ProbeRewardString_v = [double(sprintf('%.0fcents', dat.ProbeReward)) zeros(1,tmpStringZeros)]';
+tmpStringZeros = 9 - numel(double(sprintf('%.0f cents', dat.ProbeReward)));
+b5.ProbeRewardString_v = [double(sprintf('%.0f cents', dat.ProbeReward)) zeros(1,tmpStringZeros)]';
 
-tmpStringZeros = 8 - numel(double(sprintf('%.0fcents', dat.ReferenceReward)));
-b5.ReferenceRewardString_v = [double(sprintf('%.0fcents', dat.ReferenceReward)) zeros(1,tmpStringZeros)]';
+tmpStringZeros = 8 - numel(double(sprintf('%.0f cents', dat.ReferenceReward)));
+b5.ReferenceRewardString_v = [double(sprintf('%.0f cents', dat.ReferenceReward)) zeros(1,tmpStringZeros)]';
 
 fprintf('Probe Effort \t\t%d\n',dat.ProbeEffort);
 fprintf('Probe reward \t\t%d\n',dat.ProbeReward);
@@ -85,7 +85,7 @@ b5.ReferenceEffortString_v  = [double(sprintf('%02d Lb',...
     round(dat.ReferenceEffort / ((b5.Frame_scale(2)/2)/50))...
     )) zeros(1,27)]';
 
-b5.ProbeEffortString_pos        = b5.ProbeEffortTarget_pos + [-15, -2];
+b5.ProbeEffortString_pos        = b5.ProbeEffortTarget_pos + [-15, 2];
 b5.ReferenceEffortString_pos    = b5.ReferenceTarget_pos + [-15, -2];
 
 
@@ -233,7 +233,7 @@ if ~dat.OutcomeID
 
 	t_start = b5.time_o;
 	while ~done
-
+         [Params, dat, b5] = UpdateCursor(Params, dat, b5); % syncs b5 twice
         pos = b5.Cursor_pos;
         if Params.TimerOn
             AdjustTimerBar;
@@ -249,8 +249,8 @@ if ~dat.OutcomeID
         posRefOk 	= EffortInBox(pos, b5.StartTarget_pos, b5.ReferenceTarget_pos, b5.ReferenceTarget_scale);
 
 
-        intentionProbe 	= EffortInBox(pos, b5.StartTarget_pos, b5.ProbeEffortTarget_pos/2, b5.ProbeEffortTarget_scale);
-        intentionRef 	= EffortInBox(pos, b5.StartTarget_pos, b5.ReferenceTarget_pos/2, b5.ReferenceTarget_scale);
+%         intentionProbe 	= EffortInBox(pos, b5.StartTarget_pos, b5.ProbeEffortTarget_pos/2, b5.ProbeEffortTarget_scale);
+%         intentionRef 	= EffortInBox(pos, b5.StartTarget_pos, b5.ReferenceTarget_pos/2, b5.ReferenceTarget_scale);
 
 
 
@@ -265,44 +265,45 @@ if ~dat.OutcomeID
             dat.OutcomeStr 	= 'cancel @ reaction';
         end
         
-        if ~isempty(dat.ReactionTime)
-            if pos(1) - b5.StartTarget_pos(1) < -Params.NoGoTap
+        if  (pos(2) - b5.StartTarget_pos(2)) < -Params.NoGoTap
+            if isempty(dat.ReactionTime)
+                dat.ReactionTime = b5.time_o - t_start;
+            end
                 dat.TrialChoice = 'Pass';
                 done = true;
                 dat.OutcomeID 	= 0;
                 dat.OutcomeStr 	= 'success';
-            end
         end
             
-        if ~posRefOk && ~posProbeOk
-            gotPos = false;
-        end
+%         if ~posProbeOk
+%             gotPos = false;
+%         end
         
-        if ~gotIntention
-            if intentionProbe
-                gotIntention = 1; %Probe effort
-            end
-            if intentionRef
-                gotIntention = 2; %Ref effort
-            end
-        else
-            if intentionProbe && (gotIntention == 2)
-                dat.MovementTime = b5.time_o - t_start - dat.ReactionTime;
-                dat.TrialChoice = '';
-                done            = true;
-                dat.OutcomeID 	= 4;
-                dat.OutcomeStr 	= 'cancel @ Backtrack for Ref';
-            end
-            if intentionRef && (gotIntention == 1)
-                dat.MovementTime = b5.time_o - t_start - dat.ReactionTime;
-                dat.TrialChoice = '';
-                done            = true;
-                dat.OutcomeID 	= 4;
-                dat.OutcomeStr 	= 'cancel @ Backtrack for Probe';
-            end
-        end
+%         if ~gotIntention
+%             if intentionProbe
+%                 gotIntention = 1; %Probe effort
+%             end
+%             if intentionRef
+%                 gotIntention = 2; %Ref effort
+%             end
+%         else
+%             if intentionProbe && (gotIntention == 2)
+%                 dat.MovementTime = b5.time_o - t_start - dat.ReactionTime;
+%                 dat.TrialChoice = '';
+%                 done            = true;
+%                 dat.OutcomeID 	= 4;
+%                 dat.OutcomeStr 	= 'cancel @ Backtrack for Ref';
+%             end
+%             if intentionRef && (gotIntention == 1)
+%                 dat.MovementTime = b5.time_o - t_start - dat.ReactionTime;
+%                 dat.TrialChoice = '';
+%                 done            = true;
+%                 dat.OutcomeID 	= 4;
+%                 dat.OutcomeStr 	= 'cancel @ Backtrack for Probe';
+%             end
+%         end
         
-		if posProbeOk && (gotIntention == 1)
+		if posProbeOk %&& (gotIntention == 1)
 			if ~gotPos
 				gotPos    = true;
 				starthold = b5.time_o;
@@ -318,20 +319,20 @@ if ~dat.OutcomeID
 			end
 		end
 
-		if posRefOk && (gotIntention == 2)
-            if ~gotPos
-				gotPos    = true;
-				starthold = b5.time_o;
-            end
-			if (b5.time_o - starthold) > Params.BigEffortTarget.Hold
-				done = true;
-
-                dat.TrialChoice = 'Pass';
-                dat.MovementTime = b5.time_o - t_start - dat.ReactionTime;
-                dat.OutcomeID 	= 0;
-                dat.OutcomeStr 	= 'Succes';
-			end
-		end
+% 		if posRefOk %&& (gotIntention == 2)
+%             if ~gotPos
+% 				gotPos    = true;
+% 				starthold = b5.time_o;
+%             end
+% 			if (b5.time_o - starthold) > Params.BigEffortTarget.Hold
+% 				done = true;
+% 
+%                 dat.TrialChoice = 'Pass';
+%                 dat.MovementTime = b5.time_o - t_start - dat.ReactionTime;
+%                 dat.OutcomeID 	= 0;
+%                 dat.OutcomeStr 	= 'Succes';
+% 			end
+% 		end
 
 		% check for TIMEOUT
         if ~isempty(dat.ReactionTime)
@@ -345,7 +346,7 @@ if ~dat.OutcomeID
         end
         
         % update hand
-        [Params, dat, b5] = UpdateCursor(Params, dat, b5); % syncs b5 twice
+%         [Params, dat, b5] = UpdateCursor(Params, dat, b5); % syncs b5 twice
 	end
 end
 
@@ -387,10 +388,6 @@ if dat.OutcomeID == 0
 else
     tmpStringZeros = 32 - numel(double(sprintf('Earned = %05d',0)));
     b5.TotalPoints_v = [double(sprintf('Earned = %05d',0)) zeros(1,tmpStringZeros)]';
-end
-
-if dat.TrialNum > 20
-    [Params, dat] = CalculateAdaptiveVariable(Params, dat, b5);
 end
 
 b5.TotalPoints_draw = DRAW_BOTH;
