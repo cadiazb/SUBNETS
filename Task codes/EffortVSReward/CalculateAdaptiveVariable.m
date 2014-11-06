@@ -45,8 +45,7 @@ function [Params, dat] = CalculateAdaptiveVariable(Params, Data, b5, trial)
                                 (Params.MaxForce * (b5.Frame_scale(2)/2)/50)),1,'first');
                 Params.RewardRange(tmpEffortIndex) = Params.RewardRange(tmpEffortIndex) - 1;
                 Params.MaxReward(tmpEffortIndex) = Params.MaxReward(tmpEffortIndex) * 1.5^Params.RewardRange(tmpEffortIndex);
-                Params.InitialSampling      = dat.ProbeEffort * ...
-                                Params.MaxForce * (b5.Frame_scale(2)/2)/50;
+                Params.InitialSampling      = dat.ProbeEffort;
                 Params.InitialSampling(:, 2:(Params.RewardGradients+1)) = ...
                             Params.MaxReward(tmpEffortIndex) .* [1:Params.RewardGradients]/Params.RewardGradients;
                 return
@@ -75,7 +74,7 @@ function [Params, dat] = CalculateAdaptiveVariable(Params, Data, b5, trial)
                     AdaptiveSampling([Data(iTrialSucces).ProbeReward],tmpChoseProbe, Params.ProbeModels.(['Effort' num2str(tmpEffortIndex)]));
             end
                 Params.RewardAdaptation(Params.RewardAdaptation(:,1) == ...
-    (dat.ProbeEffort/(Params.MaxForce * (b5.Frame_scale(2)/2)/50)), 2) = tmpReward;
+    (dat.ProbeEffort/(Params.MaxForce * (b5.Frame_scale(2)/2)/50)), 2) = floor(10*tmpReward)/10;
             end
         case 4
             display('No adaptation in this trial')

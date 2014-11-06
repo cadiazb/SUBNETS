@@ -81,11 +81,11 @@ b5.ReferenceRewardString_pos(2) = ...
 b5.ReferenceRewardString_pos(1) = ...
     b5.ReferenceTarget_pos(1);
 
-tmpStringZeros = 9 - numel(double(sprintf('%.0f cents', dat.ProbeReward)));
-b5.ProbeRewardString_v = [double(sprintf('%.0f cents', dat.ProbeReward)) zeros(1,tmpStringZeros)]';
+tmpStringZeros = 12 - numel(double(sprintf('%.1f cents', dat.ProbeReward)));
+b5.ProbeRewardString_v = [double(sprintf('%.1f cents', dat.ProbeReward)) zeros(1,tmpStringZeros)]';
 
-tmpStringZeros = 8 - numel(double(sprintf('%.0f cents', dat.ReferenceReward)));
-b5.ReferenceRewardString_v = [double(sprintf('%.0f cents', dat.ReferenceReward)) zeros(1,tmpStringZeros)]';
+tmpStringZeros = 12 - numel(double(sprintf('%.1f cents', dat.ReferenceReward)));
+b5.ReferenceRewardString_v = [double(sprintf('%.1f cents', dat.ReferenceReward)) zeros(1,tmpStringZeros)]';
 
 fprintf('Probe Effort \t\t%d\n',dat.ProbeEffort);
 fprintf('Probe reward \t\t%d\n',dat.ProbeReward);
@@ -383,8 +383,8 @@ if dat.OutcomeID == 0
         tmpTrialPoints = 0;
     end
     
-    tmpStringZeros = 32 - numel(double(sprintf('Earned = %.2f cents',tmpTrialPoints)));
-    b5.TotalPoints_v = [double(sprintf('Earned = %.2f cents',tmpTrialPoints)) zeros(1,tmpStringZeros)]';
+    tmpStringZeros = 32 - numel(double(sprintf('Earned = %.1f cents',tmpTrialPoints)));
+    b5.TotalPoints_v = [double(sprintf('Earned = %.1f cents',tmpTrialPoints)) zeros(1,tmpStringZeros)]';
     
     Params.EffortSampleSpace(find(Params.EffortSampleSpace == dat.ProbeEffort, 1)) = [];
     
@@ -403,8 +403,8 @@ if dat.OutcomeID == 0
     end
 
 else
-    tmpStringZeros = 32 - numel(double(sprintf('Earned = %.2f cents',0)));
-    b5.TotalPoints_v = [double(sprintf('Earned = %.2f cents',0)) zeros(1,tmpStringZeros)]';
+    tmpStringZeros = 32 - numel(double(sprintf('Earned = %.1f cents',0)));
+    b5.TotalPoints_v = [double(sprintf('Earned = %.1f cents',0)) zeros(1,tmpStringZeros)]';
 end
 
 b5.TotalPoints_draw = DRAW_BOTH;

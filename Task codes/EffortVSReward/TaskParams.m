@@ -41,8 +41,8 @@ bmi5_cmd('make open_square Frame 0.01');
 
 bmi5_cmd('make text ProbeEffortString 32');
 bmi5_cmd('make text ReferenceEffortString 32');
-bmi5_cmd('make text ProbeRewardString 9');
-bmi5_cmd('make text ReferenceRewardString 8');
+bmi5_cmd('make text ProbeRewardString 12');
+bmi5_cmd('make text ReferenceRewardString 12');
 bmi5_cmd('make text TotalPoints 32');
 
 for ii = 1:2
@@ -211,7 +211,7 @@ Params.StartTarget.Locations 	= {Params.WsCenter + [-40 -40]}; % cell array of l
 %% Probe Effort Target
 b5.ProbeEffortTarget_color                  = [0 0.6 0 1];
 b5.ProbeEffortTarget_scale                  = [395 1];
-Params.ProbeEffortTarget.EffortVector       = 0.4:0.2:1;
+Params.ProbeEffortTarget.EffortVector       = 0.4:0.6:1;
 Params.ProbeEffortTarget.RewardVector       = floor(linspace(1,50,numel(Params.ProbeEffortTarget.EffortVector )));
 
 %% Reference Target
@@ -281,7 +281,7 @@ Params.TempPerf				=0.5;  %(msec)
 Params.BlockSize 				=1000;
 
 %% Reward adaptation. Staircase
-Params.UseRewardAdaptation = false;
+Params.UseRewardAdaptation = true;
 Params.RewardAdaptation = [Params.ProbeEffortTarget.EffortVector;...
     Params.ProbeEffortTarget.RewardVector]';
 Params.RewardStepUp     = 2;
@@ -306,7 +306,7 @@ Params.MaxReward                    = repmat(Params.MaxReward, numel(Params.Prob
 Params.NoGoTap                      = 0.05 * (Params.MaxForce/50) * b5.Frame_scale(2)/2;
 
 % Create matrix to collect initial data for adaptive sampling
-Params.Npre = 20; % Max number of samples per probe before increasing MaxReward
+Params.Npre = 2; % Max number of samples per probe before increasing MaxReward
 Params.RewardRange = zeros(1,numel(Params.ProbeEffortTarget.EffortVector));
 Params.RewardGradients = 10;
 Params.InitialSampling      = Params.ProbeEffortTarget.EffortVector' * ...
