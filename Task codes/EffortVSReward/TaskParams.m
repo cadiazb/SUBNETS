@@ -211,7 +211,7 @@ Params.StartTarget.Locations 	= {Params.WsCenter + [-40 -40]}; % cell array of l
 %% Probe Effort Target
 b5.ProbeEffortTarget_color                  = [0 0.6 0 1];
 b5.ProbeEffortTarget_scale                  = [395 1];
-Params.ProbeEffortTarget.EffortVector       = 0.2:0.1:1;
+Params.ProbeEffortTarget.EffortVector       = 0.4:0.2:1;
 Params.ProbeEffortTarget.RewardVector       = floor(linspace(1,50,numel(Params.ProbeEffortTarget.EffortVector )));
 
 %% Reference Target
@@ -280,7 +280,7 @@ Params.TempPerf				=0.5;  %(msec)
 % Params.BlockSize 				= 35;
 Params.BlockSize 				=1000;
 
-%% Reward adaptation
+%% Reward adaptation. Staircase
 Params.UseRewardAdaptation = true;
 Params.RewardAdaptation = [Params.ProbeEffortTarget.EffortVector;...
     Params.ProbeEffortTarget.RewardVector]';
@@ -301,10 +301,24 @@ Params.TimerOn                      = false;
 Params.AllowEarlyReach              = false; % { allow subject to start
                                            % { reach before end of delay
 Params.MaxForce                     = 20; % Measured max force per subject [N]
-Params.MaxReward                    = repmat(10,1, numel(Params.ProbeEffortTarget.EffortVector)); % Max reward for individual trial for each probes
+Params.MaxReward                    = repmat(10, numel(Params.ProbeEffortTarget.EffortVector),1); % Max reward for individual trial for each probes
 Params.NoGoTap                      = 0.05 * (Params.MaxForce/50) * b5.Frame_scale(2)/2;
 
+% Create matrix to collect initial data for adaptive sampling
+Params.Npre = 20; % Max number of samples per probe before increasing MaxReward
+Params.RewardRange = zeros(1,numel(Params.ProbeEffortTarget.EffortVector));
+Params.RewardGradients = 5;
+Params.InitialSampling      = Params.ProbeEffortTarget.EffortVector' * ...
+                                Params.MaxForce * (b5.Frame_scale(2)/2)/50;
+Params.InitialSampling(:, 2:(Params.RewardGradients+1)) = ...
+    repmat(Params.MaxReward, 1,numel(1:Params.RewardGradients)) .* repmat([1:Params.RewardGradients]/Params.RewardGradients, numel(Params.MaxReward), 1);
+Params.InitialSampling = repmat(Params.InitialSampling,1,1, Params.Npre);
 
+for ii = 1:numel(numel(Params.ProbeEffortTarget.EffortVector))
+    Params.ProbeModels.(['Effort' num2str(ii)]) = [];
+end
+
+% Sampling space for the rest of the experiment
 Params.EffortSampleSpace    = repmat(Params.ProbeEffortTarget.EffortVector, ...
     1, ceil(300/size(Params.ProbeEffortTarget.EffortVector,2)))* ...
                                 Params.MaxForce * (b5.Frame_scale(2)/2)/50;

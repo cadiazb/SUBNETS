@@ -21,7 +21,14 @@ b5.TimerBar_pos(1) = Params.WsCenter(1) - b5.Frame_scale(1)/2 + ...
                         b5.TimerBar_scale(1)/2;
 %% Draw Probe effort from vector
 
-dat.ProbeEffort         = DrawFromVec(Params.EffortSampleSpace);
+if ~isempty(Params.InitialSampling)
+    dat.ProbeEffort = NaN;
+    while isnan(dat.ProbeEffort)
+    dat.ProbeEffort = DrawFromVec(Params.InitialSampling(:,1,1));
+    end
+else
+    dat.ProbeEffort         = DrawFromVec(Params.EffortSampleSpace);
+end
 
 
 dat.ReferenceEffort     = Params.ReferenceTarget.EffortReference * ...
@@ -52,10 +59,17 @@ b5.ReferenceAxis_pos    = b5.ReferenceTarget_pos;
 
 %% Generate the amounts of reward
 dat.ReferenceReward = Params.ReferenceTarget.RewardReference;
+
+if ~isempty(Params.InitialSampling)
+    dat.ProbeReward = ...
+        Params.InitialSampling(Params.InitialSampling(:,1) == ...
+    dat.ProbeEffort, ...
+    randi([2, size(Params.InitialSampling,2)],1), 1);
+else
 dat.ProbeReward = ...
     Params.RewardAdaptation(Params.RewardAdaptation(:,1) == ...
     (dat.ProbeEffort/(Params.MaxForce * (b5.Frame_scale(2)/2)/50)), 2);
-
+end
 %% Set reward strings
 b5.ProbeRewardString_pos(2) = ...
     b5.ProbeEffortTarget_pos(2) - (-1)^dat.ProbeEffortUp * 40;
@@ -375,8 +389,8 @@ if dat.OutcomeID == 0
         tmpTrialPoints = 0;
     end
     
-    tmpStringZeros = 32 - numel(double(sprintf('Earned = %05d',tmpTrialPoints)));
-    b5.TotalPoints_v = [double(sprintf('Earned = %05d',tmpTrialPoints)) zeros(1,tmpStringZeros)]';
+    tmpStringZeros = 32 - numel(double(sprintf('Earned = %.2f cents',tmpTrialPoints)));
+    b5.TotalPoints_v = [double(sprintf('Earned = %.2f cents',tmpTrialPoints)) zeros(1,tmpStringZeros)]';
     
     Params.EffortSampleSpace(find(Params.EffortSampleSpace == dat.ProbeEffort, 1)) = [];
     
@@ -384,10 +398,19 @@ if dat.OutcomeID == 0
     fprintf('Total points\t\t%d \n',dat.TotalPoints);
 	
     b5.RewardTone_play_io = 1;
+    
+    if ~isempty(Params.InitialSampling)
+        Params.InitialSampling(Params.InitialSampling(:,1) == ...
+        dat.ProbeEffort, ...
+        :,1) = NaN;
+        if all(isnan(Params.InitialSampling(:,:,1)))
+            Params.InitialSampling(:,:,1) = [];
+        end
+    end
 
 else
-    tmpStringZeros = 32 - numel(double(sprintf('Earned = %05d',0)));
-    b5.TotalPoints_v = [double(sprintf('Earned = %05d',0)) zeros(1,tmpStringZeros)]';
+    tmpStringZeros = 32 - numel(double(sprintf('Earned = %.2f cents',0)));
+    b5.TotalPoints_v = [double(sprintf('Earned = %.2f cents',0)) zeros(1,tmpStringZeros)]';
 end
 
 b5.TotalPoints_draw = DRAW_BOTH;
