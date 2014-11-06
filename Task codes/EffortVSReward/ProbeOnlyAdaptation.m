@@ -240,6 +240,7 @@ if ~dat.OutcomeID
     b5.StartAxis_draw = DRAW_NONE;
     b5.GoTone_play_io = 1;
     b5 = bmi5_mmap(b5);
+    system('beep');
 
 	done            = false;
 	gotPos          = false;
