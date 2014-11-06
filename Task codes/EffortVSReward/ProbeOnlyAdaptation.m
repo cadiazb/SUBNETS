@@ -359,15 +359,15 @@ if ~dat.OutcomeID
 end
 
 %% Trial outcome and variable adaptation
-b5.Cursor_draw 		= DRAW_NONE;
+% b5.Cursor_draw 		= DRAW_NONE;
 b5.StartTarget_draw = DRAW_NONE;
 b5.StartAxis_draw = DRAW_NONE;
 b5.Frame_draw = DRAW_NONE;
 
-b5.ProbeEffortTarget_draw 	= DRAW_NONE;
+% b5.ProbeEffortTarget_draw 	= DRAW_NONE;
 b5.ProbeEffortAxis_draw = DRAW_NONE; 
-b5.ProbeEffortString_draw = DRAW_NONE; 
-b5.ProbeRewardString_draw = DRAW_NONE;
+% b5.ProbeEffortString_draw = DRAW_NONE; 
+% b5.ProbeRewardString_draw = DRAW_NONE;
 
 b5.ReferenceTarget_draw = DRAW_NONE;
 b5.ReferenceAxis_draw = DRAW_NONE;

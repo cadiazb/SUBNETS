@@ -171,7 +171,7 @@ Params.ReachDelayRange       	= [0.5 0.5];	% draw from this interval
 Params.ReactionTimeDelay      	= 2.6;
 Params.ErrPenalty               = 0;
 Params.TimeoutReachStartTarget  = 0.1; % max time to acquire start target
-Params.TimeoutReachTarget       = 0.5; % max time to reach reaching target
+Params.TimeoutReachTarget       = 1.2; % max time to reach reaching target
 Params.MovementWindow           = 0.3; % For effort line, time to move [s]
 Params.TrialLength              = 4;   % Fixed trial length [s]
 
@@ -211,7 +211,7 @@ Params.StartTarget.Locations 	= {Params.WsCenter + [-40 -40]}; % cell array of l
 %% Probe Effort Target
 b5.ProbeEffortTarget_color                  = [0 0.6 0 1];
 b5.ProbeEffortTarget_scale                  = [395 1];
-Params.ProbeEffortTarget.EffortVector       = 0.4:0.6:1;
+Params.ProbeEffortTarget.EffortVector       = 0.4:0.2:1;
 Params.ProbeEffortTarget.RewardVector       = floor(linspace(1,50,numel(Params.ProbeEffortTarget.EffortVector )));
 
 %% Reference Target
@@ -306,7 +306,7 @@ Params.MaxReward                    = repmat(Params.MaxReward, numel(Params.Prob
 Params.NoGoTap                      = 0.05 * (Params.MaxForce/50) * b5.Frame_scale(2)/2;
 
 % Create matrix to collect initial data for adaptive sampling
-Params.Npre = 2; % Max number of samples per probe before increasing MaxReward
+Params.Npre = 20; % Max number of samples per probe before increasing MaxReward
 Params.RewardRange = zeros(1,numel(Params.ProbeEffortTarget.EffortVector));
 Params.RewardGradients = 10;
 Params.InitialSampling      = Params.ProbeEffortTarget.EffortVector' * ...
