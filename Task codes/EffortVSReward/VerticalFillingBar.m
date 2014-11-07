@@ -241,14 +241,14 @@ if ~dat.OutcomeID
         if ~posOk && isempty(dat.ReactionTime)
             dat.ReactionTime = b5.time_o - t_start;
         end
-        if ~isempty(dat.ReactionTime)
-            if abs(abs(pos(2)) - abs(b5.StartTarget_pos(2))) > Params.NoGoTap
-                dat.TrialChoice = 'Pass';
-                done = true;
-                dat.OutcomeID 	= 0;
-                dat.OutcomeStr 	= 'success';
-            end
-        end
+%         if ~isempty(dat.ReactionTime)
+%             if abs(abs(pos(2)) - abs(b5.StartTarget_pos(2))) > Params.NoGoTap
+%                 dat.TrialChoice = 'Pass';
+%                 done = true;
+%                 dat.OutcomeID 	= 0;
+%                 dat.OutcomeStr 	= 'success';
+%             end
+%         end
         
         if ~isempty(dat.ReactionTime)
             if (b5.time_o - (dat.ReactionTime + t_start)) > Params.MovementWindow
@@ -302,8 +302,8 @@ b5.FillingEffort_draw  = DRAW_NONE;
 if dat.OutcomeID == 0
 %     if floor(0.05+b5.FillingEffort_scale(2)/b5.Frame_scale(2)*5)
     if strcmp(dat.TrialChoice, 'Probe Effort')
-        tmpTrialPoints = (max(Params.VerticalRewardsMatrix(dat.ProbeReward,:))*0.25) * ...
-            floor((0.05+b5.FillingEffort_scale(2)/b5.Frame_scale(2)/0.25));
+        tmpTrialPoints = (max(Params.VerticalRewardsMatrix(dat.ProbeReward,:))) * ...
+            ((0.05+b5.FillingEffort_scale(2)/b5.Frame_scale(2)));
     else
         tmpTrialPoints = 0;
     end
