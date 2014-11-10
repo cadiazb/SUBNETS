@@ -25,18 +25,18 @@ function [Params, dat, b5] = UpdateCursor(Params, dat, b5)
     if dat.ProbeEffortUp
         if newForce(2) > 0
             newPosX = (b5.Frame_scale(1)/2)*newForce(1) + b5.Frame_pos(1);
-            newPosY = (b5.Frame_scale(2)/2)*newForce(2)*(50/dat.ProbeEffort) + b5.Frame_pos(2);
+            newPosY = (b5.Frame_scale(2)/2)*newForce(2) + b5.Frame_pos(2);
         else
             newPosX = (b5.Frame_scale(1)/2)*newForce(1) + b5.Frame_pos(1);
-            newPosY = (b5.Frame_scale(2)/2)*newForce(2)*(50/dat.ReferenceEffort) + b5.Frame_pos(2);
+            newPosY = (b5.Frame_scale(2)/2)*newForce(2) + b5.Frame_pos(2);
         end
     else
         if newForce(2) < 0
             newPosX = (b5.Frame_scale(1)/2)*newForce(1) + b5.Frame_pos(1);
-            newPosY = (b5.Frame_scale(2)/2)*newForce(2)*(50/dat.ProbeEffort) + b5.Frame_pos(2);
+            newPosY = (b5.Frame_scale(2)/2)*newForce(2) + b5.Frame_pos(2);
         else
             newPosX = (b5.Frame_scale(1)/2)*newForce(1) + b5.Frame_pos(1);
-            newPosY = (b5.Frame_scale(2)/2)*newForce(2)*(50/dat.ReferenceEffort) + b5.Frame_pos(2);
+            newPosY = (b5.Frame_scale(2)/2)*newForce(2) + b5.Frame_pos(2);
         end
     end
 
