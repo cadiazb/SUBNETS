@@ -204,7 +204,6 @@ Params.StartTarget.Win  		= 20; % radius
 Params.StartTarget.Locations 	= {Params.WsCenter + [-40 -40]}; % cell array of locations
 
 %% Rewards
-Params.UseRewardAdaptation          = false;
 Params.MaxReward    = 24;
 Params.PassReward   = 1;
 Params.RewardsVector = [2:2:Params.MaxReward];
@@ -229,11 +228,13 @@ b5.PointsBox_scale = [40 40];
 b5.PointsBox_pos = Params.WsBounds(1,:);
 
 % Adaptive sampling parameters
-Params.MaxRewardVector = repmat(Params.MaxReward, numel(Params.EffortVector),1);
-
+Params.UseRewardAdaptation          = false;
+% Params.MaxRewardVector = repmat(Params.MaxReward, numel(Params.EffortVector),1);
+% Params.RewardAdaptation = [Params.ProbeEffortTarget.EffortVector;...
+%     floor(linspace(1,Params.MaxReward,numel(Params.EffortVector )))]';
 
 %% Effort
-Params.MaxForce                     = 20; % Measured max force per subject [N]
+Params.MaxForce                     = 30; % Measured max force per subject [N]
 
 % Vertical bar outline
 b5.BarOutline_color     = [0 0 1 1];
@@ -259,12 +260,13 @@ end
 % Go/NoGo
 b5.ProbeTarget_color = [1 1 0 1];
 b5.ProbeTarget_scale = [b5.BarOutline_scale(1), 2];
-b5.ProbeTarget_pos = Params.WsCenter - [0, b5.Frame_scale(2)/2];
+b5.ProbeTarget_pos = Params.WsCenter ;
+b5.ProbeTarget_draw = 3;
 
 Params.EffortVector = [0.1:0.1:1];
 
 %% Pass
-Params.NoGoTap    = 0.12 * (Params.MaxForce/50) * b5.Frame_scale(2)/2;
+Params.NoGoTap    = 0.08 * (20/50) * b5.Frame_scale(2)/2;
 
 b5.Pass_color     = [0 0 1 1];
 b5.Pass_scale     = b5.BarOutline_scale .* [1, 0.1];

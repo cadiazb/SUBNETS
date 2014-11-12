@@ -22,7 +22,7 @@ function [Params, dat, b5] = UpdateCursorOnLine(Params, dat, b5)
     newForce(1) =  sign(itmp(3))*(log(1+abs(itmp(3))/tao)*1/log(1+1/tao));
     
 
-    newPosX = min((b5.Frame_scale(1))*newForce(1) + b5.StartTarget_pos(1), ...
+    newPosX = min((b5.Frame_scale(1))*newForce(1)*50/Params.MaxForce + b5.StartTarget_pos(1), ...
         b5.Frame_scale(1) + b5.StartTarget_pos(1));
 %     try
 %         newPosY = min(dat.EffortLine(2,find(dat.EffortLine(1,:) >= newPosX,1,'first')), Params.WsBounds(2,2));
