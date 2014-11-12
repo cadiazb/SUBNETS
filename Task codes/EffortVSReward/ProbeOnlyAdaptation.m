@@ -12,15 +12,10 @@ DRAW_BOTH     = 3;
 % [Params, dat, b5] = UpdateCursor(Params, dat, b5); % this syncs b5 twice
 
 %% Generate a StartTarget position
-b5.StartTarget_pos = Params.WsCenter;
+b5.StartTarget_pos = Params.WsCenter - [0, b5.Frame_scale(2)/2]; 
 
-%% Set initial timer bare length
-b5.TimerBar_scale(1) = b5.Frame_scale(1);
-
-b5.TimerBar_pos(1) = Params.WsCenter(1) - b5.Frame_scale(1)/2 + ...
-                        b5.TimerBar_scale(1)/2;
 %% Draw Probe effort from vector
-
+% Draw reward from 'Training vector' or from Adaptive Vector
 if ~isempty(Params.InitialSampling)
     dat.ProbeEffort = NaN;
     while isnan(dat.ProbeEffort)
@@ -30,31 +25,11 @@ else
     dat.ProbeEffort         = DrawFromVec(Params.EffortSampleSpace);
 end
 
+%% Generate ProbeTarget and Reference Target positions
+b5.ProbeTarget_pos 		= b5.StartTarget_pos;
 
-dat.ReferenceEffort     = Params.ReferenceTarget.EffortReference * ...
-                                Params.MaxForce * (b5.Frame_scale(2)/2)/50;
-
-dat.ProbeEffortUp       = 1; % Probe allways up
-
-%% Generate ProbeEffortTarget and Reference Target positions
-b5.ProbeEffortTarget_pos 		= b5.StartTarget_pos;
-b5.ReferenceTarget_pos          = b5.StartTarget_pos;
-
-
-b5.ProbeEffortTarget_pos(2) 	= b5.ProbeEffortTarget_pos(2) - ...
-                                (-1)^dat.ProbeEffortUp...
-                                        * dat.ProbeEffort;
-
-b5.ReferenceTarget_pos(2)       = b5.ReferenceTarget_pos(2) + ...
-                                (-1)^dat.ProbeEffortUp...
-                                        * dat.ReferenceEffort;
-
-b5.ProbeEffortAxis_pos  = b5.ProbeEffortTarget_pos;
-b5.ReferenceAxis_pos    = b5.ReferenceTarget_pos;
-%% Update target width according
-
- b5.ProbeEffortTarget_scale             = [dat.ProbeEffort + 20, 1];
- b5.ReferenceTarget_scale               = [dat.ReferenceEffort + 20, 1];
+b5.ProbeTarget_pos(2) 	= b5.ProbeTarget_pos(2) + ...
+                                        dat.ProbeEffort;
          
 
 %% Generate the amounts of reward
@@ -72,20 +47,12 @@ dat.ProbeReward = ...
 end
 %% Set reward strings
 b5.ProbeRewardString_pos(2) = ...
-    b5.ProbeEffortTarget_pos(2) - (-1)^dat.ProbeEffortUp * 40;
+    b5.ProbeTarget_pos(2) + 40;
 b5.ProbeRewardString_pos(1) = ...
-    b5.ProbeEffortTarget_pos(1) - 25;
-
-b5.ReferenceRewardString_pos(2) = ...
-    b5.ReferenceTarget_pos(2) + (-1)^dat.ProbeEffortUp * 40;
-b5.ReferenceRewardString_pos(1) = ...
-    b5.ReferenceTarget_pos(1);
+    b5.ProbeTarget_pos(1) - 25;
 
 tmpStringZeros = 12 - numel(double(sprintf('%.1f cents', dat.ProbeReward)));
 b5.ProbeRewardString_v = [double(sprintf('%.1f cents', dat.ProbeReward)) zeros(1,tmpStringZeros)]';
-
-tmpStringZeros = 12 - numel(double(sprintf('%.1f cents', dat.ReferenceReward)));
-b5.ReferenceRewardString_v = [double(sprintf('%.1f cents', dat.ReferenceReward)) zeros(1,tmpStringZeros)]';
 
 fprintf('Probe Effort \t\t%d\n',dat.ProbeEffort);
 fprintf('Probe reward \t\t%d\n',dat.ProbeReward);
@@ -99,7 +66,7 @@ b5.ReferenceEffortString_v  = [double(sprintf('%02d Lb',...
     round(dat.ReferenceEffort / ((b5.Frame_scale(2)/2)/50))...
     )) zeros(1,27)]';
 
-b5.ProbeEffortString_pos        = b5.ProbeEffortTarget_pos + [-15, 2];
+b5.ProbeEffortString_pos        = b5.ProbeTarget_pos + [-15, 2];
 b5.ReferenceEffortString_pos    = b5.ReferenceTarget_pos + [-15, -2];
 
 
@@ -117,7 +84,7 @@ b5.StartTarget_draw = DRAW_NONE;
 b5.StartAxis_draw = DRAW_NONE;
 b5.Frame_draw = DRAW_NONE;
 
-b5.ProbeEffortTarget_draw 	= DRAW_NONE;
+b5.ProbeTarget_draw 	= DRAW_NONE;
 b5.ProbeEffortAxis_draw = DRAW_NONE; 
 b5.ProbeEffortString_draw = DRAW_NONE; 
 b5.ProbeRewardString_draw = DRAW_NONE;
@@ -183,7 +150,7 @@ if ~dat.OutcomeID
 %     b5.ReferenceAxis_draw = DRAW_BOTH;
 %     b5.ReferenceEffortString_draw = DRAW_BOTH;
     
-    b5.ProbeEffortTarget_draw 	= DRAW_BOTH;
+    b5.ProbeTarget_draw 	= DRAW_BOTH;
     b5.ProbeEffortAxis_draw = DRAW_BOTH; 
     b5.ProbeEffortString_draw = DRAW_BOTH;
     b5.ProbeRewardString_draw = DRAW_BOTH;
@@ -219,8 +186,8 @@ if ~dat.OutcomeID
         
 %         if (b5.time_o - t_start)>b5.PairTone_duration/32
 % %             b5.CheatTarget_draw = DRAW_NONE;
-%             b5.ProbeEffortTarget_draw 	= DRAW_NONE;
-%             b5.ProbeEffortTarget_draw 	= DRAW_BOTH;
+%             b5.ProbeTarget_draw 	= DRAW_NONE;
+%             b5.ProbeTarget_draw 	= DRAW_BOTH;
 %         end
         % update hand
         [Params, dat, b5] = UpdateCursor(Params, dat, b5); % syncs b5 twice
@@ -228,8 +195,8 @@ if ~dat.OutcomeID
 end
 % if dat.RewardedTargetID == dat.ICMS.TargetID
 %     b5.CheatTarget_draw = DRAW_NONE;
-%     b5.ProbeEffortTarget_draw 	= DRAW_NONE;
-%     b5.ProbeEffortTarget_draw 	= DRAW_BOTH;
+%     b5.ProbeTarget_draw 	= DRAW_NONE;
+%     b5.ProbeTarget_draw 	= DRAW_BOTH;
 % end
 
 
@@ -260,11 +227,11 @@ if ~dat.OutcomeID
         
 		% Check for acquisition of a reach target
 
-        posProbeOk 	= EffortInBox(pos, b5.StartTarget_pos, b5.ProbeEffortTarget_pos, b5.ProbeEffortTarget_scale);
+        posProbeOk 	= EffortInBox(pos, b5.StartTarget_pos, b5.ProbeTarget_pos, b5.ProbeTarget_scale);
         posRefOk 	= EffortInBox(pos, b5.StartTarget_pos, b5.ReferenceTarget_pos, b5.ReferenceTarget_scale);
 
 
-%         intentionProbe 	= EffortInBox(pos, b5.StartTarget_pos, b5.ProbeEffortTarget_pos/2, b5.ProbeEffortTarget_scale);
+%         intentionProbe 	= EffortInBox(pos, b5.StartTarget_pos, b5.ProbeTarget_pos/2, b5.ProbeTarget_scale);
 %         intentionRef 	= EffortInBox(pos, b5.StartTarget_pos, b5.ReferenceTarget_pos/2, b5.ReferenceTarget_scale);
 
 
@@ -364,7 +331,7 @@ b5.StartTarget_draw = DRAW_NONE;
 b5.StartAxis_draw = DRAW_NONE;
 b5.Frame_draw = DRAW_NONE;
 
-% b5.ProbeEffortTarget_draw 	= DRAW_NONE;
+% b5.ProbeTarget_draw 	= DRAW_NONE;
 b5.ProbeEffortAxis_draw = DRAW_NONE; 
 % b5.ProbeEffortString_draw = DRAW_NONE; 
 % b5.ProbeRewardString_draw = DRAW_NONE;

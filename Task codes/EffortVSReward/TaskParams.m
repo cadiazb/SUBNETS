@@ -48,6 +48,10 @@ bmi5_cmd('make text TotalPoints 10');
 bmi5_cmd('make text Reward 9');
 bmi5_cmd('make text RewardFeedback 9');
 bmi5_cmd('make text PassReward 9');
+bmi5_cmd('make text PassString 5');
+
+% Go/NoGo
+bmi5_cmd('make square ProbeTarget');
 
 eval(bmi5_cmd('mmap structure'));
 
@@ -160,7 +164,7 @@ Params.KeyboardAtBlockEnd 		= true;
 Params.TimeoutReachStartTarget  = 0.1; % max time to acquire start target
 Params.StartTarget.Hold       	= 0.1;
 % Instructed delay
-Params.ReachDelayRange       	= [0.5 0.5];	% draw from this interval
+Params.ReachDelay               = 1.2;	% draw from this interval
 % Reaching phase
 Params.ReactionTimeDelay      	= 2; % Max time to initiate movement
 
@@ -171,7 +175,7 @@ Params.TimeoutReachTarget       = 1.3; % max time to reach reaching target
 Params.MovementWindow           = 0.3; % For effort line, time to move [s]
 
 % Other
-Params.TrialLength              = 3;   % Fixed trial length [s]
+Params.TrialLength              = 4;   % Fixed trial length [s]
 Params.InterTrialDelay 			= 0.5;  % delay between each trial [sec]
 
 %%  WORKSPACE, in mm
@@ -200,7 +204,7 @@ Params.StartTarget.Win  		= 20; % radius
 Params.StartTarget.Locations 	= {Params.WsCenter + [-40 -40]}; % cell array of locations
 
 %% Rewards
-Params.UseRewardAdaptation          = true;
+Params.UseRewardAdaptation          = false;
 Params.MaxReward    = 24;
 Params.PassReward   = 1;
 Params.RewardsVector = [2:2:Params.MaxReward];
@@ -211,18 +215,22 @@ b5.Reward_color = [0 0 0 1];
 b5.Reward_pos = Params.WsCenter + [-25, b5.Frame_scale(2)/2 + 10];
 
 b5.RewardCircle_color = [0 1 0 0.75];
-b5.RewardCircle_scale = [20 20];
+b5.RewardCircle_scale = [30 30];
 
 b5.RewardCircleFeedback_color = [0 1 0 0.75];
-b5.RewardCircleFeedback_scale = [20 20];
-b5.RewardCircleFeedback_pos = Params.WsCenter - [40, b5.Frame_scale(2)/2];
+b5.RewardCircleFeedback_scale = [30 30];
+b5.RewardCircleFeedback_pos = Params.WsCenter - [60, b5.Frame_scale(2)/2];
 
 b5.RewardFeedback_color = [0 0 0 0.75];
-b5.RewardFeedback_pos = b5.RewardCircleFeedback_pos;
+b5.RewardFeedback_pos = b5.RewardCircleFeedback_pos - [45,0];
 
 b5.PointsBox_color = [0 1 0 0.75];
-b5.PointsBox_scale = [30 30];
+b5.PointsBox_scale = [40 40];
 b5.PointsBox_pos = Params.WsBounds(1,:);
+
+% Adaptive sampling parameters
+Params.MaxRewardVector = repmat(Params.MaxReward, numel(Params.EffortVector),1);
+
 
 %% Effort
 Params.MaxForce                     = 20; % Measured max force per subject [N]
@@ -248,25 +256,36 @@ for ii = 1:Params.NumEffortTicks
         Params.WsCenter(2) - b5.BarOutline_scale(2)/2 + ii*b5.BarOutline_scale(2)/(1+ Params.NumEffortTicks);
 end
 
+% Go/NoGo
+b5.ProbeTarget_color = [1 1 0 1];
+b5.ProbeTarget_scale = [b5.BarOutline_scale(1), 2];
+b5.ProbeTarget_pos = Params.WsCenter - [0, b5.Frame_scale(2)/2];
+
+Params.EffortVector = [0.1:0.1:1];
+
 %% Pass
-Params.NoGoTap    = 0.2 * (Params.MaxForce/50) * b5.Frame_scale(2)/2;
+Params.NoGoTap    = 0.12 * (Params.MaxForce/50) * b5.Frame_scale(2)/2;
 
 b5.Pass_color     = [0 0 1 1];
-b5.Pass_scale     = b5.BarOutline_scale .* [1, 0.2];
+b5.Pass_scale     = b5.BarOutline_scale .* [1, 0.1];
 b5.Pass_pos       = Params.WsCenter - [0,b5.Frame_scale(2)/2 + b5.Pass_scale(2)/2] - ...
-                       [0, Params.NoGoTap];
+                       [0, 30];
                    
 b5.PassRewardCircle_color = [0 1 0 0.75];
-b5.PassRewardCircle_scale = [20 20];
-b5.PassRewardCircle_pos = b5.Pass_pos - [40, 0];
+b5.PassRewardCircle_scale = [30 30];
+b5.PassRewardCircle_pos = b5.Pass_pos - [60, 0];
 
 b5.PassReward_color = [0 0 0 0.75];
-b5.PassReward_pos = b5.PassRewardCircle_pos;
-b5.PassReward_v = [double(sprintf('%.0f cent', Params.PassReward)) 0 0 0]';
+b5.PassReward_pos = b5.PassRewardCircle_pos - [55, 0];
+b5.PassReward_v = [double(sprintf('%.0f ¢', Params.PassReward)) 0 0 0 0 0 0]';
+
+b5.PassString_v = [double('Pass') 0]';
+b5.PassString_pos = b5.Pass_pos - [15, 0];
+b5.PassString_color = [1 1 1 1];
 %% Total Points String
 b5.TotalPoints_color        = [0 0 0 1];
-b5.TotalPoints_pos          = Params.WsBounds(1,:);
-b5.TotalPoints_v            = [double(sprintf('%.01f cents',0)) zeros(1,numel(b5.TotalPoints_v) - 9)]';
+b5.TotalPoints_pos          = b5.PointsBox_pos - [120, 0];
+b5.TotalPoints_v            = [double(sprintf('%.01f ',0)) 162 zeros(1,numel(b5.TotalPoints_v) - 5)]';
 
 %% TONES
 b5.GoTone_freq 				= 1000;  % (Hz)
