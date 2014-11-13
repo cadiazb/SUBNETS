@@ -6,7 +6,6 @@ function [Params, dat, b5] = UpdateCursorOnLine(Params, dat, b5)
     %% Retreive readings form Labjack
     n = 250; %number of samples read from labjack
     Vin = 5; % Power supply [V]
-    maxLoad = 50; % Load cell max [N]
     ZeroBalance = Vin*2e-3*0.002;
     tao = 5;
     itmp = zeros(size(b5.isometric_sensors_o,1), 1);
@@ -21,18 +20,16 @@ function [Params, dat, b5] = UpdateCursorOnLine(Params, dat, b5)
     newForce(2) = -sign(itmp(1))*(log(1+abs(itmp(1))/tao)*1/log(1+1/tao));
     newForce(1) =  sign(itmp(3))*(log(1+abs(itmp(3))/tao)*1/log(1+1/tao));
     
+    if newForce(1) >= 0
+        newPosX = min((b5.Frame_scale(1))*newForce(1)*(Params.LoadCellMax/Params.MaxForce) + b5.StartTarget_pos(1), ...
+            b5.Frame_scale(1) + b5.StartTarget_pos(1));
+    else
+        newPosX = min((b5.Frame_scale(1))*newForce(1)*(Params.PassSensitivity/Params.MaxForce) + b5.StartTarget_pos(1), ...
+            b5.Frame_scale(1) + b5.StartTarget_pos(1));
+    end
 
-    newPosX = min((b5.Frame_scale(1))*newForce(1)*50/Params.MaxForce + b5.StartTarget_pos(1), ...
-        b5.Frame_scale(1) + b5.StartTarget_pos(1));
-%     try
-%         newPosY = min(dat.EffortLine(2,find(dat.EffortLine(1,:) >= newPosX,1,'first')), Params.WsBounds(2,2));
-%     catch
-        newPosY = min((b5.Frame_scale(2))*newForce(2) + b5.StartTarget_pos(2), ...
+    newPosY = min((b5.Frame_scale(2))*newForce(2) + b5.StartTarget_pos(2), ...
         b5.Frame_scale(2) + b5.StartTarget_pos(2));
-%     end
-
-
-    
     %% Update cursor position
     if abs(newPosX - b5.Cursor_pos(1)) > ZeroBalance
         b5.Cursor_pos(1) = newPosX;

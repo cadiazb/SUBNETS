@@ -15,7 +15,7 @@ b5.StartTarget_pos = Params.WsCenter - [0, b5.Frame_scale(2)/2];
 %% Draw rewards from vector
 dat.ProbeReward = DrawFromVec(Params.RewardSampleSpace);
 
-tmpString = sprintf('%d Â¢',Params.RewardsVector(dat.ProbeReward));
+tmpString = sprintf('%d ¢',Params.RewardsVector(dat.ProbeReward));
 tmpStringZeros = numel(b5.Reward_v) - numel(double(tmpString));
 b5.Reward_v = [double(tmpString) zeros(1,tmpStringZeros)]';
 clear tmpStringZeros tmpString
@@ -25,7 +25,7 @@ b5.RewardCircle_pos = Params.WsCenter;
 b5.Reward_pos = Params.WsCenter - [15, 0];
 b5.RewardCircleFeedback_pos = Params.WsCenter - [60, b5.Frame_scale(2)/2];
 b5.RewardFeedback_pos = b5.RewardCircleFeedback_pos - [55,0];
-b5.RewardFeedback_v = [double('0.0 Â¢') zeros(1,numel(b5.RewardFeedback_v) - 5)]';
+b5.RewardFeedback_v = [double('0.0 ¢') zeros(1,numel(b5.RewardFeedback_v) - 5)]';
 b5.PassRewardCircle_pos = b5.Pass_pos - [60, 0];
 b5.PassReward_pos = b5.PassRewardCircle_pos - [55, 0];
 
@@ -104,7 +104,6 @@ if ~dat.OutcomeID
     
     b5.RewardCircle_draw = DRAW_BOTH;
     b5.Reward_draw = DRAW_BOTH;
-%     [Params, b5] = blinkShape(Params, b5, {'RewardCircle', 'Reward'}, [2, 2], Params.ReachDelay);
 
     done = false;
 	
@@ -124,8 +123,6 @@ if ~dat.OutcomeID
         [Params, dat, b5] = UpdateCursorOnLine(Params, dat, b5); % syncs b5 twice
     end
 end
-
-
 %% 3. REACHING PHASE (reach to target and hold)
 if ~dat.OutcomeID
     
@@ -143,7 +140,6 @@ if ~dat.OutcomeID
     b5.RewardFeedback_draw          = DRAW_BOTH;
     b5.PassReward_draw              = DRAW_BOTH;
     b5.PassString_draw              = DRAW_BOTH;
-    
     
     b5.GoTone_play_io = 1;
     b5.FillingEffort_scale(2) = 0;
@@ -167,7 +163,7 @@ if ~dat.OutcomeID
         b5.RewardCircleFeedback_pos = Params.WsCenter - [60, b5.Frame_scale(2)/2] + ...
                     [0, b5.FillingEffort_scale(2)];
         b5.RewardFeedback_pos(2) = b5.RewardCircleFeedback_pos(2);
-        tmpString = sprintf('%.01f Â¢', Params.RewardsVector(dat.ProbeReward) * ...
+        tmpString = sprintf('%.01f ¢', Params.RewardsVector(dat.ProbeReward) * ...
             (b5.FillingEffort_scale(2)/b5.Frame_scale(2)));
         b5.RewardFeedback_v = [double(tmpString) zeros(1, numel(b5.RewardFeedback_v) - numel(double(tmpString)))]';
         b5 = bmi5_mmap(b5);
@@ -248,7 +244,6 @@ b5.PassString_draw              = DRAW_NONE;
 
 
 if dat.OutcomeID == 0
-%     if floor(0.05+b5.FillingEffort_scale(2)/b5.Frame_scale(2)*5)
     if strcmp(dat.TrialChoice, 'Probe Effort')
         tmpTrialPoints = Params.RewardsVector(dat.ProbeReward) * ...
             (b5.FillingEffort_scale(2)/b5.Frame_scale(2));
@@ -259,7 +254,7 @@ if dat.OutcomeID == 0
     
     dat.TotalPoints = dat.TotalPoints + tmpTrialPoints;
     
-    tmpString = sprintf('%0.1f Â¢',dat.TotalPoints);
+    tmpString = sprintf('%0.1f ¢',dat.TotalPoints);
     tmpStringZeros = numel(b5.TotalPoints_v) - numel(double(tmpString));
     b5.TotalPoints_v = [double(tmpString) zeros(1,tmpStringZeros)]';
 
@@ -270,18 +265,12 @@ if dat.OutcomeID == 0
     b5.RewardTone_play_io = 1;
     Params.RewardSampleSpace(find(Params.RewardSampleSpace == dat.ProbeReward, 1)) = [];
 else
-    tmpString = sprintf('%0.1f Â¢',dat.TotalPoints);
+    tmpString = sprintf('%0.1f ¢',dat.TotalPoints);
     tmpStringZeros = numel(b5.TotalPoints_v) - numel(double(tmpString));
     b5.TotalPoints_v = [double(tmpString) zeros(1,tmpStringZeros)]';  
 end
 
 b5 = bmi5_mmap(b5);
-
-if Params.UseRewardAdaptation
-    [Params, dat] = CalculateAdaptiveVariable(Params, dat, b5);
-end
-
-
 
 % Pause at end of trials
 if Params.FixedTrialLength
@@ -298,7 +287,6 @@ end
 
 b5.PointsBox_draw               = DRAW_NONE;
 b5.TotalPoints_draw             = DRAW_NONE;
-
 
 %%% XXX TODO: NEED WAY TO LOG (MORE) INTERESTING TRIAL EVENTS
 

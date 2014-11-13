@@ -226,9 +226,11 @@ for itrial = startTrial : Params.NumTrials
 		[Params, Data(trial), b5] = ...
         RewardAdaptive( Params, Data(trial), b5 );
     case 2
+        Params.UseRewardAdaptation          = true;
 		[Params, Data(trial), b5] = ...
-        ProbeOnlyRewardAdaptive( Params, Data(trial), b5 );
+        ProbeOnlyAdaptation( Params, Data(trial), b5 );
     case 3
+        Params.UseRewardAdaptation          = false;
 		[Params, Data(trial), b5] = ...
         VerticalFillingBar( Params, Data(trial), b5 );
 	otherwise
@@ -280,6 +282,10 @@ NerrorsP = sum(errlistP~=0);
 NcorrectP = 10 - NerrorsP;
     
     Params.TempPerf=NcorrectP/10;
+        end
+    %% Caculate adaptive reward
+    if Params.UseRewardAdaptation
+        [Params] = CalculateAdaptiveVariable(Params, Data, trial);
     end
     
     %% Save Data

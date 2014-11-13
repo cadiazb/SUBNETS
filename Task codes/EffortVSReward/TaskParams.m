@@ -227,13 +227,8 @@ b5.PointsBox_color = [0 1 0 0.75];
 b5.PointsBox_scale = [40 40];
 b5.PointsBox_pos = Params.WsBounds(1,:);
 
-% Adaptive sampling parameters
-Params.UseRewardAdaptation          = false;
-% Params.MaxRewardVector = repmat(Params.MaxReward, numel(Params.EffortVector),1);
-% Params.RewardAdaptation = [Params.ProbeEffortTarget.EffortVector;...
-%     floor(linspace(1,Params.MaxReward,numel(Params.EffortVector )))]';
-
 %% Effort
+Params.LoadCellMax                  = 50;
 Params.MaxForce                     = 30; % Measured max force per subject [N]
 
 % Vertical bar outline
@@ -266,6 +261,7 @@ b5.ProbeTarget_draw = 3;
 Params.EffortVector = [0.1:0.1:1];
 
 %% Pass
+Params.PassSensitivity  = 20;
 Params.NoGoTap    = 0.08 * (20/50) * b5.Frame_scale(2)/2;
 
 b5.Pass_color     = [0 0 1 1];
@@ -284,6 +280,27 @@ b5.PassReward_v = [double(sprintf('%.0f ¢', Params.PassReward)) 0 0 0 0 0 0]';
 b5.PassString_v = [double('Pass') 0]';
 b5.PassString_pos = b5.Pass_pos - [15, 0];
 b5.PassString_color = [1 1 1 1];
+
+%% Adaptive sampling parameters
+Params.UseRewardAdaptation          = false;
+Params.MaxRewardVector = repmat(Params.MaxReward, numel(Params.EffortVector),1);
+Params.RewardAdaptation = [Params.EffortVector;...
+    floor(linspace(1,Params.MaxReward,numel(Params.EffortVector )))]';
+Params.Npre = 20; % Max number of samples per probe before increasing MaxReward
+Params.RewardRange = zeros(1,numel(Params.EffortVector));
+Params.RewardGradients = 10;
+Params.InitialSampling      = Params.EffortVector';
+Params.InitialSampling(:, 2:(Params.RewardGradients+1)) = ...
+    repmat(Params.MaxRewardVector, 1,numel(1:Params.RewardGradients)) .* repmat([1:Params.RewardGradients]/Params.RewardGradients, numel(Params.MaxRewardVector), 1);
+Params.InitialSampling = repmat(Params.InitialSampling,1,1, Params.Npre);
+
+for ii = 1:numel(Params.EffortVector)
+    Params.ProbeModels.(['Effort' num2str(ii)]) = [];
+end
+
+% Sampling space for the rest of the experiment
+Params.EffortSampleSpace    = repmat(Params.EffortVector, ...
+    1, ceil(Params.NumCorrectTrials/size(Params.EffortVector,2)));
 %% Total Points String
 b5.TotalPoints_color        = [0 0 0 1];
 b5.TotalPoints_pos          = b5.PointsBox_pos - [120, 0];
