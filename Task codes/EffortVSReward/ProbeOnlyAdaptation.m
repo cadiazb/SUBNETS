@@ -41,7 +41,7 @@ dat.ProbeReward = ...
     dat.ProbeEffort, 2);
 end
 
-tmpString = sprintf('%.1f ¢', dat.ProbeReward);
+tmpString = sprintf('%.1f Â¢', dat.ProbeReward);
 tmpStringZeros = numel(b5.Reward_v) - numel(double(tmpString));
 b5.Reward_v = [double(tmpString) zeros(1,tmpStringZeros)]';
 clear tmpString tmpStringZeros
@@ -115,7 +115,7 @@ while ~done
     end
     
     % update hand
-    [Params, dat, b5] = UpdateCursor(Params, dat, b5); % syncs b5 twice
+    [Params, dat, b5] = UpdateCursorOnLine(Params, dat, b5); % syncs b5 twice
 
 end
 
@@ -129,7 +129,7 @@ if ~dat.OutcomeID
 
     done = false;
 
-    while ((b5.time_o - t_start) < dat.ReachDelay) && ~done
+    while ((b5.time_o - t_start) < Params.ReachDelay) && ~done
 
         pos = b5.Cursor_pos;
 
@@ -142,24 +142,25 @@ if ~dat.OutcomeID
         end
         
         % update hand
-        [Params, dat, b5] = UpdateCursor(Params, dat, b5); % syncs b5 twice
+        [Params, dat, b5] = UpdateCursorOnLine(Params, dat, b5); % syncs b5 twice
     end
 end
 %% 3. REACHING PHASE (reach to target and hold)
 if ~dat.OutcomeID
     
     [Params, b5] = moveShape(Params, b5, {'RewardCircle', 'Reward'}, ...
-        [b5.RewardCircle_pos;b5.Reward_pos] + [-60, 0; -60, 0], [0 0;-15 0],[0 0;-55 0]);
+        [b5.RewardCircle_pos;b5.RewardCircle_pos] + [-60, 0; -60, 0], [0 0;-15 0],[0 0;-55 0]);
     
-    b5.BarOutline_draw  = DRAW_BOTH;
-    b5.FillingEffort_draw  = DRAW_BOTH;
-    b5.Pass_draw            =DRAW_BOTH;
-    b5.PassRewardCircle_draw             = DRAW_BOTH;
+    b5.BarOutline_draw          = DRAW_BOTH;
+    b5.FillingEffort_draw       = DRAW_BOTH;
+    b5.Pass_draw                = DRAW_BOTH;
+    b5.PassRewardCircle_draw    = DRAW_BOTH;
+    b5.ProbeTarget_draw         = DRAW_BOTH;
     for ii = 1:Params.NumEffortTicks
         b5.(sprintf('effortTick%d_draw',ii))   = DRAW_BOTH;
     end
-    b5.PassReward_draw              = DRAW_BOTH;
-    b5.PassString_draw              = DRAW_BOTH;
+    b5.PassReward_draw          = DRAW_BOTH;
+    b5.PassString_draw          = DRAW_BOTH;
     
     b5.GoTone_play_io = 1;
     b5.FillingEffort_scale(2) = 0;
@@ -172,24 +173,18 @@ if ~dat.OutcomeID
 
 	t_start = b5.time_o;
 	while ~done
-        [Params, dat, b5] = UpdateCursor(Params, dat, b5); % syncs b5 twice
+        [Params, dat, b5] = UpdateCursorOnLine(Params, dat, b5); % syncs b5 twice
         pos = b5.Cursor_pos;
         dat.FinalCursorPos = [max(dat.FinalCursorPos(1), pos(1)), 0];
         b5.FillingEffort_scale = [b5.BarOutline_scale(1),...
             max(dat.FinalCursorPos(1)-b5.StartTarget_pos(1),0)];
         b5.FillingEffort_pos       = Params.WsCenter - [0, b5.Frame_scale(2)/2] + ...
                     [0, b5.FillingEffort_scale(2)/2];
-        b5.RewardCircleFeedback_pos = Params.WsCenter - [60, b5.Frame_scale(2)/2] + ...
-                    [0, b5.FillingEffort_scale(2)];
-        b5.RewardFeedback_pos(2) = b5.RewardCircleFeedback_pos(2);
-        tmpString = sprintf('%.01f ¢', Params.RewardsVector(dat.ProbeReward) * ...
-            (b5.FillingEffort_scale(2)/b5.Frame_scale(2)));
-        b5.RewardFeedback_v = [double(tmpString) zeros(1, numel(b5.RewardFeedback_v) - numel(double(tmpString)))]';
         b5 = bmi5_mmap(b5);
         
 		% Check for acquisition of a reach target
         posOk = TrialInBox(pos,b5.StartTarget_pos,Params.StartTarget.Win);
-        posProbeOk 	= EffortInBox(pos, b5.StartTarget_pos, b5.ProbeTarget_pos);
+        posProbeOk 	= dat.ProbeEffort <=(b5.FillingEffort_scale(2) / b5.BarOutline_scale(2));
         
         if ~posOk && isempty(dat.ReactionTime)
             dat.ReactionTime = b5.time_o - t_start;
@@ -284,7 +279,7 @@ if dat.OutcomeID == 0
     
     dat.TotalPoints = dat.TotalPoints + tmpTrialPoints;
     
-    tmpString = sprintf('%0.1f ¢',dat.TotalPoints);
+    tmpString = sprintf('%0.1f Â¢',dat.TotalPoints);
     tmpStringZeros = numel(b5.TotalPoints_v) - numel(double(tmpString));
     b5.TotalPoints_v = [double(tmpString) zeros(1,tmpStringZeros)]';
     
@@ -305,7 +300,7 @@ if dat.OutcomeID == 0
     end
 
 else
-    tmpString = sprintf('%0.1f ¢',dat.TotalPoints);
+    tmpString = sprintf('%0.1f Â¢',dat.TotalPoints);
     tmpStringZeros = numel(b5.TotalPoints_v) - numel(double(tmpString));
     b5.TotalPoints_v = [double(tmpString) zeros(1,tmpStringZeros)]';
 end

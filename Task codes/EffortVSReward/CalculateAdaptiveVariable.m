@@ -31,7 +31,7 @@ if isempty(Params.InitialSampling)
     end
 
     % Adaptation
-    tmpEffortIndex = find(Params.ProbeEffortTarget.EffortVector == dat.ProbeEffort,1,'first');
+    tmpEffortIndex = find(Params.EffortVector == dat.ProbeEffort,1,'first');
     if isempty(Params.ProbeModels.(['Effort' num2str(tmpEffortIndex)]))
         [tmpReward, Params.ProbeModels.(['Effort' num2str(tmpEffortIndex)])] = ...
             AdaptiveSampling([Data(iTrialSucces).ProbeReward],tmpChoseProbe);
@@ -40,5 +40,5 @@ if isempty(Params.InitialSampling)
             AdaptiveSampling([Data(iTrialSucces).ProbeReward],tmpChoseProbe, Params.ProbeModels.(['Effort' num2str(tmpEffortIndex)]));
     end
     Params.RewardAdaptation(Params.RewardAdaptation(:,1) == ...
-        dat.ProbeEffort, 2) = floor(10*tmpReward)/10;
+        dat.ProbeEffort, 2) = max(floor(10*tmpReward)/10,Params.PassReward);
 end

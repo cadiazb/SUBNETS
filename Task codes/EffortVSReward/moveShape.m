@@ -46,7 +46,7 @@ while iPath <= size(shapes.(shapeName{ii}).posPath,2)
     b5 = bmi5_mmap(b5);
     if (b5.time_o - tPrevStep) >= tStep
         for ii = 1:numel(shapeName)
-            b5.([shapeName{ii} '_pos']) = shapes.(shapeName{ii}).posPath(:,iPath);
+            b5.([shapeName{ii} '_pos']) = shapes.(shapeName{ii}).posPath(:,iPath)';
         end
         tPrevStep = b5.time_o;
         iPath = iPath + 1;

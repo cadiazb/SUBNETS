@@ -133,7 +133,7 @@ Params.NumCorrectTrials         = 400;
 %%  Trial Type Function Selection
 % do not modify
 
-Params.TrialTypeProbs 			= [0 0 1];
+Params.TrialTypeProbs 			= [0 1 0];
 Params.TrialTypeProbs           = Params.TrialTypeProbs/sum(Params.TrialTypeProbs);
 
 %% BLOCKS OF TRIALS
@@ -256,13 +256,12 @@ end
 b5.ProbeTarget_color = [1 1 0 1];
 b5.ProbeTarget_scale = [b5.BarOutline_scale(1), 2];
 b5.ProbeTarget_pos = Params.WsCenter ;
-b5.ProbeTarget_draw = 3;
 
-Params.EffortVector = [0.1:0.1:1];
+Params.EffortVector = [0.1:0.4:1];
 
 %% Pass
 Params.PassSensitivity  = 20;
-Params.NoGoTap    = 0.08 * (20/50) * b5.Frame_scale(2)/2;
+Params.NoGoTap    = 0.025 * b5.Frame_scale(2);
 
 b5.Pass_color     = [0 0 1 1];
 b5.Pass_scale     = b5.BarOutline_scale .* [1, 0.1];
@@ -282,17 +281,18 @@ b5.PassString_pos = b5.Pass_pos - [15, 0];
 b5.PassString_color = [1 1 1 1];
 
 %% Adaptive sampling parameters
-Params.UseRewardAdaptation          = false;
-Params.MaxRewardVector = repmat(Params.MaxReward, numel(Params.EffortVector),1);
-Params.RewardAdaptation = [Params.EffortVector;...
-    floor(linspace(1,Params.MaxReward,numel(Params.EffortVector )))]';
-Params.Npre = 20; % Max number of samples per probe before increasing MaxReward
-Params.RewardRange = zeros(1,numel(Params.EffortVector));
-Params.RewardGradients = 10;
-Params.InitialSampling      = Params.EffortVector';
+Params.UseRewardAdaptation      = false;
+Params.MaxRewardVector          = repmat(Params.MaxReward, numel(Params.EffortVector),1);
+Params.RewardAdaptation         = [Params.EffortVector;...
+                                        floor(linspace(1,Params.MaxReward,numel(Params.EffortVector )))]';
+Params.Npre                     = 3; % Max number of samples per probe before increasing MaxReward
+Params.RewardRange              = zeros(1,numel(Params.EffortVector));
+Params.RewardGradients          = 10;
+Params.InitialSampling          = Params.EffortVector';
 Params.InitialSampling(:, 2:(Params.RewardGradients+1)) = ...
-    repmat(Params.MaxRewardVector, 1,numel(1:Params.RewardGradients)) .* repmat([1:Params.RewardGradients]/Params.RewardGradients, numel(Params.MaxRewardVector), 1);
-Params.InitialSampling = repmat(Params.InitialSampling,1,1, Params.Npre);
+                                        repmat(Params.MaxRewardVector, 1,numel(1:Params.RewardGradients)) .* ...
+                                        repmat([1:Params.RewardGradients]/Params.RewardGradients, numel(Params.MaxRewardVector), 1);
+Params.InitialSampling          = repmat(Params.InitialSampling,1,1, Params.Npre);
 
 for ii = 1:numel(Params.EffortVector)
     Params.ProbeModels.(['Effort' num2str(ii)]) = [];
