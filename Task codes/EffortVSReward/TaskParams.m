@@ -133,7 +133,7 @@ Params.NumCorrectTrials         = 400;
 %%  Trial Type Function Selection
 % do not modify
 
-Params.TrialTypeProbs 			= [0 0 1];
+Params.TrialTypeProbs 			= [0 1 0];
 Params.TrialTypeProbs           = Params.TrialTypeProbs/sum(Params.TrialTypeProbs);
 
 %% BLOCKS OF TRIALS
