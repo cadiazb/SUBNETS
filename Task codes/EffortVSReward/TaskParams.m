@@ -126,15 +126,44 @@ fprintf('BMI5 structure data will be stored to %s\n\n',fname);
 Params.BMI5FileName = fname;
 Params.SessionCount = ct;
 
-%% Set total number of trials and expected correct trials
-Params.NumTrials 				= 2000; % Choose a big number so task doesn't finish before hand
-Params.NumCorrectTrials         = 400;
-
 %%  Trial Type Function Selection
 % do not modify
+% 1. SubjectCallibration: Use this task to find max force for each subject
+% 2. Go/NoGo with reward adaptaion. file = ProbeOnlyAdaptation.m
+% 3. Continous reward. file = VerticalFillingBar.m
 
-Params.TrialTypeProbs 			= [0 0 1];
+tmpTrialOK = 0;
+tmpGetTrialType = 0;
+tmpDlgOpt.Position = [990   304   350   150];
+while ~tmpTrialOK && (tmpGetTrialType < 3)
+    tmpGetTrialType = tmpGetTrialType + 1;
+    [tmpTrialType, tmpTrialOK] = mylistdlg('PromptString', 'Select trial type', ...
+        'SelectionMode','single', 'ListString', ...
+        {'Subject Callibration', 'Go/NoGo', 'Continous Reward'},...
+        'Position', tmpDlgOpt.Position);
+end
+if ~tmpTrialOK
+    error('Could not get trial type')
+end
+switch tmpTrialType
+    case 1
+        Params.TrialTypeProbs 			= [1 0 0];
+    case 2
+        Params.TrialTypeProbs 			= [0 1 0];
+    case 3
+        Params.TrialTypeProbs 			= [0 0 1];
+end
 Params.TrialTypeProbs           = Params.TrialTypeProbs/sum(Params.TrialTypeProbs);
+
+clear tmpTrialOK tmpTrialType tmpDlgOpt
+
+%% Set total number of trials and expected correct trials
+Params.NumTrials 				= 2000; % Choose a big number so task doesn't finish before hand
+if Params.TrialTypeProbs(1)
+    Params.NumCorrectTrials         = 4;
+else
+    Params.NumCorrectTrials         = 230;
+end
 
 %% BLOCKS OF TRIALS
 % 1. "regular"/training trials  (2afc)
@@ -142,18 +171,18 @@ Params.TrialTypeProbs           = Params.TrialTypeProbs/sum(Params.TrialTypeProb
 % 3. psychometric-current-quest (2afc)
 % 4. psychometric-current-quest (yes/no)
 
-Params.BlockTypes = {
-'regular/training (2afc)'
-'basic psychometric-current (2afc)'
-'quest psychometric-current (2afc)'
-'quest psychometric-current (yes/no)'
-};
-Params.DoSequentialBlocks       = true; % 0 - Probabalistic; 1 - Sequential
-Params.BlockSequence            = [1 ]; % overflows to start
-Params.BlockProbs 				= [0 0 1 0]; % make sure these add to 1 exactly
-
-% this option forces the first block to be type-1 (irrespective of prob)
-Params.FirstBlockIsType1 		= false;
+% Params.BlockTypes = {
+% 'regular/training (2afc)'
+% 'basic psychometric-current (2afc)'
+% 'quest psychometric-current (2afc)'
+% 'quest psychometric-current (yes/no)'
+% };
+% Params.DoSequentialBlocks       = true; % 0 - Probabalistic; 1 - Sequential
+% Params.BlockSequence            = [1 ]; % overflows to start
+% Params.BlockProbs 				= [0 0 1 0]; % make sure these add to 1 exactly
+% 
+% % this option forces the first block to be type-1 (irrespective of prob)
+% Params.FirstBlockIsType1 		= false;
 
 % This triggers a keyboard at the end of a block so that paramters can
 % be adjusted (will also play an alarm to notify the operator)
@@ -207,17 +236,22 @@ Params.StartTarget.Locations 	= {Params.WsCenter + [-40 -40]}; % cell array of l
 Params.MaxReward    = 24;
 Params.PassReward   = 1;
 Params.RewardsVector = [2:2:Params.MaxReward];
-Params.RewardSampleSpace = repmat(1:numel(Params.RewardsVector), ...
+
+if ~Params.TrialTypeProbs(1)
+    Params.RewardSampleSpace = repmat(1:numel(Params.RewardsVector), ...
                             1, round(Params.NumCorrectTrials/numel(Params.RewardsVector)));
+else
+    Params.RewardSampleSpace = ones(1, Params.NumCorrectTrials);
+end
 
 b5.Reward_color = [0 0 0 1];
 b5.Reward_pos = Params.WsCenter + [-25, b5.Frame_scale(2)/2 + 10];
 
 b5.RewardCircle_color = [0 1 0 0.75];
-b5.RewardCircle_scale = [30 30];
+b5.RewardCircle_scale = [35 35];
 
 b5.RewardCircleFeedback_color = [0 1 0 0.75];
-b5.RewardCircleFeedback_scale = [30 30];
+b5.RewardCircleFeedback_scale = [35 35];
 b5.RewardCircleFeedback_pos = Params.WsCenter - [60, b5.Frame_scale(2)/2];
 
 b5.RewardFeedback_color = [0 0 0 0.75];
@@ -229,7 +263,19 @@ b5.PointsBox_pos = Params.WsBounds(1,:);
 
 %% Effort
 Params.LoadCellMax                  = 50;
-Params.MaxForce                     = 30; % Measured max force per subject [N]
+if Params.TrialTypeProbs(1)
+    Params.MaxForce                 = 50;
+else
+    tmpInput = {NaN};
+    tmpDlgOpt.Position = [990   304   200   150];
+    while isnan(str2double(tmpInput{1})) || (str2double(tmpInput{1}) < 20)
+        tmpInput = myinputdlg('Measured max force (>20N) =', 'Subject max force',...
+            1,{'30'}, tmpDlgOpt);
+    end
+    Params.MaxForce = ceil(str2double(tmpInput{1})); % Measured max force per subject [N]
+    
+    clear tmpInput tmpDlgOpt
+end
 
 % Vertical bar outline
 b5.BarOutline_color     = [0 0 1 1];
@@ -269,7 +315,7 @@ b5.Pass_pos       = Params.WsCenter - [0,b5.Frame_scale(2)/2 + b5.Pass_scale(2)/
                        [0, 30];
                    
 b5.PassRewardCircle_color = [0 1 0 0.75];
-b5.PassRewardCircle_scale = [30 30];
+b5.PassRewardCircle_scale = [35 35];
 b5.PassRewardCircle_pos = b5.Pass_pos - [60, 0];
 
 b5.PassReward_color = [0 0 0 0.75];
@@ -282,16 +328,16 @@ b5.PassString_color = [1 1 1 1];
 
 %% Adaptive sampling parameters
 Params.UseRewardAdaptation      = false;
-Params.MaxRewardVector          = repmat(Params.MaxReward, numel(Params.EffortVector),1);
+Params.MaxRewardVector          = floor(linspace(Params.PassReward+1,Params.MaxReward,numel(Params.EffortVector )))';
 Params.RewardAdaptation         = [Params.EffortVector;...
-                                        floor(linspace(1,Params.MaxReward,numel(Params.EffortVector )))]';
+                                        floor(linspace(Params.PassReward+1,Params.MaxReward,numel(Params.EffortVector )))]';
 Params.Npre                     = 3; % Max number of samples per probe before increasing MaxReward
 Params.RewardRange              = zeros(1,numel(Params.EffortVector));
 Params.RewardGradients          = 10;
 Params.InitialSampling          = Params.EffortVector';
 Params.InitialSampling(:, 2:(Params.RewardGradients+1)) = ...
-                                        repmat(Params.MaxRewardVector, 1,numel(1:Params.RewardGradients)) .* ...
-                                        repmat([1:Params.RewardGradients]/Params.RewardGradients, numel(Params.MaxRewardVector), 1);
+                repmat(Params.MaxRewardVector, 1,numel(1:Params.RewardGradients)) .* ...
+                repmat([1:Params.RewardGradients]/Params.RewardGradients, numel(Params.MaxRewardVector), 1);
 Params.InitialSampling          = repmat(Params.InitialSampling,1,1, Params.Npre);
 
 for ii = 1:numel(Params.EffortVector)

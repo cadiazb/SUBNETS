@@ -71,35 +71,35 @@ for itrial = startTrial : Params.NumTrials
     if trial == 1
     	Data(trial).BlockNum 	= 1;
     	Data(trial).TotalBlocks = 1;
-	    if Params.FirstBlockIsType1
-	        Data(trial).BlockType = 1;
-        elseif Params.DoSequentialBlocks
-            Data(trial).BlockType = DrawSequentially(Params.BlockSequence, Data(trial).TotalBlocks);
-        else
-	        Data(trial).BlockType = DrawFromProbVec(Params.BlockProbs);
-        end
+%         if Params.FirstBlockIsType1
+% 	        Data(trial).BlockType = 1;
+%         elseif Params.DoSequentialBlocks
+%             Data(trial).BlockType = DrawSequentially(Params.BlockSequence, Data(trial).TotalBlocks);
+%         else
+% 	        Data(trial).BlockType = DrawFromProbVec(Params.BlockProbs);
+%         end
         Data(trial).TotalPoints = 0;
     else
         Data(trial).BlockNum = Data(trial-1).BlockNum;
         Data(trial).TotalBlocks = Data(trial-1).TotalBlocks;
         Data(trial).TotalPoints = Data(trial-1).TotalPoints;
-        if Data(trial-1).OutcomeID == 0 || Data(trial-1).OutcomeID == 3
+        if Data(trial-1).OutcomeID == 0
             Data(trial).BlockNum = Data(trial).BlockNum + 1;
         end
-        if Data(trial).BlockNum > Params.BlockSize
-            if Params.KeyboardAtBlockEnd
-                [Params, b5] = DoKeyboard(Params, b5);
-            end
-            Data(trial).BlockNum 	= 1;
-            Data(trial).TotalBlocks = Data(trial).TotalBlocks + 1;
-            if Params.DoSequentialBlocks
-                Data(trial).BlockType = DrawSequentially(Params.BlockSequence, Data(trial).TotalBlocks);
-            else
-                Data(trial).BlockType = DrawFromProbVec(Params.BlockProbs);
-            end
-        else
-            Data(trial).BlockType = Data(trial-1).BlockType;
-        end
+%         if Data(trial).BlockNum > Params.BlockSize
+%             if Params.KeyboardAtBlockEnd
+%                 [Params, b5] = DoKeyboard(Params, b5);
+%             end
+%             Data(trial).BlockNum 	= 1;
+%             Data(trial).TotalBlocks = Data(trial).TotalBlocks + 1;
+%             if Params.DoSequentialBlocks
+%                 Data(trial).BlockType = DrawSequentially(Params.BlockSequence, Data(trial).TotalBlocks);
+%             else
+%                 Data(trial).BlockType = DrawFromProbVec(Params.BlockProbs);
+%             end
+%         else
+%             Data(trial).BlockType = Data(trial-1).BlockType;
+%         end
     end
     
     Data(trial).AlwaysReward = false;
@@ -108,56 +108,56 @@ for itrial = startTrial : Params.NumTrials
 	% we may overwrite some parameters here below.
 % 	Data(trial).ICMS = Params.ICMS;
 
-	LEFT  = 0;
-	RIGHT = 1;
+% 	LEFT  = 0;
+% 	RIGHT = 1;
 
-	Data(trial).TargetProb = 0.5; % the default
+% 	Data(trial).TargetProb = 0.5; % the default
 
-	Data(trial).IsCorrectionTrial = false;
+% 	Data(trial).IsCorrectionTrial = false;
 
-	if Params.UseAdaptiveProbability && Params.UseCorrectionTrials
-		error('cannot set both correction trials and adaptive probability true');
-	end
+% 	if Params.UseAdaptiveProbability && Params.UseCorrectionTrials
+% 		error('cannot set both correction trials and adaptive probability true');
+% 	end
 
-	if Params.UseCorrectionTrials && trial > 1
-		if Data(trial-1).OutcomeID ~= 0
-		    Data(trial).IsCorrectionTrial = true;
-		    if Data(trial-1).RewardedTargetID == 0
-		        Data(trial).TargetProb = 1.0;
-		    else
-		        Data(trial).TargetProb = 0.0;
-		    end
-		end
-	end
+% 	if Params.UseCorrectionTrials && trial > 1
+% 		if Data(trial-1).OutcomeID ~= 0
+% 		    Data(trial).IsCorrectionTrial = true;
+% 		    if Data(trial-1).RewardedTargetID == 0
+% 		        Data(trial).TargetProb = 1.0;
+% 		    else
+% 		        Data(trial).TargetProb = 0.0;
+% 		    end
+% 		end
+% 	end
 
-	if Params.UseAdaptiveProbability && trial >= 2*Params.AdaptiveLookbackLength
-		tmplookback      = 1:(trial-1);
-		tmpHistErr       = [Data(tmplookback).OutcomeID];
-		lookbackgood     = tmplookback(tmpHistErr == 0 | tmpHistErr == 3);
-		lookback         = lookbackgood(end-Params.AdaptiveLookbackLength+1:end);
-		historyErr       = [Data(lookback).OutcomeID];
-		historyID        = [Data(lookback).RewardedTargetID];
-		nLeft            = sum((historyID==LEFT  & historyErr==0) | ...
-		                       (historyID==RIGHT & historyErr==3));   
-		nRight           = sum((historyID==RIGHT & historyErr==0) | ...
-		                       (historyID==LEFT  & historyErr==3)); 
-		Data(trial).TargetProb 			= nRight./(nLeft+nRight);
-		Data(trial).RecentReachesLeft 	= nLeft;
-		Data(trial).RecentReachesRight 	= nRight;
-	end  
+% 	if Params.UseAdaptiveProbability && trial >= 2*Params.AdaptiveLookbackLength
+% 		tmplookback      = 1:(trial-1);
+% 		tmpHistErr       = [Data(tmplookback).OutcomeID];
+% 		lookbackgood     = tmplookback(tmpHistErr == 0 | tmpHistErr == 3);
+% 		lookback         = lookbackgood(end-Params.AdaptiveLookbackLength+1:end);
+% 		historyErr       = [Data(lookback).OutcomeID];
+% 		historyID        = [Data(lookback).RewardedTargetID];
+% 		nLeft            = sum((historyID==LEFT  & historyErr==0) | ...
+% 		                       (historyID==RIGHT & historyErr==3));   
+% 		nRight           = sum((historyID==RIGHT & historyErr==0) | ...
+% 		                       (historyID==LEFT  & historyErr==3)); 
+% 		Data(trial).TargetProb 			= nRight./(nLeft+nRight);
+% 		Data(trial).RecentReachesLeft 	= nLeft;
+% 		Data(trial).RecentReachesRight 	= nRight;
+% 	end  
 
-	reset_q = false;
+% 	reset_q = false;
 
-    chance_level = 0.05; 
+%     chance_level = 0.05; 
     
 % 	if (trial == 1) ||Data(trial).BlockNum == 1
 % 		(Params.ICMSQUEST.ResetQOnNewBlock && Data(trial).BlockNum == 1)
 % 		reset_q = true;
 %     end
 
-    if Data(trial).BlockType == 4
-        chance_level = 0.05;    % for yes/no trials
-    end
+%     if Data(trial).BlockType == 4
+%         chance_level = 0.05;    % for yes/no trials
+%     end
     
 % 	if reset_q
 % 		Data(trial).QuestState = ThresholdFinderCreate( ...
@@ -174,44 +174,44 @@ for itrial = startTrial : Params.NumTrials
 	% 2. psychometric-current-basic
 	% 3. psychometric-current-quest
     % 4. psychometric-current-quest (yes/no)
-	switch Data(trial).BlockType
-	case 1
-		% dont need to do anything special for regular trials
-	case 2
-		Data(trial).ICMS.AmpUA = DrawFromVec(Params.ICMSQUEST.AmpVecUA);
-	case 3
-		thresh_guess = ThresholdFinderSuggestQuantile(Data(trial).QuestState);
-		if Params.ICMSQUEST.RoundNearestUA
-	  		thresh_guess = round(thresh_guess);
-		end
-		if Params.ICMSQUEST.ClampToVec
-			nearest_i = nearestpoint(thresh_guess, Params.ICMSQUEST.AmpVecUA);
-			thresh_guess = Params.ICMSQUEST.AmpVecUA(nearest_i);
-		end
-		thresh_guess = min(thresh_guess, Params.ICMSQUEST.MaxAmpUA);
-		Data(trial).ICMS.AmpUA = thresh_guess;
-    case 4
-        % everything from case-3
-        thresh_guess = ThresholdFinderSuggestQuantile(Data(trial).QuestState);
-		if Params.ICMSQUEST.RoundNearestUA
-	  		thresh_guess = round(thresh_guess);
-		end
-		if Params.ICMSQUEST.ClampToVec
-			nearest_i = nearestpoint(thresh_guess, Params.ICMSQUEST.AmpVecUA);
-			thresh_guess = Params.ICMSQUEST.AmpVecUA(nearest_i);
-		end
-		thresh_guess = min(thresh_guess, Params.ICMSQUEST.MaxAmpUA);
-		Data(trial).ICMS.AmpUA = thresh_guess;
-        % but also...
-        Data(trial).AlwaysReward = true;
-	otherwise
-		error('Unknown blocktype!');
-	end
+% 	switch Data(trial).BlockType
+% 	case 1
+% 		% dont need to do anything special for regular trials
+% 	case 2
+% 		Data(trial).ICMS.AmpUA = DrawFromVec(Params.ICMSQUEST.AmpVecUA);
+% 	case 3
+% 		thresh_guess = ThresholdFinderSuggestQuantile(Data(trial).QuestState);
+% 		if Params.ICMSQUEST.RoundNearestUA
+% 	  		thresh_guess = round(thresh_guess);
+% 		end
+% 		if Params.ICMSQUEST.ClampToVec
+% 			nearest_i = nearestpoint(thresh_guess, Params.ICMSQUEST.AmpVecUA);
+% 			thresh_guess = Params.ICMSQUEST.AmpVecUA(nearest_i);
+% 		end
+% 		thresh_guess = min(thresh_guess, Params.ICMSQUEST.MaxAmpUA);
+% 		Data(trial).ICMS.AmpUA = thresh_guess;
+%     case 4
+%         % everything from case-3
+%         thresh_guess = ThresholdFinderSuggestQuantile(Data(trial).QuestState);
+% 		if Params.ICMSQUEST.RoundNearestUA
+% 	  		thresh_guess = round(thresh_guess);
+% 		end
+% 		if Params.ICMSQUEST.ClampToVec
+% 			nearest_i = nearestpoint(thresh_guess, Params.ICMSQUEST.AmpVecUA);
+% 			thresh_guess = Params.ICMSQUEST.AmpVecUA(nearest_i);
+% 		end
+% 		thresh_guess = min(thresh_guess, Params.ICMSQUEST.MaxAmpUA);
+% 		Data(trial).ICMS.AmpUA = thresh_guess;
+%         % but also...
+%         Data(trial).AlwaysReward = true;
+% 	otherwise
+% 		error('Unknown blocktype!');
+% 	end
 
 	fprintf('\nTrial num\t\t%i\n',trial);
 	fprintf('Trial type\t\t%i\n',Data(trial).TrialType);
-    fprintf('Block type\t\t%s\n',Params.BlockTypes{Data(trial).BlockType});
-    fprintf('Block num\t\t(%i of %i)\n',Data(trial).BlockNum,Params.BlockSize);
+%     fprintf('Block type\t\t%s\n',Params.BlockTypes{Data(trial).BlockType});
+%     fprintf('Block num\t\t(%i of %i)\n',Data(trial).BlockNum,Params.BlockSize);
 	fprintf('Total Blocks\t\t%i\n',Data(trial).TotalBlocks);
 
 	%% - - - - - - RUN TRIAL - - - - - -
@@ -222,9 +222,10 @@ for itrial = startTrial : Params.NumTrials
 	% 1. detectStimCue_Trial
 	% 2. -- Nothing yet
 	switch Data(trial).TrialType
-	case 1 
+	case 1
+        Params.UseRewardAdaptation          = false;
 		[Params, Data(trial), b5] = ...
-        RewardAdaptive( Params, Data(trial), b5 );
+        SubjectCallibration( Params, Data(trial), b5 );
     case 2
         Params.UseRewardAdaptation          = true;
 		[Params, Data(trial), b5] = ...
@@ -271,18 +272,18 @@ for itrial = startTrial : Params.NumTrials
     end
 
     %% calculate the reward based on the short-term performance
-        if trial>10
-            
-            PTrialIDs=[Data(trial-9:trial).OutcomeID];
-%     NtrialsP=max(find( PTrialIDs==0));
-
-
-errlistP = [Data(trial-9:trial).OutcomeID];
-NerrorsP = sum(errlistP~=0);
-NcorrectP = 10 - NerrorsP;
-    
-    Params.TempPerf=NcorrectP/10;
-        end
+%         if trial>10
+%             
+%             PTrialIDs=[Data(trial-9:trial).OutcomeID];
+% %     NtrialsP=max(find( PTrialIDs==0));
+% 
+% 
+% errlistP = [Data(trial-9:trial).OutcomeID];
+% NerrorsP = sum(errlistP~=0);
+% NcorrectP = 10 - NerrorsP;
+%     
+%     Params.TempPerf=NcorrectP/10;
+%         end
     %% Caculate adaptive reward
     if Params.UseRewardAdaptation
         [Params] = CalculateAdaptiveVariable(Params, Data, trial);
@@ -291,7 +292,8 @@ NcorrectP = 10 - NerrorsP;
     %% Save Data
 	% NOTE NOTE NOTE * this overwrites any existing file! * NOTE NOTE NOTE
     % Save full data structure after each block
-    if Data(trial).BlockNum == Params.BlockSize
+%     if Data(trial).BlockNum == Params.BlockSize
+    if isempty(Params.RewardSampleSpace) || isempty(Params.EffortSampleSpace)
         DATA = Data;
         DATA(trial+1:end) = []; % kill excess
         fprintf('-> saving DATA structure\n'); 
@@ -314,7 +316,7 @@ NcorrectP = 10 - NerrorsP;
     
 	% GUI
 	drawnow;
-	while PAUSE_FLAG || KEYBOARD_FLAG
+    while PAUSE_FLAG || KEYBOARD_FLAG
 		if KEYBOARD_FLAG
 			[Params, b5] = DoKeyboard(Params, b5);
 			KEYBOARD_FLAG = false;
@@ -322,7 +324,7 @@ NcorrectP = 10 - NerrorsP;
 		pause(.1);
     end
     
-    if isempty(Params.RewardSampleSpace)
+    if isempty(Params.RewardSampleSpace) || isempty(Params.EffortSampleSpace)
         done = true;
     end
     
@@ -343,6 +345,7 @@ function SetupGUI()
   PAUSE_FLAG = false;
   KEYBOARD_FLAG = false;
   figure(1);
+  clf
   %screen_sz = get(0,'ScreenSize');
   set(gcf,'position', [990   304   350   150]);
   uicontrol(gcf, 'style', 'toggle', 'units', 'normalized', 'position', [.1 .4 .3 .2], ...
