@@ -19,8 +19,7 @@ function [Params, dat, b5] = UpdateCursorOnLine(Params, dat, b5)
 %     newForce = [itmp(1), itmp(3)];
     newForce(2) = -sign(itmp(1))*(log(1+abs(itmp(1))/tao)*1/log(1+1/tao));
     newForce(1) =  sign(itmp(3))*(log(1+abs(itmp(3))/tao)*1/log(1+1/tao));
-    newForce(2) = 0;
-    newForce(1) = 0;
+
     if newForce(1) >= 0
         newPosX = min((b5.Frame_scale(1))*newForce(1)*(Params.LoadCellMax/Params.MaxForce) + b5.StartTarget_pos(1), ...
             b5.Frame_scale(1) + b5.StartTarget_pos(1));
