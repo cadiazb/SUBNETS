@@ -9,11 +9,11 @@ function [Params, dat, b5] = UpdateCursor(Params, dat, b5)
     maxLoad = 50; % Load cell max [N]
     ZeroBalance = Vin*2e-3*0.002;
     tao = 5;
-    itmp = zeros(size(b5.isometric_sensors_o,1), 1);
+    itmp = zeros(size(b5.isometricAIN_sensors_o,1), 1);
     
     for ii = 1:n
         b5 = bmi5_mmap(b5); 
-        itmp = itmp - b5.isometric_sensors_o;
+        itmp = itmp - b5.isometricAIN_sensors_o;
     end
     itmp = (itmp./n)./(Vin*2e-3);
     

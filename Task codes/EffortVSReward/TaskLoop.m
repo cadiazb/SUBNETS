@@ -344,7 +344,7 @@ function SetupGUI()
   KEYBOARD_FLAG = false;
   figure(1);
   %screen_sz = get(0,'ScreenSize');
-  set(gcf,'position', [1235 92 350 150]);
+  set(gcf,'position', [990   304   350   150]);
   uicontrol(gcf, 'style', 'toggle', 'units', 'normalized', 'position', [.1 .4 .3 .2], ...
     'string', 'PAUSE',    'callback', @PauseCallback);
   uicontrol(gcf, 'style', 'push',   'units', 'normalized', 'position', [.6 .4 .3 .2], ...

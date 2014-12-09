@@ -25,7 +25,7 @@ bmi5_cmd('delete_all');
 bmi5_cmd('make circle StartTarget');
 
 bmi5_cmd('make open_square Frame 0.01');
-bmi5_cmd('make open_square BarOutline 0.01');
+bmi5_cmd('make open_square BarOutline 0.03');
 bmi5_cmd('make square FillingEffort');
 bmi5_cmd('make square Pass');
 bmi5_cmd('make square PointsBox');
@@ -38,7 +38,7 @@ for ii = 1:Params.NumEffortTicks
     bmi5_cmd(sprintf('make square effortTick%d',ii));
 end
 
-bmi5_cmd('make labjack isometric 4');
+bmi5_cmd('make labjack isometric 4 4');
 bmi5_cmd('make tone GoTone');
 bmi5_cmd('make tone RewardTone');
 bmi5_cmd('make store int 1 Trial');
@@ -133,7 +133,7 @@ Params.NumCorrectTrials         = 400;
 %%  Trial Type Function Selection
 % do not modify
 
-Params.TrialTypeProbs 			= [0 1 0];
+Params.TrialTypeProbs 			= [0 0 1];
 Params.TrialTypeProbs           = Params.TrialTypeProbs/sum(Params.TrialTypeProbs);
 
 %% BLOCKS OF TRIALS
@@ -195,7 +195,7 @@ end
 
 %% Cursor
 b5.Cursor_color 				= [1 1 1 0.75]; % RGBA 
-b5.Cursor_scale 				= [6 6];        % [mm] % note: diameter!
+b5.Cursor_scale 				= [0 0];        % [mm] % note: diameter!
 
 %% Start Target
 b5.StartTarget_color			= [1 0 0 1];

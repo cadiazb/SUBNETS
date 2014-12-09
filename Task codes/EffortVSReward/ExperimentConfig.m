@@ -1,6 +1,6 @@
 % These are global configuration options
 
-CalibrationFile = '/home/tlh24/sabes-exp-ctrl/bmi5/matlab/calibration_polhemus.mat';
+CalibrationFile = '/home/motorlab/sabes-exp-ctrl/bmi5/matlab/calibration_polhemus.mat';
 
 BMI5FifoInFile  = '/tmp/bmi5_in.fifo';
 BMI5FifoOutFile = '/tmp/bmi5_out.fifo';
@@ -10,4 +10,4 @@ SortFifoOutFile = '/tmp/gtkclient_out.fifo';
 
 BinFile      = '/tmp/binned.mmap';
 
-SaveDirectory 	= '/home/tlh24/Data/SUBNETS/EffortVSReward';
+SaveDirectory 	= '/home/motorlab/Data/SUBNETS/EffortVSReward';
