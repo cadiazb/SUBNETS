@@ -312,7 +312,7 @@ for itrial = startTrial : Params.NumTrials
     % trigger bmi5 save event
     fprintf('-> saving BMI5 data\n');
     s = sprintf('save %s', Params.BMI5FileName);
-%     bmi5_cmd(s);
+    bmi5_cmd(s);
     
 	% GUI
 	drawnow;

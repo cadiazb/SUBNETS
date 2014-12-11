@@ -79,26 +79,19 @@ Minute=sprintf('%02d',TimeNow(5));
 HourMinute=strcat(Hour,Minute);
 
 d = fullfile(SaveDirectory,Params.SubjectID);
-if ~exist(d,'dir')
-	mkdir(d);
-end
+if ~exist(d,'dir'),     mkdir(d);   end
+
 d = fullfile(d,num2str(yr));
-if ~exist(d,'dir')
-	mkdir(d);
-end
+if ~exist(d,'dir'),     mkdir(d);   end
+
 d = fullfile(d,num2str(mo));
-if ~exist(d,'dir')
-	mkdir(d);
-end
+if ~exist(d,'dir'),     mkdir(d);   end
+
 d = fullfile(d,today);
-if ~exist(d,'dir')
-	mkdir(d);
-end
+if ~exist(d,'dir'),     mkdir(d);   end
 
 d = fullfile(d,HourMinute);
-if ~exist(d,'dir')
-	mkdir(d);
-end
+if ~exist(d,'dir'),     mkdir(d);   end
 
 ct = 1;
 tn = Params.TaskName;
