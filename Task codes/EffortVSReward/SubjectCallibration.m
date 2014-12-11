@@ -133,6 +133,8 @@ if ~dat.OutcomeID
     b5.FillingEffort_pos       = Params.WsCenter - [0, b5.Frame_scale(2)/2];
     b5 = bmi5_mmap(b5);
 
+    dat.GoCue_time_o = b5.GoTone_time_o;
+    
 	done            = false;
     dat.FinalCursorPos = b5.StartTarget_pos;
 
@@ -156,9 +158,9 @@ if ~dat.OutcomeID
         
         if ~isempty(dat.ReactionTime)
             if (b5.time_o - (dat.ReactionTime + t_start)) > Params.MovementWindow
-                dat.MovementTime = NaN;
-                dat.ActualEffort = (pos(2) - b5.StartTarget_pos(2)) /...
-                                        b5.Frame_scale(2); % Force as %of Max
+                dat.MovementTime = b5.time_o - (dat.ReactionTime + t_start);
+                dat.ActualEffort = b5.FillingEffort_scale(2) /...
+                                        b5.BarOutline_scale(2); % Force as %of Max
                 dat.TrialChoice = 'Probe Effort';
                 done            = true;
                 dat.OutcomeID 	= 0;

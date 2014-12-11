@@ -22,27 +22,19 @@ dfields = {
 	'OutcomeID'
 	'OutcomeStr'
 	'ReachDelay'
-	'ICMS'
-	'IsCorrectionTrial'
-	'QuestState'
-	'TargetProb'
-	'RecentReachesLeft'
-	'RecentReachesRight'
     'ProbeReward'
-    'ReferenceReward'
     'ProbeEffort'
-    'ReferenceEffort'
     'ProbeEffortUp'
-    'ShowProbeEffort'
     'TrialChoice'
     'TotalPoints'
     'ReactionTime'
     'MovementTime'
     'AlwaysReward'
-    'EffortLine'
     'ActualEffort'
     'ActualReward' 
     'FinalCursorPos'
+    'ForceTrace'
+    'GoCue_time_o'
 };
 dinit = cell(size(dfields));
 dtmp  = cell2struct(dinit,dfields,1);
@@ -213,6 +205,8 @@ for itrial = startTrial : Params.NumTrials
 %     fprintf('Block type\t\t%s\n',Params.BlockTypes{Data(trial).BlockType});
 %     fprintf('Block num\t\t(%i of %i)\n',Data(trial).BlockNum,Params.BlockSize);
 	fprintf('Total Blocks\t\t%i\n',Data(trial).TotalBlocks);
+    %% Initialize force trace
+    Data(trial).ForceTrace = NaN(2 * Params.TrialLength / 0.01 , 5);
 
 	%% - - - - - - RUN TRIAL - - - - - -
 	b5.Trial_v = trial;
@@ -240,7 +234,9 @@ for itrial = startTrial : Params.NumTrials
 	b5 = bmi5_mmap(b5);
 	Data(trial).TimeEnd = b5.time_o; % grab time at end of trial
 	%%  - - - - - - END TRIAL  - - - - - - 
-
+    
+    %% Clean remaining of force trace
+    Data(trial).ForceTrace(isnan(Data(trial).ForceTrace(:,1)),:) = [];
 	%% TRIAL SUMMARY INFO DISPLAY
 	fprintf('Outcome\t\t\t\t%d (%s)\n',Data(trial).OutcomeID,Data(trial).OutcomeStr);
     fprintf('Reaction time\t\t%d \n', Data(trial).ReactionTime);
@@ -290,10 +286,14 @@ for itrial = startTrial : Params.NumTrials
     end
     
     %% Save Data
+    if isempty(Params.RewardSampleSpace) || isempty(Params.EffortSampleSpace)
+        done = true;
+    end
+    
 	% NOTE NOTE NOTE * this overwrites any existing file! * NOTE NOTE NOTE
     % Save full data structure after each block
 %     if Data(trial).BlockNum == Params.BlockSize
-    if isempty(Params.RewardSampleSpace) || isempty(Params.EffortSampleSpace)
+    if done
         DATA = Data;
         DATA(trial+1:end) = []; % kill excess
         fprintf('-> saving DATA structure\n'); 
@@ -324,11 +324,13 @@ for itrial = startTrial : Params.NumTrials
 		pause(.1);
     end
     
-    if isempty(Params.RewardSampleSpace) || isempty(Params.EffortSampleSpace)
-        done = true;
-    end
+
     
 	if done
+        if Params.TrialTypeProbs(1)
+            display(sprintf('Subjects mean max force is %d',...
+                mean([Data(~[Data(:).OutcomeID]).ActualEffort]) * Params.MaxForce))
+        end
 		break;
 	end
 

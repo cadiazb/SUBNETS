@@ -161,8 +161,10 @@ clear tmpTrialOK tmpTrialType tmpDlgOpt
 Params.NumTrials 				= 2000; % Choose a big number so task doesn't finish before hand
 if Params.TrialTypeProbs(1)
     Params.NumCorrectTrials         = 4;
+elseif Params.TrialTypeProbs(2)
+    Params.NumCorrectTrials         = 200; % Go/NoGo correct trials after initial sampling
 else
-    Params.NumCorrectTrials         = 230;
+    Params.NumCorrectTrials         = 225; % Continuous reward
 end
 
 %% BLOCKS OF TRIALS
@@ -193,19 +195,19 @@ Params.KeyboardAtBlockEnd 		= true;
 Params.TimeoutReachStartTarget  = 0.1; % max time to acquire start target
 Params.StartTarget.Hold       	= 0.1;
 % Instructed delay
-Params.ReachDelay               = 1.2;	% draw from this interval
+Params.ReachDelay               = 1;	% draw from this interval
 % Reaching phase
 Params.ReactionTimeDelay      	= 2; % Max time to initiate movement
 
 % Go/NoGo
-Params.TimeoutReachTarget       = 1.3; % max time to reach reaching target
+Params.TimeoutReachTarget       = 0.6; % max time to reach reaching target
 
 % Continuous reward
 Params.MovementWindow           = 0.3; % For effort line, time to move [s]
 
 % Other
-Params.TrialLength              = 4;   % Fixed trial length [s]
-Params.InterTrialDelay 			= 0.5;  % delay between each trial [sec]
+Params.TrialLength              = 3.6;   % Fixed trial length [s]
+Params.InterTrialDelay 			= 0.4;  % delay between each trial [sec]
 
 %%  WORKSPACE, in mm
 Params.WsBounds             	= [-150 -150 ; 150 150]; % [Xmin Ymin; Xmax Ymax]
@@ -233,7 +235,7 @@ Params.StartTarget.Win  		= 20; % radius
 Params.StartTarget.Locations 	= {Params.WsCenter + [-40 -40]}; % cell array of locations
 
 %% Rewards
-Params.MaxReward    = 24;
+Params.MaxReward    = 30;
 Params.PassReward   = 1;
 Params.RewardsVector = [2:2:Params.MaxReward];
 
@@ -258,7 +260,7 @@ b5.RewardFeedback_color = [0 0 0 0.75];
 b5.RewardFeedback_pos = b5.RewardCircleFeedback_pos - [45,0];
 
 b5.PointsBox_color = [0 1 0 0.75];
-b5.PointsBox_scale = [40 40];
+b5.PointsBox_scale = [50 40];
 b5.PointsBox_pos = Params.WsBounds(1,:);
 
 %% Effort
@@ -303,7 +305,7 @@ b5.ProbeTarget_color = [1 1 0 1];
 b5.ProbeTarget_scale = [b5.BarOutline_scale(1), 2];
 b5.ProbeTarget_pos = Params.WsCenter ;
 
-Params.EffortVector = [0.1:0.4:1];
+Params.EffortVector = [0.1:0.12:1];
 
 %% Pass
 Params.PassSensitivity  = 20;
@@ -349,7 +351,7 @@ Params.EffortSampleSpace    = repmat(Params.EffortVector, ...
     1, ceil(Params.NumCorrectTrials/size(Params.EffortVector,2)));
 %% Total Points String
 b5.TotalPoints_color        = [0 0 0 1];
-b5.TotalPoints_pos          = b5.PointsBox_pos - [120, 0];
+b5.TotalPoints_pos          = b5.PointsBox_pos - [110, 0];
 b5.TotalPoints_v            = [double(sprintf('%.01f ',0)) 162 zeros(1,numel(b5.TotalPoints_v) - 5)]';
 
 %% TONES
