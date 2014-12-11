@@ -4,7 +4,7 @@ function [Params, dat, b5] = UpdateCursorOnLine(Params, dat, b5)
     b5 = bmi5_mmap(b5);
     
     %% Retreive readings form Labjack
-    n = 250; %number of samples read from labjack
+    n = 100; %number of samples read from labjack
     Vin = 5; % Power supply [V]
     ZeroBalance = Vin*2e-3*0.002;
     tao = 5;
