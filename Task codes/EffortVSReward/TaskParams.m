@@ -344,7 +344,7 @@ Params.EffortSampleSpace    = repmat(Params.EffortVector, ...
     1, ceil(Params.NumCorrectTrials/size(Params.EffortVector,2)));
 %% Total Points String
 b5.TotalPoints_color        = [0 0 0 1];
-b5.TotalPoints_pos          = b5.PointsBox_pos - [110, 0];
+b5.TotalPoints_pos          = b5.PointsBox_pos - [140, 0]; %-[110, 0];
 b5.TotalPoints_v            = [double(sprintf('%.01f ',0)) 162 zeros(1,numel(b5.TotalPoints_v) - 5)]';
 
 %% TONES
@@ -367,6 +367,7 @@ Params.AdaptiveLookbackLength       = 10;    % num trials to look back
 Params.FixedTrialLength             = true;
 Params.AllowEarlyReach              = false; % { allow subject to start
                                            % { reach before end of delay
+Params.StringOffset                 = [65, 115];%[-55; -100]; % To see string centered in coin
 
 %% SYNC
 b5 = bmi5_mmap(b5);
