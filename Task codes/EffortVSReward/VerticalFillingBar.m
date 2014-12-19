@@ -15,7 +15,7 @@ b5.StartTarget_pos = Params.WsCenter - [0, b5.Frame_scale(2)/2];
 %% Draw rewards from vector
 dat.ProbeReward = DrawFromVec(Params.RewardSampleSpace);
 
-tmpString = sprintf('%d ¢',Params.RewardsVector(dat.ProbeReward));
+tmpString = sprintf('%d ¢',Params.RewardsVector(Params.RewardsVector == dat.ProbeReward));
 tmpStringZeros = numel(b5.Reward_v) - numel(double(tmpString));
 b5.Reward_v = [double(tmpString) zeros(1,tmpStringZeros)]';
 clear tmpStringZeros tmpString
@@ -165,7 +165,7 @@ if ~dat.OutcomeID
         b5.RewardCircleFeedback_pos = Params.WsCenter - [60, b5.Frame_scale(2)/2] + ...
                     [0, b5.FillingEffort_scale(2)];
         b5.RewardFeedback_pos(2) = b5.RewardCircleFeedback_pos(2);
-        tmpString = sprintf('%.01f ¢', Params.RewardsVector(dat.ProbeReward) * ...
+        tmpString = sprintf('%.01f ¢', Params.RewardsVector(Params.RewardsVector == dat.ProbeReward) * ...
             (b5.FillingEffort_scale(2)/b5.Frame_scale(2)));
         b5.RewardFeedback_v = [double(tmpString) zeros(1, numel(b5.RewardFeedback_v) - numel(double(tmpString)))]';
         b5 = bmi5_mmap(b5);
@@ -250,7 +250,7 @@ b5.PassString_draw              = DRAW_NONE;
 
 if dat.OutcomeID == 0
     if strcmp(dat.TrialChoice, 'Probe Effort')
-        tmpTrialPoints = Params.RewardsVector(dat.ProbeReward) * ...
+        tmpTrialPoints = Params.RewardsVector(Params.RewardsVector == dat.ProbeReward) * ...
             (b5.FillingEffort_scale(2)/b5.Frame_scale(2));
     end
     if strcmp(dat.TrialChoice, 'Pass')
