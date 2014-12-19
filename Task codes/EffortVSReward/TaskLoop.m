@@ -222,6 +222,11 @@ for itrial = startTrial : Params.NumTrials
 	switch Data(trial).TrialType
 	case 1
         Params.UseRewardAdaptation          = false;
+        if trial > 1 && ~isempty(max([Data(~[Data().OutcomeID]).ActualEffort]))
+            b5.ProbeTarget_pos 		= [0,max([Data(~[Data().OutcomeID]).ActualEffort]) * b5.Frame_scale(2)];
+        else
+            b5.ProbeTarget_pos 		= [0,0];
+        end
 		[Params, Data(trial), b5] = ...
         SubjectCallibration( Params, Data(trial), b5 );
     case 2
@@ -341,8 +346,8 @@ for itrial = startTrial : Params.NumTrials
     
 	if done
         if Params.TrialTypeProbs(1)
-            display(sprintf('Subjects mean max force is %d',...
-                mean([Data(~[Data(:).OutcomeID]).ActualEffort]) * Params.MaxForce))
+            display(sprintf('Subjects max force is %.2d',...
+                max([Data(~[Data(:).OutcomeID]).ActualEffort]) * Params.MaxForce))
         end
 		break;
 	end

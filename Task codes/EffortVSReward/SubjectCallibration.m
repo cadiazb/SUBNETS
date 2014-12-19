@@ -12,23 +12,6 @@ DRAW_BOTH     = 3;
 %% Generate a StartTarget position
 b5.StartTarget_pos = Params.WsCenter - [0, b5.Frame_scale(2)/2]; 
 
-%% Draw rewards from vector
-% dat.ProbeReward = DrawFromVec(Params.RewardSampleSpace);
-
-% tmpString = sprintf('%d ¢',Params.RewardsVector(dat.ProbeReward));
-% tmpStringZeros = numel(b5.Reward_v) - numel(double(tmpString));
-% b5.Reward_v = [double(tmpString) zeros(1,tmpStringZeros)]';
-% clear tmpStringZeros tmpString
-
-% Init positions
-% b5.RewardCircle_pos = Params.WsCenter;
-% b5.Reward_pos = Params.WsCenter - [15, 0];
-% b5.RewardCircleFeedback_pos = Params.WsCenter - [60, b5.Frame_scale(2)/2];
-% b5.RewardFeedback_pos = b5.RewardCircleFeedback_pos - [55,0];
-% b5.RewardFeedback_v = [double('0.0 ¢') zeros(1,numel(b5.RewardFeedback_v) - 5)]';
-% b5.PassRewardCircle_pos = b5.Pass_pos - [60, 0];
-% b5.PassReward_pos = b5.PassRewardCircle_pos - [55, 0];
-
 %% Misc stuff
 dat.OutcomeID 	= 0;
 dat.OutcomeStr 	= 'Success';
@@ -98,6 +81,7 @@ while ~done
 end
 
 %% 2. INSTRUCTED DELAY PHASE
+
 if ~dat.OutcomeID
     b5 = bmi5_mmap(b5);
     t_start = b5.time_o;
@@ -126,6 +110,11 @@ if ~dat.OutcomeID
     b5.FillingEffort_draw  = DRAW_BOTH;
     for ii = 1:Params.NumEffortTicks
         b5.(sprintf('effortTick%d_draw',ii))   = DRAW_BOTH;
+    end
+    % Turn on feedback of max effort during callibration
+    if b5.ProbeTarget_pos(2)
+        b5.ProbeTarget_pos 		= b5.ProbeTarget_pos + b5.StartTarget_pos;
+        b5.ProbeTarget_draw     = DRAW_BOTH;
     end
     
     b5.GoTone_play_io = 1;
@@ -195,6 +184,7 @@ b5.RewardCircle_draw            = DRAW_NONE;
 b5.RewardCircleFeedback_draw    = DRAW_NONE;
 b5.PassRewardCircle_draw        = DRAW_NONE;
 b5.Cursor_draw                  = DRAW_NONE;
+b5.ProbeTarget_draw             = DRAW_NONE;
 for ii = 1:Params.NumEffortTicks
     b5.(sprintf('effortTick%d_draw',ii))   = DRAW_NONE;
 end
