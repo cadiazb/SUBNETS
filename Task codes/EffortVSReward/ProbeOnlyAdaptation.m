@@ -30,10 +30,10 @@ b5.ProbeTarget_pos 		= b5.StartTarget_pos + ...
                                 [0,dat.ProbeEffort * b5.Frame_scale(2)];
 
 %% Generate the amounts of reward
-if ~isempty(Params.InitialSampling)
+if ~isempty(Params.InitialSampling) || ~dat.ProbesAdaptationState(dat.ProbesAdaptationState(:,1) == dat.ProbeEffort,2)
     dat.ProbeReward = ...
-        Params.InitialSampling(Params.InitialSampling(:,1) == dat.ProbeEffort, ...
-    randi([2, size(Params.InitialSampling,2)],1), ...
+        Params.InitialSamplingRewards(Params.InitialSampling(:,1,1) == dat.ProbeEffort, ...
+    randi([1, size(Params.InitialSamplingRewards,2)],1), ...
     1);
 else
 dat.ProbeReward = ...
@@ -170,6 +170,7 @@ if ~dat.OutcomeID
     dat.GoCue_time_o = b5.GoTone_time_o;
 
 	done            = false;
+    tmpChoseProbe   = false;
     dat.FinalCursorPos = b5.StartTarget_pos;
 
 	t_start = b5.time_o;
@@ -189,8 +190,11 @@ if ~dat.OutcomeID
         
         if ~posOk && isempty(dat.ReactionTime)
             dat.ReactionTime = b5.time_o - t_start;
+            if b5.FillingEffort_scale(2) > 0
+                tmpChoseProbe = true;
+            end
         end
-        if ~isempty(dat.ReactionTime)
+        if ~isempty(dat.ReactionTime) && ~tmpChoseProbe
             if (pos(1) - b5.StartTarget_pos(1)) < -Params.NoGoTap
                 dat.TrialChoice = 'Pass';
                 done = true;
@@ -296,7 +300,7 @@ if dat.OutcomeID == 0
         if all(isnan(Params.InitialSampling(:,:,1)))
             Params.InitialSampling(:,:,1) = [];
         end
-    else
+    elseif  dat.ProbesAdaptationState(dat.ProbesAdaptationState(:,1) == dat.ProbeEffort,2)
         Params.EffortSampleSpace(find(Params.EffortSampleSpace == dat.ProbeEffort, 1)) = [];
     end
 

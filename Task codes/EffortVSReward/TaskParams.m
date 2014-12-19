@@ -228,12 +228,13 @@ Params.StartTarget.Win  		= 20; % radius
 Params.StartTarget.Locations 	= {Params.WsCenter + [-40 -40]}; % cell array of locations
 
 %% Rewards
-Params.MaxReward    = 30;
-Params.PassReward   = 1;
-Params.RewardsVector = [2:2:Params.MaxReward];
+Params.AbsoluteMaxRewward   = 200;
+Params.MaxReward            = 30;
+Params.PassReward           = 1;
+Params.RewardsVector        = [2:2:Params.MaxReward];
 
 if ~Params.TrialTypeProbs(1)
-    Params.RewardSampleSpace = repmat(1:numel(Params.RewardsVector), ...
+    Params.RewardSampleSpace = repmat(Params.RewardsVector, ...
                             1, round(Params.NumCorrectTrials/numel(Params.RewardsVector)));
 else
     Params.RewardSampleSpace = ones(1, Params.NumCorrectTrials);
@@ -298,7 +299,7 @@ b5.ProbeTarget_color = [1 1 0 1];
 b5.ProbeTarget_scale = [b5.BarOutline_scale(1), 2];
 b5.ProbeTarget_pos = Params.WsCenter ;
 
-Params.EffortVector = [0.1:0.12:1];
+Params.EffortVector = [0.1 0.3 0.45 0.55 0.65 0.75 0.85 1];%[0.1:0.12:1];
 
 %% Pass
 Params.PassSensitivity  = 20;
@@ -328,12 +329,13 @@ Params.RewardAdaptation         = [Params.EffortVector;...
                                         floor(linspace(Params.PassReward+1,Params.MaxReward,numel(Params.EffortVector )))]';
 Params.Npre                     = 3; % Max number of samples per probe before increasing MaxReward
 Params.RewardRange              = zeros(1,numel(Params.EffortVector));
-Params.RewardGradients          = 10;
+Params.RewardGradients          = 5;
 Params.InitialSampling          = Params.EffortVector';
-Params.InitialSampling(:, 2:(Params.RewardGradients+1)) = ...
+Params.InitialSamplingRewards(1:numel(Params.InitialSampling), 1:(Params.RewardGradients)) = ...
                 repmat(Params.MaxRewardVector, 1,numel(1:Params.RewardGradients)) .* ...
                 repmat([1:Params.RewardGradients]/Params.RewardGradients, numel(Params.MaxRewardVector), 1);
 Params.InitialSampling          = repmat(Params.InitialSampling,1,1, Params.Npre);
+Params.NumTrialInitialSampling  = numel(Params.InitialSampling);
 
 for ii = 1:numel(Params.EffortVector)
     Params.ProbeModels.(['Effort' num2str(ii)]) = [];

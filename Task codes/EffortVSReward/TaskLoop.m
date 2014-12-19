@@ -35,6 +35,7 @@ dfields = {
     'FinalCursorPos'
     'ForceTrace'
     'GoCue_time_o'
+    'ProbesAdaptationState'
 };
 dinit = cell(size(dfields));
 dtmp  = cell2struct(dinit,dfields,1);
@@ -71,10 +72,13 @@ for itrial = startTrial : Params.NumTrials
 % 	        Data(trial).BlockType = DrawFromProbVec(Params.BlockProbs);
 %         end
         Data(trial).TotalPoints = 0;
+        Data(trial).ProbesAdaptationState = Params.EffortVector';
+        Data(trial).ProbesAdaptationState(:,2) = false;
     else
         Data(trial).BlockNum = Data(trial-1).BlockNum;
         Data(trial).TotalBlocks = Data(trial-1).TotalBlocks;
         Data(trial).TotalPoints = Data(trial-1).TotalPoints;
+        Data(trial).ProbesAdaptationState = Data(trial-1).ProbesAdaptationState;
         if Data(trial-1).OutcomeID == 0
             Data(trial).BlockNum = Data(trial).BlockNum + 1;
         end
@@ -283,6 +287,14 @@ for itrial = startTrial : Params.NumTrials
     %% Caculate adaptive reward
     if Params.UseRewardAdaptation
         [Params] = CalculateAdaptiveVariable(Params, Data, trial);
+    end
+    
+    %% Drop high probes that have reach the absolute max reward more than 5 times
+    tmpEffortProbes = unique(Params.EffortSampleSpace);
+    for ii = 1:numel(tmpEffortProbes)
+        if sum([DATA([DATA.ProbeEffort] == tmpEffortProbes(ii)).ProbeReward] == Params.AbsoluteMaxReward) > 5
+            Params.EffortSampleSpace(Params.EffortSampleSpace == tmpEffortProbes(ii)) = []; 
+        end
     end
     
     %% Save Data
