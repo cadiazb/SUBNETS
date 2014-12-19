@@ -228,7 +228,7 @@ Params.StartTarget.Win  		= 20; % radius
 Params.StartTarget.Locations 	= {Params.WsCenter + [-40 -40]}; % cell array of locations
 
 %% Rewards
-Params.AbsoluteMaxRewward   = 200;
+Params.AbsoluteMaxReward   = 200;
 Params.MaxReward            = 30;
 Params.PassReward           = 1;
 Params.RewardsVector        = [2:2:Params.MaxReward];
@@ -331,7 +331,8 @@ Params.Npre                     = 3; % Max number of samples per probe before in
 Params.RewardRange              = zeros(1,numel(Params.EffortVector));
 Params.RewardGradients          = 5;
 Params.InitialSampling          = Params.EffortVector';
-Params.InitialSamplingRewards(1:numel(Params.InitialSampling), 1:(Params.RewardGradients)) = ...
+Params.InitialSamplingRewards   = Params.InitialSampling;
+Params.InitialSamplingRewards(:, 2:(Params.RewardGradients+1)) = ...
                 repmat(Params.MaxRewardVector, 1,numel(1:Params.RewardGradients)) .* ...
                 repmat([1:Params.RewardGradients]/Params.RewardGradients, numel(Params.MaxRewardVector), 1);
 Params.InitialSampling          = repmat(Params.InitialSampling,1,1, Params.Npre);

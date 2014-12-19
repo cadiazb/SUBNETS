@@ -1,4 +1,4 @@
-function [Params] = CalculateAdaptiveVariable(Params, Data, trial)
+function [Params, Data] = CalculateAdaptiveVariable(Params, Data, trial)
     dat = Data(trial);
     if isempty(dat.TrialChoice)
         display('No trial choice recorded')
@@ -13,7 +13,7 @@ if isempty(Params.InitialSampling)
         tmpEffortIndex = find(Params.EffortVector == dat.ProbeEffort,1,'first');
         Params.RewardRange(tmpEffortIndex) = Params.RewardRange(tmpEffortIndex) - 1;
         Params.MaxRewardVector(tmpEffortIndex) = Params.MaxRewardVector(tmpEffortIndex) * 1.5^Params.RewardRange(tmpEffortIndex);
-        Params.InitialSamplingRewards(tmpEffortIndex, 1:(Params.RewardGradients)) = ...
+        Params.InitialSamplingRewards(tmpEffortIndex, 2:(Params.RewardGradients+1)) = ...
                     Params.MaxRewardVector(tmpEffortIndex) .* [1:Params.RewardGradients]/Params.RewardGradients;
         return
     end
@@ -23,13 +23,14 @@ if isempty(Params.InitialSampling)
             Params.RewardRange(tmpEffortIndex) = Params.RewardRange(tmpEffortIndex) + 1;
         end
         Params.MaxRewardVector(tmpEffortIndex) = Params.MaxRewardVector(tmpEffortIndex) * 1.5^Params.RewardRange(tmpEffortIndex);
-        Params.InitialSamplingReward(tmpEffortIndex, 1:(Params.RewardGradients)) = ...
+        Params.InitialSamplingRewards(tmpEffortIndex, 2:(Params.RewardGradients+1)) = ...
                     Params.MaxRewardVector(tmpEffortIndex) .* [1:Params.RewardGradients]/Params.RewardGradients;
         return
     end
     
     if ~dat.ProbesAdaptationState(dat.ProbesAdaptationState(:,1) == dat.ProbeEffort,2)
         dat.ProbesAdaptationState(dat.ProbesAdaptationState(:,1) == dat.ProbeEffort,2) = 1;
+        Data(trial).ProbesAdaptationState = dat.ProbesAdaptationState;
     end
     % Adaptation
     tmpEffortIndex = find(Params.EffortVector == dat.ProbeEffort,1,'first');

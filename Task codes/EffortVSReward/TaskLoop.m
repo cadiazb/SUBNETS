@@ -208,7 +208,7 @@ for itrial = startTrial : Params.NumTrials
 	fprintf('Trial type\t\t%i\n',Data(trial).TrialType);
 %     fprintf('Block type\t\t%s\n',Params.BlockTypes{Data(trial).BlockType});
 %     fprintf('Block num\t\t(%i of %i)\n',Data(trial).BlockNum,Params.BlockSize);
-	fprintf('Total Blocks\t\t%i\n',Data(trial).TotalBlocks);
+	fprintf('Total Blocks\t\t%i\n',Data(trial).BlockNum);
     %% Initialize force trace
     Data(trial).ForceTrace = NaN(2 * Params.TrialLength / 0.01 , 5);
 
@@ -286,13 +286,14 @@ for itrial = startTrial : Params.NumTrials
 %         end
     %% Caculate adaptive reward
     if Params.UseRewardAdaptation
-        [Params] = CalculateAdaptiveVariable(Params, Data, trial);
+        [Params, Data] = CalculateAdaptiveVariable(Params, Data, trial);
+        fprintf('Probe Adaptation state\t\t%i\n',Data(trial).ProbesAdaptationState(Data(trial).ProbesAdaptationState(:,1) == Data(trial).ProbeEffort,2));
     end
     
     %% Drop high probes that have reach the absolute max reward more than 5 times
     tmpEffortProbes = unique(Params.EffortSampleSpace);
     for ii = 1:numel(tmpEffortProbes)
-        if sum([DATA([DATA.ProbeEffort] == tmpEffortProbes(ii)).ProbeReward] == Params.AbsoluteMaxReward) > 5
+        if sum([Data([Data.ProbeEffort] == tmpEffortProbes(ii)).ProbeReward] == Params.AbsoluteMaxReward) > 5
             Params.EffortSampleSpace(Params.EffortSampleSpace == tmpEffortProbes(ii)) = []; 
         end
     end
