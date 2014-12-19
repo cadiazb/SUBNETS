@@ -153,7 +153,7 @@ clear tmpTrialOK tmpTrialType tmpDlgOpt
 %% Set total number of trials and expected correct trials
 Params.NumTrials 				= 2000; % Choose a big number so task doesn't finish before hand
 if Params.TrialTypeProbs(1)
-    Params.NumCorrectTrials         = 4;
+    Params.NumCorrectTrials         = 8;
 elseif Params.TrialTypeProbs(2)
     Params.NumCorrectTrials         = 200; % Go/NoGo correct trials after initial sampling
 else
@@ -302,7 +302,7 @@ b5.ProbeTarget_pos = Params.WsCenter ;
 Params.EffortVector = [0.1 0.3 0.45 0.55 0.65 0.75 0.85 1];%[0.1:0.12:1];
 
 %% Pass
-Params.PassSensitivity  = 20;
+Params.PassSensitivity  = 10;
 Params.NoGoTap    = 0.025 * b5.Frame_scale(2);
 
 b5.Pass_color     = [0 0 1 1];
