@@ -264,8 +264,8 @@ if Params.TrialTypeProbs(1)
 else
     tmpInput = {NaN};
     tmpDlgOpt.Position = [990   304   200   150];
-    while isnan(str2double(tmpInput{1})) || (str2double(tmpInput{1}) < 20)
-        tmpInput = myinputdlg('Measured max force (>20N) =', 'Subject max force',...
+    while isnan(str2double(tmpInput{1})) || (str2double(tmpInput{1}) < 15)
+        tmpInput = myinputdlg('Measured max force (>15Lb) =', 'Subject max force',...
             1,{'30'}, tmpDlgOpt);
     end
     Params.MaxForce = ceil(str2double(tmpInput{1})); % Measured max force per subject [N]

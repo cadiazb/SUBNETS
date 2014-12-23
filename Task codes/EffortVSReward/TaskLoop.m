@@ -298,7 +298,7 @@ for itrial = startTrial : Params.NumTrials
     %% Drop high probes that have reach the absolute max reward more than 5 times
     tmpEffortProbes = unique(Params.EffortSampleSpace);
     for ii = 1:numel(tmpEffortProbes)
-        if sum([Data([Data.ProbeEffort] == tmpEffortProbes(ii)).ProbeReward] == Params.AbsoluteMaxReward) > 5
+        if sum([Data([Data.ProbeEffort] == tmpEffortProbes(ii)).ProbeReward] >= Params.AbsoluteMaxReward) > 5
             Params.EffortSampleSpace(Params.EffortSampleSpace == tmpEffortProbes(ii)) = []; 
         end
     end

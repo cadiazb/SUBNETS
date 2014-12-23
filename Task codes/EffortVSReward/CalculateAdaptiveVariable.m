@@ -22,7 +22,7 @@ if isempty(Params.InitialSampling)
         if ~Params.RewardRange(tmpEffortIndex) || dat.ProbeReward == Params.MaxRewardVector(tmpEffortIndex)
             Params.RewardRange(tmpEffortIndex) = Params.RewardRange(tmpEffortIndex) + 1;
         end
-        Params.MaxRewardVector(tmpEffortIndex) = Params.MaxRewardVector(tmpEffortIndex) * 1.5^Params.RewardRange(tmpEffortIndex);
+        Params.MaxRewardVector(tmpEffortIndex) = min(Params.AbsoluteMaxReward,Params.MaxRewardVector(tmpEffortIndex) * 1.5^Params.RewardRange(tmpEffortIndex));
         Params.InitialSamplingRewards(tmpEffortIndex, 2:(Params.RewardGradients+1)) = ...
                     Params.MaxRewardVector(tmpEffortIndex) .* [1:Params.RewardGradients]/Params.RewardGradients;
         return
