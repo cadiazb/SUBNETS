@@ -153,7 +153,7 @@ clear tmpTrialOK tmpTrialType tmpDlgOpt
 %% Set total number of trials and expected correct trials
 Params.NumTrials 				= 2000; % Choose a big number so task doesn't finish before hand
 if Params.TrialTypeProbs(1)
-    Params.NumCorrectTrials         = 8;
+    Params.NumCorrectTrials         = 20;
 elseif Params.TrialTypeProbs(2)
     Params.NumCorrectTrials         = 200; % Go/NoGo correct trials after initial sampling
 else
@@ -327,14 +327,14 @@ Params.UseRewardAdaptation      = false;
 Params.MaxRewardVector          = floor(linspace(Params.PassReward+1,Params.MaxReward,numel(Params.EffortVector )))';
 Params.RewardAdaptation         = [Params.EffortVector;...
                                         floor(linspace(Params.PassReward+1,Params.MaxReward,numel(Params.EffortVector )))]';
-Params.Npre                     = 3; % Max number of samples per probe before increasing MaxReward
+Params.Npre                     = 4; % Number of samples per probe before increasing MaxReward
 Params.RewardRange              = zeros(1,numel(Params.EffortVector));
 Params.RewardGradients          = 5;
 Params.InitialSampling          = Params.EffortVector';
 Params.InitialSamplingRewards   = Params.InitialSampling;
 Params.InitialSamplingRewards(:, 2:(Params.RewardGradients+1)) = ...
                 repmat(Params.MaxRewardVector, 1,numel(1:Params.RewardGradients)) .* ...
-                repmat([1:Params.RewardGradients]/Params.RewardGradients, numel(Params.MaxRewardVector), 1);
+                repmat((1:Params.RewardGradients)/Params.RewardGradients, numel(Params.MaxRewardVector), 1);
 Params.InitialSampling          = repmat(Params.InitialSampling,1,1, Params.Npre);
 Params.NumTrialInitialSampling  = numel(Params.InitialSampling);
 
@@ -342,12 +342,14 @@ for ii = 1:numel(Params.EffortVector)
     Params.ProbeModels.(['Effort' num2str(ii)]) = [];
 end
 
+Params.AdaptationLookBack = 10;
+
 % Sampling space for the rest of the experiment
 Params.EffortSampleSpace    = repmat(Params.EffortVector, ...
     1, ceil(Params.NumCorrectTrials/size(Params.EffortVector,2)));
 %% Total Points String
 b5.TotalPoints_color        = [0 0 0 1];
-b5.TotalPoints_pos          = b5.PointsBox_pos - [140, 0]; %-[110, 0];
+b5.TotalPoints_pos          = b5.PointsBox_pos - [110, 0]; %-[140, 0];
 b5.TotalPoints_v            = [double(sprintf('%.01f ',0)) 162 zeros(1,numel(b5.TotalPoints_v) - 5)]';
 
 %% TONES
@@ -363,6 +365,10 @@ b5.RewardTone_scale         = 1;    % (units?)
 % Params.BlockSize 				= 35;
 Params.BlockSize 				=1000;
 
+%% LJJuicer parameters
+
+Params.LJJuicerDOUT = 2; % Which digital output connected to solenoid [2-4]
+
 %% OTHER
 Params.UseCorrectionTrials          = false; % { both of these
 Params.UseAdaptiveProbability       = false; % { cannot be true
@@ -370,7 +376,7 @@ Params.AdaptiveLookbackLength       = 10;    % num trials to look back
 Params.FixedTrialLength             = true;
 Params.AllowEarlyReach              = false; % { allow subject to start
                                            % { reach before end of delay
-Params.StringOffset                 = [65, 115];%[-55; -100]; % To see string centered in coin
+Params.StringOffset                 = [55; 100];%[65, 115]; % To see string centered in coin
 
 %% SYNC
 b5 = bmi5_mmap(b5);

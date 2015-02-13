@@ -36,6 +36,8 @@ dfields = {
     'ForceTrace'
     'GoCue_time_o'
     'ProbesAdaptationState'
+    'JuiceON'
+    'JuiceOFF'
 };
 dinit = cell(size(dfields));
 dtmp  = cell2struct(dinit,dfields,1);

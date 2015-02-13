@@ -7,7 +7,7 @@ function [Params, dat, b5] = UpdateCursorOnLine(Params, dat, b5)
     n = 100; %number of samples read from labjack
     Vin = 5; % Power supply [V]
     ZeroBalance = Vin*2e-3*0.002;
-    tao = 5;
+    tao = 50;
     itmp = zeros(size(b5.isometricAIN_sensors_o,1), 1);
     
     for ii = 1:n

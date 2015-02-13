@@ -284,7 +284,8 @@ if dat.OutcomeID == 0
     
     dat.TotalPoints = dat.TotalPoints + tmpTrialPoints;
     
-    tmpString = sprintf('%0.1f ¢',dat.TotalPoints);
+%     tmpString = sprintf('%0.1f ¢',dat.TotalPoints);
+    tmpString = sprintf('$$');
     tmpStringZeros = numel(b5.TotalPoints_v) - numel(double(tmpString));
     b5.TotalPoints_v = [double(tmpString) zeros(1,tmpStringZeros)]';
     
@@ -305,7 +306,8 @@ if dat.OutcomeID == 0
     end
 
 else
-    tmpString = sprintf('%0.1f ¢',dat.TotalPoints);
+%     tmpString = sprintf('%0.1f ¢',dat.TotalPoints);
+    tmpString = sprintf('$$');
     tmpStringZeros = numel(b5.TotalPoints_v) - numel(double(tmpString));
     b5.TotalPoints_v = [double(tmpString) zeros(1,tmpStringZeros)]';
 end
