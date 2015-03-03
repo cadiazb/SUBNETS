@@ -28,27 +28,19 @@ bmi5_cmd('make open_square Frame 0.01');
 bmi5_cmd('make open_square BarOutline 0.03');
 bmi5_cmd('make square FillingEffort');
 bmi5_cmd('make square Pass');
-bmi5_cmd('make square PointsBox');
 bmi5_cmd('make circle RewardCircle');
 bmi5_cmd('make circle RewardCircleFeedback');
 bmi5_cmd('make circle PassRewardCircle');
 bmi5_cmd('make circle Cursor');
-Params.NumEffortTicks = 3;
-for ii = 1:Params.NumEffortTicks
-    bmi5_cmd(sprintf('make square effortTick%d',ii));
-end
+% Params.NumEffortTicks = 3;
+% for ii = 1:Params.NumEffortTicks
+%     bmi5_cmd(sprintf('make square effortTick%d',ii));
+% end
 
 bmi5_cmd('make labjack isometric 4 4');
 bmi5_cmd('make tone GoTone');
 bmi5_cmd('make tone RewardTone');
 bmi5_cmd('make store int 1 Trial');
-
-bmi5_cmd('make text TotalPoints 10');
-
-bmi5_cmd('make text Reward 9');
-bmi5_cmd('make text RewardFeedback 9');
-bmi5_cmd('make text PassReward 9');
-bmi5_cmd('make text PassString 5');
 
 % Go/NoGo
 bmi5_cmd('make square ProbeTarget');
@@ -125,19 +117,7 @@ Params.SessionCount = ct;
 % 2. Go/NoGo with reward adaptaion. file = ProbeOnlyAdaptation.m
 % 3. Continous reward. file = VerticalFillingBar.m
 
-tmpTrialOK = 0;
-tmpGetTrialType = 0;
-tmpDlgOpt.Position = [990   304   350   150];
-while ~tmpTrialOK && (tmpGetTrialType < 3)
-    tmpGetTrialType = tmpGetTrialType + 1;
-    [tmpTrialType, tmpTrialOK] = mylistdlg('PromptString', 'Select trial type', ...
-        'SelectionMode','single', 'ListString', ...
-        {'Subject Callibration', 'Go/NoGo', 'Continous Reward'},...
-        'Position', tmpDlgOpt.Position);
-end
-if ~tmpTrialOK
-    error('Could not get trial type')
-end
+tmpTrialType = 2;
 switch tmpTrialType
     case 1
         Params.TrialTypeProbs 			= [1 0 0];
@@ -148,16 +128,16 @@ switch tmpTrialType
 end
 Params.TrialTypeProbs           = Params.TrialTypeProbs/sum(Params.TrialTypeProbs);
 
-clear tmpTrialOK tmpTrialType tmpDlgOpt
+clear tmpTrialType
 
 %% Set total number of trials and expected correct trials
-Params.NumTrials 				= 2000; % Choose a big number so task doesn't finish before hand
+Params.NumTrials 				= 10000; % Choose a big number so task doesn't finish before hand
 if Params.TrialTypeProbs(1)
     Params.NumCorrectTrials         = 20;
 elseif Params.TrialTypeProbs(2)
-    Params.NumCorrectTrials         = 200; % Go/NoGo correct trials after initial sampling
+    Params.NumCorrectTrials         = 1000; % Go/NoGo correct trials after initial sampling
 else
-    Params.NumCorrectTrials         = 225; % Continuous reward
+    Params.NumCorrectTrials         = 1000; % Continuous reward
 end
 
 %% BLOCKS OF TRIALS
@@ -185,8 +165,8 @@ Params.KeyboardAtBlockEnd 		= true;
 
 %% DELAYS, PENALTIES and TIMEOUTS [sec]
 % Start trial
-Params.TimeoutReachStartTarget  = 0.1; % max time to acquire start target
-Params.StartTarget.Hold       	= 0.1;
+Params.TimeoutReachStartTarget  = 0.5; % max time to acquire start target
+Params.StartTarget.Hold       	= 0.5;
 % Instructed delay
 Params.ReachDelay               = 1;	% draw from this interval
 % Reaching phase
@@ -199,13 +179,12 @@ Params.TimeoutReachTarget       = 0.6; % max time to reach reaching target
 Params.MovementWindow           = 0.3; % For effort line, time to move [s]
 
 % Other
-Params.TrialLength              = 3.6;   % Fixed trial length [s]
-Params.InterTrialDelay 			= 0.4;  % delay between each trial [sec]
+Params.TrialLength              = 4;   % Fixed trial length [s]
+Params.InterTrialDelay 			= 0.5;  % delay between each trial [sec]
 
 %%  WORKSPACE, in mm
 Params.WsBounds             	= [-150 -150 ; 150 150]; % [Xmin Ymin; Xmax Ymax]
 Params.WsCenter 				= mean(Params.WsBounds,1);
-% Params.WsCenter 				= [0 0];
 
 
 b5.Frame_color  = [1 1 1 1];
@@ -228,10 +207,17 @@ Params.StartTarget.Win  		= 20; % radius
 Params.StartTarget.Locations 	= {Params.WsCenter + [-40 -40]}; % cell array of locations
 
 %% Rewards
-Params.AbsoluteMaxReward   = 200;
-Params.MaxReward            = 30;
-Params.PassReward           = 1;
-Params.RewardsVector        = [2:2:Params.MaxReward];
+Params.AbsoluteMaxReward    =   1000; % [ms]
+Params.MaxReward            =   300; % [ms]
+Params.PassReward           =   50; % [ms]
+Params.MaxRewardDotSize     =   50;
+Params.PassDotSize          =   10;
+Params.RewardsVector        = round(...
+    linspace(Params.PassReward,Params.MaxReward,10));
+Params.RewardDotScaler(1)   = (Params.PassDotSize - Params.MaxRewardDotSize)/...
+    (Params.PassReward - Params.MaxReward);
+Params.RewardDotScaler(2)   = Params.PassDotSize - ...
+    (Params.RewardDotScaler(1) * Params.PassReward);
 
 if ~Params.TrialTypeProbs(1)
     Params.RewardSampleSpace = repmat(Params.RewardsVector, ...
@@ -240,37 +226,19 @@ else
     Params.RewardSampleSpace = ones(1, Params.NumCorrectTrials);
 end
 
-b5.Reward_color = [0 0 0 1];
-b5.Reward_pos = Params.WsCenter + [-25, b5.Frame_scale(2)/2 + 10];
-
 b5.RewardCircle_color = [0 1 0 0.75];
-b5.RewardCircle_scale = [35 35];
+b5.RewardCircle_scale = [35 35]; % Initialize. Will update with reward
 
 b5.RewardCircleFeedback_color = [0 1 0 0.75];
-b5.RewardCircleFeedback_scale = [35 35];
+b5.RewardCircleFeedback_scale = [35 35]; % Initialize. Will update with reward
 b5.RewardCircleFeedback_pos = Params.WsCenter - [60, b5.Frame_scale(2)/2];
-
-b5.RewardFeedback_color = [0 0 0 0.75];
-b5.RewardFeedback_pos = b5.RewardCircleFeedback_pos - [45,0];
-
-b5.PointsBox_color = [0 1 0 0.75];
-b5.PointsBox_scale = [50 40];
-b5.PointsBox_pos = Params.WsBounds(1,:);
 
 %% Effort
 Params.LoadCellMax                  = 50;
 if Params.TrialTypeProbs(1)
     Params.MaxForce                 = 50;
 else
-    tmpInput = {NaN};
-    tmpDlgOpt.Position = [990   304   200   150];
-    while isnan(str2double(tmpInput{1})) || (str2double(tmpInput{1}) < 15)
-        tmpInput = myinputdlg('Measured max force (>15Lb) =', 'Subject max force',...
-            1,{'30'}, tmpDlgOpt);
-    end
-    Params.MaxForce = ceil(str2double(tmpInput{1})); % Measured max force per subject [N]
-    
-    clear tmpInput tmpDlgOpt
+    Params.MaxForce = 20; % Measured max force per subject [N]
 end
 
 % Vertical bar outline
@@ -283,44 +251,26 @@ b5.FillingEffort_color     = [1 1 0 1];
 b5.FillingEffort_scale     = b5.Frame_scale .* [0.25, 1];
 b5.FillingEffort_pos       = Params.WsCenter - [0, b5.Frame_scale(2)/2] + ...
                     [0, b5.FillingEffort_scale(2)/2];
-                
-% Vertical bar ticks
-for ii = 1:Params.NumEffortTicks
-    b5.(sprintf('effortTick%d_color',ii))   = b5.BarOutline_color;
-    b5.(sprintf('effortTick%d_scale',ii))   = [6,2];
-    b5.(sprintf('effortTick%d_pos',ii))(1)     = ...
-        Params.WsCenter(1) + b5.BarOutline_scale(1)/2 - b5.(sprintf('effortTick%d_scale',ii))(1)/2;
-    b5.(sprintf('effortTick%d_pos',ii))(2)     = ...
-        Params.WsCenter(2) - b5.BarOutline_scale(2)/2 + ii*b5.BarOutline_scale(2)/(1+ Params.NumEffortTicks);
-end
 
 % Go/NoGo
 b5.ProbeTarget_color = [1 1 0 1];
 b5.ProbeTarget_scale = [b5.BarOutline_scale(1), 2];
 b5.ProbeTarget_pos = Params.WsCenter ;
 
-Params.EffortVector = [0.1 0.3 0.45 0.55 0.65 0.75 0.85 1];%[0.1:0.12:1];
+Params.EffortVector = [0.1:0.12:0.9];
 
 %% Pass
-Params.PassSensitivity  = 10;
+Params.PassSensitivity  = 5;
 Params.NoGoTap    = 0.025 * b5.Frame_scale(2);
 
-b5.Pass_color     = [0 0 1 1];
-b5.Pass_scale     = b5.BarOutline_scale .* [1, 0.1];
+b5.Pass_color     = b5.ProbeTarget_color;
+b5.Pass_scale     = b5.ProbeTarget_scale;
 b5.Pass_pos       = Params.WsCenter - [0,b5.Frame_scale(2)/2 + b5.Pass_scale(2)/2] - ...
-                       [0, 30];
+                       [0, 10];
                    
 b5.PassRewardCircle_color = [0 1 0 0.75];
-b5.PassRewardCircle_scale = [35 35];
+b5.PassRewardCircle_scale = [1 1].*Params.PassDotSize;
 b5.PassRewardCircle_pos = b5.Pass_pos - [60, 0];
-
-b5.PassReward_color = [0 0 0 0.75];
-b5.PassReward_pos = b5.PassRewardCircle_pos - [55, 0];
-b5.PassReward_v = [double(sprintf('%.0f ¢', Params.PassReward)) 0 0 0 0 0 0]';
-
-b5.PassString_v = [double('Pass') 0]';
-b5.PassString_pos = b5.Pass_pos - [15, 0];
-b5.PassString_color = [1 1 1 1];
 
 %% Adaptive sampling parameters
 Params.UseRewardAdaptation      = false;
@@ -347,10 +297,6 @@ Params.AdaptationLookBack = 10;
 % Sampling space for the rest of the experiment
 Params.EffortSampleSpace    = repmat(Params.EffortVector, ...
     1, ceil(Params.NumCorrectTrials/size(Params.EffortVector,2)));
-%% Total Points String
-b5.TotalPoints_color        = [0 0 0 1];
-b5.TotalPoints_pos          = b5.PointsBox_pos - [110, 0]; %-[140, 0];
-b5.TotalPoints_v            = [double(sprintf('%.01f ',0)) 162 zeros(1,numel(b5.TotalPoints_v) - 5)]';
 
 %% TONES
 b5.GoTone_freq 				= 1000;  % (Hz)
@@ -367,7 +313,8 @@ Params.BlockSize 				=1000;
 
 %% LJJuicer parameters
 
-Params.LJJuicerDOUT = 2; % Which digital output connected to solenoid [2-4]
+Params.LJJuicerDOUT = 1; % Which digital output connected to solenoid [1-4]
+b5 = LJJuicer(Params, b5, 'off');
 
 %% OTHER
 Params.UseCorrectionTrials          = false; % { both of these
@@ -376,7 +323,7 @@ Params.AdaptiveLookbackLength       = 10;    % num trials to look back
 Params.FixedTrialLength             = true;
 Params.AllowEarlyReach              = false; % { allow subject to start
                                            % { reach before end of delay
-Params.StringOffset                 = [55; 100];%[65, 115]; % To see string centered in coin
+
 
 %% SYNC
 b5 = bmi5_mmap(b5);

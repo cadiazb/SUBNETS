@@ -41,16 +41,11 @@ dat.ProbeReward = ...
     dat.ProbeEffort, 2);
 end
 
-tmpString = sprintf('%.1f ¢', dat.ProbeReward);
-tmpStringZeros = numel(b5.Reward_v) - numel(double(tmpString));
-b5.Reward_v = [double(tmpString) zeros(1,tmpStringZeros)]';
-clear tmpString tmpStringZeros
-
 % Init positions
 b5.RewardCircle_pos = b5.ProbeTarget_pos;
-b5.Reward_pos = b5.RewardCircle_pos - [20, 0];
+b5.RewardCircle_scale = [1, 1] .* ...
+    ceil(Params.RewardDotScaler(1) * dat.ProbeReward + Params.RewardDotScaler(2));
 b5.PassRewardCircle_pos = b5.Pass_pos - [60, 0];
-b5.PassReward_pos = b5.PassRewardCircle_pos - [Params.StringOffset(1), 0];
 
 %% Misc stuff
 dat.OutcomeID 	= 0;
@@ -66,17 +61,6 @@ b5.RewardCircle_draw            = DRAW_NONE;
 b5.PassRewardCircle_draw        = DRAW_NONE;
 b5.Cursor_draw                  = DRAW_NONE;
 b5.ProbeTarget_draw             = DRAW_NONE;
-for ii = 1:Params.NumEffortTicks
-    b5.(sprintf('effortTick%d_draw',ii))   = DRAW_NONE;
-end
-
-b5.Reward_draw                  = DRAW_NONE;
-b5.PassReward_draw              = DRAW_NONE;
-b5.PassString_draw              = DRAW_NONE;
-
-%% Always show points ON/OFF
-b5.TotalPoints_draw             = DRAW_NONE;
-b5.PointsBox_draw               = DRAW_NONE;
 
 b5 = bmi5_mmap(b5);
 %% 1. ACQUIRE START TARGET
@@ -125,7 +109,6 @@ if ~dat.OutcomeID
     t_start = b5.time_o;
     
     b5.RewardCircle_draw = DRAW_BOTH;
-    b5.Reward_draw = DRAW_BOTH;
 
     done = false;
 
@@ -148,19 +131,14 @@ end
 %% 3. REACHING PHASE (reach to target and hold)
 if ~dat.OutcomeID
     
-    [Params, b5] = moveShape(Params, b5, {'RewardCircle', 'Reward'}, ...
-        [b5.RewardCircle_pos;b5.RewardCircle_pos] + [-60, 0; -60, 0], [0 0;-20 0],[0 0;-Params.StringOffset(1) 0]);
+    [Params, b5] = moveShape(Params, b5, {'RewardCircle'}, ...
+        [b5.RewardCircle_pos] + [-60, 0], [0 0],[0 0]);
     
     b5.BarOutline_draw          = DRAW_BOTH;
     b5.FillingEffort_draw       = DRAW_BOTH;
     b5.Pass_draw                = DRAW_BOTH;
     b5.PassRewardCircle_draw    = DRAW_BOTH;
     b5.ProbeTarget_draw         = DRAW_BOTH;
-    for ii = 1:Params.NumEffortTicks
-        b5.(sprintf('effortTick%d_draw',ii))   = DRAW_BOTH;
-    end
-    b5.PassReward_draw          = DRAW_BOTH;
-    b5.PassString_draw          = DRAW_BOTH;
     
     b5.GoTone_play_io = 1;
     b5.FillingEffort_scale(2) = 0;
@@ -177,9 +155,9 @@ if ~dat.OutcomeID
 	while ~done
         [Params, dat, b5] = UpdateCursorOnLine(Params, dat, b5); % syncs b5 twice
         pos = b5.Cursor_pos;
-        dat.FinalCursorPos = [max(dat.FinalCursorPos(1), pos(1)), 0];
+        dat.FinalCursorPos = [0,max(dat.FinalCursorPos(2), pos(2))];
         b5.FillingEffort_scale = [b5.BarOutline_scale(1),...
-            max(dat.FinalCursorPos(1)-b5.StartTarget_pos(1),0)];
+            max(dat.FinalCursorPos(2)-b5.StartTarget_pos(2),0)];
         b5.FillingEffort_pos       = Params.WsCenter - [0, b5.Frame_scale(2)/2] + ...
                     [0, b5.FillingEffort_scale(2)/2];
         b5 = bmi5_mmap(b5);
@@ -190,12 +168,12 @@ if ~dat.OutcomeID
         
         if ~posOk && isempty(dat.ReactionTime)
             dat.ReactionTime = b5.time_o - t_start;
-            if b5.FillingEffort_scale(2) > 0
+            if b5.FillingEffort_scale(2) > Params.NoGoTap
                 tmpChoseProbe = true;
             end
         end
         if ~isempty(dat.ReactionTime) && ~tmpChoseProbe
-            if (pos(1) - b5.StartTarget_pos(1)) < -Params.NoGoTap
+            if (pos(2) - b5.StartTarget_pos(2)) < -Params.NoGoTap
                 dat.TrialChoice = 'Pass';
                 done = true;
                 dat.OutcomeID 	= 0;
@@ -236,63 +214,32 @@ if ~dat.OutcomeID
         end
 	end
 end
-%% Graphical feedback
-if dat.OutcomeID == 0
-    b5.TotalPoints_draw             = DRAW_BOTH;
-    b5.PointsBox_draw               = DRAW_BOTH;
-    switch dat.TrialChoice
-        case 'Probe Effort'
-            [Params, b5] = blinkShape(Params, b5, {'RewardCircle', 'Reward'}, [10, 10], 0.5);
-            [Params, b5] = moveShape(Params, b5, {'RewardCircle', 'Reward'}, ...
-                [Params.WsBounds(1,:);Params.WsBounds(1,:)],[0 0; -Params.StringOffset(1) 0], [0 0; -Params.StringOffset(2) 0]);
-            b5.RewardCircle_draw    = DRAW_NONE;
-            b5.Reward_draw          = DRAW_NONE;
-        case 'Pass'
-            [Params, b5] = blinkShape(Params, b5, {'Pass', 'PassRewardCircle', 'PassReward'}, [10, 10, 10], 0.5);
-            [Params, b5] = moveShape(Params, b5, {'PassRewardCircle', 'PassReward'}, ...
-                [Params.WsBounds(1,:);Params.WsBounds(1,:)],[0 0; -Params.StringOffset(1) 0], [0 0; -Params.StringOffset(2) 0]);
-            b5.PassRewardCircle_draw        = DRAW_NONE;
-            b5.PassReward_draw              = DRAW_NONE;
-    end
-end
 
 %% Trial outcome and variable adaptation
-b5.StartTarget_draw             = DRAW_NONE;
-b5.Frame_draw                   = DRAW_NONE;
-b5.BarOutline_draw              = DRAW_NONE;
-b5.FillingEffort_draw           = DRAW_NONE;
-b5.Pass_draw                    = DRAW_NONE;
-b5.RewardCircle_draw            = DRAW_NONE;
-b5.PassRewardCircle_draw        = DRAW_NONE;
-b5.Cursor_draw                  = DRAW_NONE;
-b5.ProbeTarget_draw             = DRAW_NONE;
-for ii = 1:Params.NumEffortTicks
-    b5.(sprintf('effortTick%d_draw',ii))   = DRAW_NONE;
-end
-
-b5.Reward_draw                  = DRAW_NONE;
-b5.PassReward_draw              = DRAW_NONE;
-b5.PassString_draw              = DRAW_NONE;
 
 if dat.OutcomeID == 0
     if strcmp(dat.TrialChoice, 'Probe Effort')
-        tmpTrialPoints = dat.ProbeReward;
+        dat.ActualReward = dat.ProbeReward;
     end
     if strcmp(dat.TrialChoice, 'Pass')
-        tmpTrialPoints = Params.PassReward;
+        dat.ActualReward = Params.PassReward;
     end
     
-    dat.TotalPoints = dat.TotalPoints + tmpTrialPoints;
-    
-%     tmpString = sprintf('%0.1f ¢',dat.TotalPoints);
-    tmpString = sprintf('$$');
-    tmpStringZeros = numel(b5.TotalPoints_v) - numel(double(tmpString));
-    b5.TotalPoints_v = [double(tmpString) zeros(1,tmpStringZeros)]';
-    
     fprintf('Choice\t\t%s \n',dat.TrialChoice);
-    fprintf('Total points\t\t%d \n',dat.TotalPoints);
+    fprintf('Trial reward\t\t%d \n',dat.ActualReward);
 	
     b5.RewardTone_play_io = 1;
+    
+    % Give juice reward
+    b5 = LJJuicer(Params, b5, 'on');
+    b5 = bmi5_mmap(b5);
+    juiceStart = b5.time_o;
+    while (b5.time_o - juiceStart) < (dat.ActualReward / 1000)
+        b5 = bmi5_mmap(b5);
+    end
+    b5 = LJJuicer(Params, b5, 'off');
+    dat.JuiceON = juiceStart;
+    dat.JuiceOFF = b5.time_o;
     
     if ~isempty(Params.InitialSampling)
         Params.InitialSampling(Params.InitialSampling(:,1) == ...
@@ -304,15 +251,20 @@ if dat.OutcomeID == 0
     elseif  dat.ProbesAdaptationState(dat.ProbesAdaptationState(:,1) == dat.ProbeEffort,2)
         Params.EffortSampleSpace(find(Params.EffortSampleSpace == dat.ProbeEffort, 1)) = [];
     end
-
-else
-%     tmpString = sprintf('%0.1f ¢',dat.TotalPoints);
-    tmpString = sprintf('$$');
-    tmpStringZeros = numel(b5.TotalPoints_v) - numel(double(tmpString));
-    b5.TotalPoints_v = [double(tmpString) zeros(1,tmpStringZeros)]';
 end
 
 b5 = bmi5_mmap(b5);
+
+%Clean screen
+b5.StartTarget_draw             = DRAW_NONE;
+b5.Frame_draw                   = DRAW_NONE;
+b5.BarOutline_draw              = DRAW_NONE;
+b5.FillingEffort_draw           = DRAW_NONE;
+b5.Pass_draw                    = DRAW_NONE;
+b5.RewardCircle_draw            = DRAW_NONE;
+b5.PassRewardCircle_draw        = DRAW_NONE;
+b5.Cursor_draw                  = DRAW_NONE;
+b5.ProbeTarget_draw             = DRAW_NONE;
 
 % Pause at end of trials
 if Params.FixedTrialLength
@@ -326,8 +278,6 @@ startpause = b5.time_o;
 while (b5.time_o - startpause) < the_delay
     b5 = bmi5_mmap(b5);
 end
-b5.PointsBox_draw               = DRAW_NONE;
-b5.TotalPoints_draw             = DRAW_NONE;
 
 %%% XXX TODO: NEED WAY TO LOG (MORE) INTERESTING TRIAL EVENTS
 

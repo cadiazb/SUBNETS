@@ -46,6 +46,7 @@ Data = dtmp;
 Data(Params.NumTrials) = dtmp;
 
 SetupGUI();
+drawnow;
 
 %% TRIAL LOOP
 

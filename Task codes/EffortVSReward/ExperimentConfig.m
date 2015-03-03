@@ -10,4 +10,4 @@ SortFifoOutFile = '/tmp/gtkclient_out.fifo';
 
 BinFile      = '/tmp/binned.mmap';
 
-SaveDirectory 	= '/home/motorlab/Data/SUBNETS/EffortVSReward';
+SaveDirectory 	= '/home/motorlab/Data/SUBNETS/inCage';
