@@ -47,7 +47,22 @@ t_start = b5.time_o;
 while ~done
 
     pos = b5.Cursor_pos;
-
+%     [Params, dat, b5] = UpdateCursorOnLine(Params, dat, b5); % syncs b5 twice
+%         pos = b5.Cursor_pos;
+%         dat.FinalCursorPos = [0,pos(2)];
+%         if (dat.FinalCursorPos(2)-b5.StartTarget_pos(2)) >= 0
+%             b5.FillingEffort_scale = [b5.BarOutline_scale(1),...
+%                 dat.FinalCursorPos(2)-b5.StartTarget_pos(2)];
+%             b5.FillingEffort_pos       = Params.WsCenter - [0, b5.Frame_scale(2)/2] + ...
+%                     [0, b5.FillingEffort_scale(2)/2];
+%         else
+%             b5.FillingEffort_scale = [b5.BarOutline_scale(1),...
+%                 -max((dat.FinalCursorPos(2)-b5.StartTarget_pos(2)), ...
+%                 (b5.Pass_pos(2) - b5.StartTarget_pos(2)))];
+%             b5.FillingEffort_pos       = Params.WsCenter - [0, b5.Frame_scale(2)/2] - ...
+%                     [0, b5.FillingEffort_scale(2)/2];
+%         end
+%         
 	% Check for acquisition of start target
   	posOk = TrialInBox(pos, b5.StartTarget_pos, Params.StartTarget.Win);
 
