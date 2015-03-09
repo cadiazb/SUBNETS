@@ -4,10 +4,10 @@ function [Params, dat, b5] = UpdateCursorOnLine(Params, dat, b5)
     b5 = bmi5_mmap(b5);
     
     %% Retreive readings form Labjack
-    n = 200; %number of samples read from labjack
+    n = 100; %number of samples read from labjack
     Vin = 5; % Power supply [V]
     ZeroBalance = Vin*2e-3*0.6;
-    ZeroOffset = [0.0015 0 -0.00022 0]';
+    ZeroOffset = [0.0015 0 -0.0002 0]';
     Polarity = [1 1 1 1]';
     tao = 50;
     itmp = zeros(size(b5.isometricAIN_sensors_o,1), 1);

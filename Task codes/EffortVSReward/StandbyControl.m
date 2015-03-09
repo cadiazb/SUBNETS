@@ -1,4 +1,4 @@
-function [b5, controlWindow] = StandbyControl(b5)
+function [b5, controlWindow] = StandbyControl(Params, b5, standAlone)
 % Standby control for in cage training
 %
 % [b5, controlWindow] = StandbyControl(b5)
@@ -36,11 +36,17 @@ set(uiH.Quit, 'Callback',           @Quit_Callback);
 set(uiH.QuitButton, 'Callback',     @Quit_Callback);
 set(figH, 'CloseRequestFcn',        @Quit_Callback);
 
+if exist('standAlone', 'var') && ~standAlone
+    set(uiH.Quit, 'enable', 'off')
+    set(uiH.QuitButton, 'enable', 'off')
+    set(figH, 'CloseRequest', 'off');
+end
+
 % Make figure visible
 set(figH, 'Visible', 'on');
 
 % Initialize GUI
-Params = [];
+ParamsGUI = [];
 standbyControlInit();
 
 % Create global bmi5 fifo
@@ -56,7 +62,7 @@ controlWindow.rewardNow = @RewardNow;
 controlWindow.purgeLine = @PurgeLine;
 controlWindow.setRewardTime = @SetRewardTime;
 controlWindow.setPurgeTime = @SetPurgeTime;
-controlWindow.quit = @Quite;
+controlWindow.quit = @Quit_Callback;
 controlWindow.message = @message;
 controlWindow.doSomething = @doSomething;
 
@@ -86,15 +92,15 @@ controlWindow.doSomething = @doSomething;
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
     function RewardNow_Callback(hObject, ~)
         
-        b5.isometricDOUT_channels = 1;
+        b5 = LJJuicer(Params, b5, 'on');
         b5 = bmi5_mmap(b5);
         juiceStart = b5.isometricDOUT_time_o;
 
-        while (b5.time_o - juiceStart) < (Params.RewardTime.Value/1000)
+        while (b5.time_o - juiceStart) < (ParamsGUI.RewardTime.Value/1000)
             b5 = bmi5_mmap(b5);
         end
         
-        b5.isometricDOUT_channels = 0;
+        b5 = LJJuicer(Params, b5, 'off');
         b5 = bmi5_mmap(b5);
         set(uiH.Msg,'String',...
             sprintf('Rewarded %.0f ms', 1000*(b5.time_o - juiceStart)));
@@ -107,9 +113,9 @@ controlWindow.doSomething = @doSomething;
         b5 = bmi5_mmap(b5);
         juiceStart = b5.isometricDOUT_time_o;
 
-        while (b5.time_o - juiceStart) < Params.PurgeTime.Value
+        while (b5.time_o - juiceStart) < ParamsGUI.PurgeTime.Value
             set(uiH.Msg,'String',...
-                sprintf('%.01f', Params.PurgeTime.Value - (b5.time_o - juiceStart)));
+                sprintf('%.01f', ParamsGUI.PurgeTime.Value - (b5.time_o - juiceStart)));
             b5 = bmi5_mmap(b5);
         end
         set(uiH.Msg,'String', 'Line Purged');
@@ -122,7 +128,7 @@ controlWindow.doSomething = @doSomething;
     function RewardTime_Callback(hObject, ~)
         
         UpdateParams();
-        set(uiH.RewardTimeText, 'string', sprintf('%.0fms',Params.RewardTime.Value));
+        set(uiH.RewardTimeText, 'string', sprintf('%.0fms',ParamsGUI.RewardTime.Value));
         
     end
 
@@ -130,22 +136,22 @@ controlWindow.doSomething = @doSomething;
     function PurgeTime_Callback(hObject, ~)
         
         UpdateParams();
-        set(uiH.PurgeTimeText, 'string', sprintf('%.2fs',Params.PurgeTime.Value));
+        set(uiH.PurgeTimeText, 'string', sprintf('%.2fs',ParamsGUI.PurgeTime.Value));
     end
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
     function RewardTimeMin_Callback(hObject, ~)
         
         if ~isnan(str2double(get(hObject,'string')))
-            if Params.RewardTime.Value < str2double(hObject.String)
-                set(hObject, 'String', num2str(Params.RewardTime.Range(1)));
+            if ParamsGUI.RewardTime.Value < str2double(hObject.String)
+                set(hObject, 'String', num2str(ParamsGUI.RewardTime.Range(1)));
                 message('Current reward time is shorter that new min')
             else
                 set(uiH.RewardTime, 'Min', str2double(hObject.String'))
                 UpdateParams();
             end
         else
-            set(hObject, 'String', num2str(Params.RewardTime.Range(1)));
+            set(hObject, 'String', num2str(ParamsGUI.RewardTime.Range(1)));
             message('Value entered is not numeric')
         end
         
@@ -155,15 +161,15 @@ controlWindow.doSomething = @doSomething;
     function RewardTimeMax_Callback(hObject, ~)
         
         if ~isnan(str2double(get(hObject,'string')))
-            if Params.RewardTime.Value > str2double(hObject.String)
-                set(hObject, 'String', num2str(Params.RewardTime.Range(2)));
+            if ParamsGUI.RewardTime.Value > str2double(hObject.String)
+                set(hObject, 'String', num2str(ParamsGUI.RewardTime.Range(2)));
                 message('Current reward time is longer that new max')
             else
                 set(uiH.RewardTime, 'Max', str2double(hObject.String))
                 UpdateParams();
             end
         else
-            set(hObject, 'String', num2str(Params.RewardTime.Range(2)));
+            set(hObject, 'String', num2str(ParamsGUI.RewardTime.Range(2)));
             message('Value entered is not numeric')
         end
         
@@ -173,15 +179,15 @@ controlWindow.doSomething = @doSomething;
     function PurgeTimeMin_Callback(hObject, ~)
         
         if ~isnan(str2double(get(hObject,'string')))
-            if Params.PurgeTime.Value < str2double(hObject.String)
-                set(hObject, 'String', num2str(Params.PurgeTime.Range(1)));
+            if ParamsGUI.PurgeTime.Value < str2double(hObject.String)
+                set(hObject, 'String', num2str(ParamsGUI.PurgeTime.Range(1)));
                 message('Current purge time is shorter that new min')
             else
                 set(uiH.PurgeTime, 'Min', str2double(hObject.String))
                 UpdateParams();
             end
         else
-            set(hObject, 'String', num2str(Params.PurgeTime.Range(1)));
+            set(hObject, 'String', num2str(ParamsGUI.PurgeTime.Range(1)));
             message('Value entered is not numeric')
         end
         
@@ -191,15 +197,15 @@ controlWindow.doSomething = @doSomething;
     function PurgeTimeMax_Callback(hObject, ~)
         
         if ~isnan(str2double(get(hObject,'string')))
-            if Params.PurgeTime.Value > str2double(hObject.String)
-                set(hObject, 'String', num2str(Params.PurgeTime.Range(2)));
+            if ParamsGUI.PurgeTime.Value > str2double(hObject.String)
+                set(hObject, 'String', num2str(ParamsGUI.PurgeTime.Range(2)));
                 message('Current purge time is longer that new max')
             else
                 set(uiH.PurgeTime, 'Max', str2double(hObject.String))
                 UpdateParams();
             end
         else
-            set(hObject, 'String', num2str(Params.PurgeTime.Range(2)));
+            set(hObject, 'String', num2str(ParamsGUI.PurgeTime.Range(2)));
             message('Value entered is not numeric')
         end
         
@@ -233,7 +239,7 @@ controlWindow.doSomething = @doSomething;
             bmi5_cmd('delete_all')
             clear b5;
             
-            save(paramsFile, 'Params')
+            save(paramsFile, 'ParamsGUI')
             
             clear('standbyControl');
         end
@@ -247,30 +253,30 @@ controlWindow.doSomething = @doSomething;
     function standbyControlInit
         try
             tmpParams = load(paramsFile);
-            Params = tmpParams.Params;
+            ParamsGUI = tmpParams.ParamsGUI;
             clear tmpParams
         catch
-            Params.RewardTime.Range = [0, 1000]; % [ms]
-            Params.RewardTime.Value = 300; % [ms]
-            Params.PurgeTime.Range = [0, 5]; % [s]
-            Params.PurgeTime.Value = 2; % [s]
+            ParamsGUI.RewardTime.Range = [0, 1000]; % [ms]
+            ParamsGUI.RewardTime.Value = 300; % [ms]
+            ParamsGUI.PurgeTime.Range = [0, 5]; % [s]
+            ParamsGUI.PurgeTime.Value = 2; % [s]
         end
         
-        set(uiH.RewardTimeMin, 'String', num2str(Params.RewardTime.Range(1)));
-        set(uiH.RewardTimeMax, 'String', num2str(Params.RewardTime.Range(2)));
+        set(uiH.RewardTimeMin, 'String', num2str(ParamsGUI.RewardTime.Range(1)));
+        set(uiH.RewardTimeMax, 'String', num2str(ParamsGUI.RewardTime.Range(2)));
         set(uiH.RewardTimeText, 'String', ...
-            sprintf('%.0fms',Params.RewardTime.Value));
-        set(uiH.RewardTime, 'Min', Params.RewardTime.Range(1));
-        set(uiH.RewardTime, 'Max', Params.RewardTime.Range(2));
-        set(uiH.RewardTime, 'Value', Params.RewardTime.Value);
+            sprintf('%.0fms',ParamsGUI.RewardTime.Value));
+        set(uiH.RewardTime, 'Min', ParamsGUI.RewardTime.Range(1));
+        set(uiH.RewardTime, 'Max', ParamsGUI.RewardTime.Range(2));
+        set(uiH.RewardTime, 'Value', ParamsGUI.RewardTime.Value);
         
-        set(uiH.PurgeTimeMin, 'String', num2str(Params.PurgeTime.Range(1)));
-        set(uiH.PurgeTimeMax, 'String', num2str(Params.PurgeTime.Range(2)));
+        set(uiH.PurgeTimeMin, 'String', num2str(ParamsGUI.PurgeTime.Range(1)));
+        set(uiH.PurgeTimeMax, 'String', num2str(ParamsGUI.PurgeTime.Range(2)));
         set(uiH.PurgeTimeText, 'String', ...
-            sprintf('%.2fs',Params.PurgeTime.Value));
-        set(uiH.PurgeTime, 'Min', Params.PurgeTime.Range(1));
-        set(uiH.PurgeTime, 'Max', Params.PurgeTime.Range(2));
-        set(uiH.PurgeTime, 'Value', Params.PurgeTime.Value);
+            sprintf('%.2fs',ParamsGUI.PurgeTime.Value));
+        set(uiH.PurgeTime, 'Min', ParamsGUI.PurgeTime.Range(1));
+        set(uiH.PurgeTime, 'Max', ParamsGUI.PurgeTime.Range(2));
+        set(uiH.PurgeTime, 'Value', ParamsGUI.PurgeTime.Value);
         
         
     end
@@ -278,14 +284,14 @@ controlWindow.doSomething = @doSomething;
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
     function UpdateParams()
         
-        Params.RewardTime.Range = [str2double(get(uiH.RewardTimeMin,'string')), ...
+        ParamsGUI.RewardTime.Range = [str2double(get(uiH.RewardTimeMin,'string')), ...
             str2double(get(uiH.RewardTimeMax,'string'))];
         
-        Params.PurgeTime.Range = [str2double(get(uiH.PurgeTimeMin,'string')), ...
+        ParamsGUI.PurgeTime.Range = [str2double(get(uiH.PurgeTimeMin,'string')), ...
             str2double(get(uiH.PurgeTimeMax,'string'))];
         
-        Params.RewardTime.Value = get(uiH.RewardTime,'Value');
-        Params.PurgeTime.Value = get(uiH.PurgeTime,'Value');
+        ParamsGUI.RewardTime.Value = get(uiH.RewardTime,'Value');
+        ParamsGUI.PurgeTime.Value = get(uiH.PurgeTime,'Value');
         
     end
 

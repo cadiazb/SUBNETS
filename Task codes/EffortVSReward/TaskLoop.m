@@ -1,10 +1,11 @@
 function TaskLoop(Params, b5)
 
 %global DEBUG;
-global PAUSE_FLAG KEYBOARD_FLAG;
+global PAUSE_FLAG KEYBOARD_FLAG QUIT_FLAG;
 
 PAUSE_FLAG      = false;
 KEYBOARD_FLAG   = false;
+QUIT_FLAG       = false;
 
 NoFigsFlag = true;
 
@@ -24,9 +25,7 @@ dfields = {
 	'ReachDelay'
     'ProbeReward'
     'ProbeEffort'
-    'ProbeEffortUp'
     'TrialChoice'
-    'TotalPoints'
     'ReactionTime'
     'MovementTime'
     'AlwaysReward'
@@ -35,7 +34,6 @@ dfields = {
     'FinalCursorPos'
     'ForceTrace'
     'GoCue_time_o'
-    'ProbesAdaptationState'
     'JuiceON'
     'JuiceOFF'
 };
@@ -46,6 +44,7 @@ Data = dtmp;
 Data(Params.NumTrials) = dtmp;
 
 SetupGUI();
+[b5, controlWindow] = StandbyControl(Params,b5,0);
 drawnow;
 
 %% TRIAL LOOP
@@ -220,8 +219,6 @@ for itrial = startTrial : Params.NumTrials
 	b5 = bmi5_mmap(b5);
 	Data(trial).TimeStart = b5.time_o; % grab time at start of trial
 	% TRIAL SELECTION
-	% 1. detectStimCue_Trial
-	% 2. -- Nothing yet
 	switch Data(trial).TrialType
 	case 1
         Params.UseRewardAdaptation          = false;
@@ -240,6 +237,10 @@ for itrial = startTrial : Params.NumTrials
         Params.UseRewardAdaptation          = false;
 		[Params, Data(trial), b5] = ...
         VerticalFillingBar( Params, Data(trial), b5 );
+    case 4
+        Params.UseRewardAdaptation          = false;
+		[Params, Data(trial), b5] = ...
+        joystickTraining( Params, Data(trial), b5 );
 	otherwise
 		error('Unknown Trial Type');
 	end
@@ -292,22 +293,12 @@ for itrial = startTrial : Params.NumTrials
 %     
 %     Params.TempPerf=NcorrectP/10;
 %         end
-    %% Caculate adaptive reward
-    if Params.UseRewardAdaptation
-        [Params, Data] = CalculateAdaptiveVariable(Params, Data, trial);
-        fprintf('Probe Adaptation state\t\t%i\n',Data(trial).ProbesAdaptationState(Data(trial).ProbesAdaptationState(:,1) == Data(trial).ProbeEffort,2));
-    end
-    
-    %% Drop high probes that have reach the absolute max reward more than 5 times
-    tmpEffortProbes = unique(Params.EffortSampleSpace);
-    for ii = 1:numel(tmpEffortProbes)
-        if sum([Data([Data.ProbeEffort] == tmpEffortProbes(ii)).ProbeReward] >= Params.AbsoluteMaxReward) > 5
-            Params.EffortSampleSpace(Params.EffortSampleSpace == tmpEffortProbes(ii)) = []; 
-        end
-    end
     
     %% Save Data
-    if isempty(Params.RewardSampleSpace) || isempty(Params.EffortSampleSpace)
+    if QUIT_FLAG
+        done = true;
+    end
+    if itrial == Params.NumTrials
         done = true;
     end
     
@@ -329,11 +320,6 @@ for itrial = startTrial : Params.NumTrials
     fprintf('-> saving DATA structure (partial)\n');
     save(tmpfile, tmpdata);
     clear(tmpdata);
-  
-    % trigger bmi5 save event
-    fprintf('-> saving BMI5 data\n');
-    s = sprintf('save %s', Params.BMI5FileName);
-    bmi5_cmd(s);
     
 	% GUI
 	drawnow;
@@ -345,15 +331,11 @@ for itrial = startTrial : Params.NumTrials
 		pause(.1);
     end
     
-
-    
-	if done
-        if Params.TrialTypeProbs(1)
-            display(sprintf('Subjects max force is %.2d',...
-                max([Data(~[Data(:).OutcomeID]).ActualEffort]) * Params.MaxForce))
-        end
-		break;
-	end
+    if done
+        controlWindow.quit();
+        close(1)
+        break;
+    end
 
 end % end-loop-over-NumTrials
 
@@ -370,11 +352,13 @@ function SetupGUI()
   figure(1);
   clf
   %screen_sz = get(0,'ScreenSize');
-  set(gcf,'position', [990   304   350   150]);
-  uicontrol(gcf, 'style', 'toggle', 'units', 'normalized', 'position', [.1 .4 .3 .2], ...
-    'string', 'PAUSE',    'callback', @PauseCallback);
-  uicontrol(gcf, 'style', 'push',   'units', 'normalized', 'position', [.6 .4 .3 .2], ...
-    'string', 'KEYBOARD', 'callback', @KeyboardCallback);
+  set(gcf,'position', [398     5   370   150]);
+  uicontrol(gcf, 'style', 'toggle', 'units', 'normalized', 'position', [.1 .6 .8 .2], ...
+    'string', 'KEYBOARD',    'callback', @KeyboardCallback);
+  uicontrol(gcf, 'style', 'push',   'units', 'normalized', 'position', [.1 .4 .8 .2], ...
+    'string', 'PAUSE', 'callback', @PauseCallback);
+  uicontrol(gcf, 'style', 'push',   'units', 'normalized', 'position', [.1 .1 .8 .2], ...
+    'string', 'QUIT', 'callback', @QuitCallback);
 end
 
 function PauseCallback(hObject, ~, ~)
@@ -388,6 +372,11 @@ end
 function KeyboardCallback(~, ~, ~)
   global KEYBOARD_FLAG
   KEYBOARD_FLAG=true;
+end
+
+function QuitCallback(~, ~, ~)
+  global QUIT_FLAG
+  QUIT_FLAG=true;
 end
 
 function [Params, b5] = DoKeyboard(Params, b5)
