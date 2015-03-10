@@ -153,7 +153,7 @@ clear tmpTrialOK tmpTrialType tmpDlgOpt
 %% Set total number of trials and expected correct trials
 Params.NumTrials 				= 2000; % Choose a big number so task doesn't finish before hand
 if Params.TrialTypeProbs(1)
-    Params.NumCorrectTrials         = 20;
+    Params.NumCorrectTrials         = 10;
 elseif Params.TrialTypeProbs(2)
     Params.NumCorrectTrials         = 200; % Go/NoGo correct trials after initial sampling
 else
