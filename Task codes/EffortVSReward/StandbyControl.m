@@ -31,14 +31,19 @@ set(uiH.RewardTimeMax, 'Callback',  @RewardTimeMax_Callback);
 set(uiH.PurgeTime, 'Callback',      @PurgeTime_Callback);
 set(uiH.PurgeTimeMin, 'Callback',   @PurgeTimeMin_Callback);
 set(uiH.PurgeTimeMax, 'Callback',   @PurgeTimeMax_Callback);
+set(uiH.OpenButton, 'Callback',     @OpenButton_Callback);
+set(uiH.CueButton, 'Callback',      @CueButton_Callback);
+set(uiH.CueRewardButton, 'Callback',@CueRewardButton_Callback);
+set(uiH.CueRewardDelay, 'Callback', @CueRewardDelay_Callback);
+set(uiH.CueOn, 'Callback',          @CueOn_Callback);
 set(uiH.About, 'Callback',          @About_Callback);
 set(uiH.Quit, 'Callback',           @Quit_Callback);
 set(uiH.QuitButton, 'Callback',     @Quit_Callback);
 set(figH, 'CloseRequestFcn',        @Quit_Callback);
 
 if exist('standAlone', 'var') && ~standAlone
-    set(uiH.Quit, 'enable', 'off')
-    set(uiH.QuitButton, 'enable', 'off')
+    set(uiH.Quit, 'Callback', @bmi5Quit_Callback)
+    set(uiH.QuitButton, 'Callback', @bmi5Quit_Callback)
     set(figH, 'CloseRequest', 'off');
 end
 
@@ -46,6 +51,8 @@ end
 set(figH, 'Visible', 'on');
 
 % Initialize GUI
+        DRAW_NONE = 0;
+        DRAW_BOTH = 3;
 ParamsGUI = [];
 standbyControlInit();
 
@@ -58,7 +65,7 @@ controlWindow = [];
 % Methods
 controlWindow.getTag = @getTag;
 controlWindow.getFolder = @getFolder;
-controlWindow.rewardNow = @RewardNow;
+controlWindow.rewardNow = @RewardNow_Callback;
 controlWindow.purgeLine = @PurgeLine;
 controlWindow.setRewardTime = @SetRewardTime;
 controlWindow.setPurgeTime = @SetPurgeTime;
@@ -94,6 +101,7 @@ controlWindow.doSomething = @doSomething;
         
         b5 = LJJuicer(Params, b5, 'on');
         b5 = bmi5_mmap(b5);
+        
         juiceStart = b5.isometricDOUT_time_o;
 
         while (b5.time_o - juiceStart) < (ParamsGUI.RewardTime.Value/1000)
@@ -102,6 +110,7 @@ controlWindow.doSomething = @doSomething;
         
         b5 = LJJuicer(Params, b5, 'off');
         b5 = bmi5_mmap(b5);
+        
         set(uiH.Msg,'String',...
             sprintf('Rewarded %.0f ms', 1000*(b5.time_o - juiceStart)));
     end
@@ -109,8 +118,9 @@ controlWindow.doSomething = @doSomething;
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
     function PurgeLine_Callback(hObject, ~)
         
-        b5.isometricDOUT_channels = 1;
+        b5 = LJJuicer(Params, b5, 'on');
         b5 = bmi5_mmap(b5);
+        set(hObject, 'background', [0 1 0]);
         juiceStart = b5.isometricDOUT_time_o;
 
         while (b5.time_o - juiceStart) < ParamsGUI.PurgeTime.Value
@@ -119,8 +129,86 @@ controlWindow.doSomething = @doSomething;
             b5 = bmi5_mmap(b5);
         end
         set(uiH.Msg,'String', 'Line Purged');
-        b5.isometricDOUT_channels = 0;
+        b5 = LJJuicer(Params, b5, 'off');
         b5 = bmi5_mmap(b5);
+        
+        set(hObject, 'background', [0.94 0.94 0.94]);
+        
+    end
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+    function OpenButton_Callback(hObject, ~)
+        tmpString = get(hObject, 'string');
+        
+        if strcmp(tmpString, 'Open')
+            b5 = LJJuicer(Params, b5, 'on');
+            b5 = bmi5_mmap(b5);
+            set(hObject, 'String', 'Close')
+        end
+        
+        if strcmp(tmpString, 'Close')
+            b5 = LJJuicer(Params, b5, 'off');
+            b5 = bmi5_mmap(b5);
+            set(hObject, 'String', 'Open')
+        end
+        
+    end
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+    function CueButton_Callback(hObject, ~)
+        
+        b5 = bmi5_mmap(b5);
+        if ParamsGUI.CueOn == 0
+            tmpCueOn = b5.CueTarget_draw;
+            if tmpCueOn == DRAW_BOTH
+                b5.CueTarget_draw = DRAW_NONE;
+                set(hObject, 'background', [0.94 0.94 0.94])
+            end
+
+            if tmpCueOn == DRAW_NONE
+                b5.CueTarget_draw = DRAW_BOTH;
+                set(hObject, 'background', [0 1 0])
+            end
+
+            b5 = bmi5_mmap(b5);
+        elseif b5.CueTarget_draw == DRAW_NONE
+            
+            b5.CueTarget_draw = DRAW_BOTH;
+            set(hObject, 'background', [0 1 0])
+            b5 = bmi5_mmap(b5);
+            
+            cueStart = b5.time_o;
+            
+            while (b5.time_o - cueStart) <= ParamsGUI.CueOn
+                b5 = bmi5_mmap(b5);
+            end
+            
+            b5.CueTarget_draw = DRAW_NONE;
+            set(hObject, 'background', [0.94 0.94 0.94])
+            b5 = bmi5_mmap(b5);
+            
+        end
+    end
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+    function CueRewardButton_Callback(hObject, ~)
+        
+        b5 = bmi5_mmap(b5);
+        b5.CueTarget_draw = DRAW_BOTH;
+        set(hObject, 'background', [0 1 0])
+        b5 = bmi5_mmap(b5);
+        
+        cueStart = b5.time_o;
+        
+        while (b5.time_o - cueStart) <= ParamsGUI.CueRewardDelay
+            b5 = bmi5_mmap(b5);
+        end
+        
+        controlWindow.rewardNow();
+        b5.CueTarget_draw = DRAW_NONE;
+        set(hObject, 'background', [0.94 0.94 0.94])
+        b5 = bmi5_mmap(b5);  
         
     end
 
@@ -212,6 +300,40 @@ controlWindow.doSomething = @doSomething;
     end
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+    function CueOn_Callback(hObject, ~)
+        
+        if ~isnan(str2double(get(hObject,'string')))
+            if str2double(get(hObject,'string')) < 0
+                set(hObject, 'String', sprintf('%.2f',ParamsGUI.CueOn));
+                message('Enter value >= 0')
+            else
+                ParamsGUI.CueOn = str2double(get(hObject,'string'));
+            end
+        else
+            set(hObject, 'String', sprintf('%.2f',ParamsGUI.CueOn));
+            message('Value entered is not numeric')
+        end
+        
+    end
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+    function CueRewardDelay_Callback(hObject, ~)
+        
+        if ~isnan(str2double(get(hObject,'string')))
+            if str2double(get(hObject,'string')) < 0
+                set(hObject, 'String', sprintf('%.2f',ParamsGUI.CueRewardDelay));
+                message('Enter value >= 0')
+            else
+                ParamsGUI.CueRewardDelay = str2double(get(hObject,'string'));
+            end
+        else
+            set(hObject, 'String', sprintf('%.2f',ParamsGUI.CueRewardDelay));
+            message('Value entered is not numeric')
+        end
+        
+    end
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 % --- Executes on menu select in About.
     function About_Callback(hObject, ~)
         
@@ -228,6 +350,15 @@ controlWindow.doSomething = @doSomething;
     function Quit_Callback(hObject, ~)
 
         standbyControlClose();
+        
+    end
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% --- Executes on menu select in Quit or close request.
+    function bmi5Quit_Callback(hObject, ~)
+
+        global QUIT_FLAG
+        QUIT_FLAG=true;
         
     end
 
@@ -260,7 +391,33 @@ controlWindow.doSomething = @doSomething;
             ParamsGUI.RewardTime.Value = 300; % [ms]
             ParamsGUI.PurgeTime.Range = [0, 5]; % [s]
             ParamsGUI.PurgeTime.Value = 2; % [s]
+            ParamsGUI.CueOn             = 0; %[s]
+            ParamsGUI.CueRewardDelay    = 1; %[s]
         end
+        
+        if ~exist('ParamsGUI', 'var') || isempty(ParamsGUI)
+            ParamsGUI.RewardTime.Range = [0, 1000]; % [ms]
+            ParamsGUI.RewardTime.Value = 300; % [ms]
+            ParamsGUI.PurgeTime.Range = [0, 5]; % [s]
+            ParamsGUI.PurgeTime.Value = 2; % [s]
+            ParamsGUI.CueOn             = 0; %[s]
+            ParamsGUI.CueRewardDelay    = 1; %[s]
+        end
+        if ~isfield(ParamsGUI, 'RewardTime')
+            ParamsGUI.RewardTime.Range = [0, 1000]; % [ms]
+            ParamsGUI.RewardTime.Value = 300; % [ms]
+        end
+        if ~isfield(ParamsGUI, 'PurgeTime')
+            ParamsGUI.PurgeTime.Range = [0, 5]; % [s]
+            ParamsGUI.PurgeTime.Value = 2; % [s]
+        end
+        if ~isfield(ParamsGUI, 'CueOn')
+            ParamsGUI.CueOn             = 0; %[s]
+        end
+        if ~isfield(ParamsGUI, 'CueRewardDelay')
+            ParamsGUI.CueRewardDelay    = 1; %[s]
+        end
+        
         
         set(uiH.RewardTimeMin, 'String', num2str(ParamsGUI.RewardTime.Range(1)));
         set(uiH.RewardTimeMax, 'String', num2str(ParamsGUI.RewardTime.Range(2)));
@@ -277,6 +434,9 @@ controlWindow.doSomething = @doSomething;
         set(uiH.PurgeTime, 'Min', ParamsGUI.PurgeTime.Range(1));
         set(uiH.PurgeTime, 'Max', ParamsGUI.PurgeTime.Range(2));
         set(uiH.PurgeTime, 'Value', ParamsGUI.PurgeTime.Value);
+        
+        set(uiH.CueOn, 'String', num2str(ParamsGUI.CueOn));
+        set(uiH.CueRewardDelay, 'String', num2str(ParamsGUI.CueRewardDelay));
         
         
     end
