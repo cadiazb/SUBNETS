@@ -27,7 +27,7 @@ b5 = LJJuicer(Params, b5, 'off');
 b5 = bmi5_mmap(b5);
 
 b5.CueTarget_pos = [0 0];
-b5.CueTarget_scale = [100 100];
+b5.CueTarget_scale = [850 480];
 b5.CueTarget_color = [0 1 0 0.5];
 b5 = bmi5_mmap(b5);
 % Run GUI
