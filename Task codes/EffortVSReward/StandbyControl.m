@@ -18,7 +18,7 @@ paramsFile = fullfile(myFolder, 'standbyControl_lastParams.mat');
 
 % Open figure and get all handles to GUI objects
 figH = openfig(fullfile(myFolder, myTag));
-set(1, 'position', [728   902   638    73]);
+set(1, 'position', [0   905   762    73]);
 uiH = getHandles(figH);
 set(figH, 'Name', myName, 'Tag', myTag);
 defaultBackgroundColor = get(0,'defaultUicontrolBackgroundColor');

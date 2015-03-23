@@ -46,23 +46,23 @@ gotPos = false;
 t_start = b5.time_o;
 while ~done
 
-    pos = b5.Cursor_pos;
-%     [Params, dat, b5] = UpdateCursorOnLine(Params, dat, b5); % syncs b5 twice
-%         pos = b5.Cursor_pos;
-%         dat.FinalCursorPos = [0,pos(2)];
-%         if (dat.FinalCursorPos(2)-b5.StartTarget_pos(2)) >= 0
-%             b5.FillingEffort_scale = [b5.BarOutline_scale(1),...
-%                 dat.FinalCursorPos(2)-b5.StartTarget_pos(2)];
-%             b5.FillingEffort_pos       = Params.WsCenter - [0, b5.Frame_scale(2)/2] + ...
-%                     [0, b5.FillingEffort_scale(2)/2];
-%         else
-%             b5.FillingEffort_scale = [b5.BarOutline_scale(1),...
-%                 -max((dat.FinalCursorPos(2)-b5.StartTarget_pos(2)), ...
-%                 (b5.Pass_pos(2) - b5.StartTarget_pos(2)))];
-%             b5.FillingEffort_pos       = Params.WsCenter - [0, b5.Frame_scale(2)/2] - ...
-%                     [0, b5.FillingEffort_scale(2)/2];
-%         end
-%         
+%     pos = b5.Cursor_pos;
+    [Params, dat, b5] = UpdateCursorOnLine(Params, dat, b5); % syncs b5 twice
+        pos = b5.Cursor_pos;
+        dat.FinalCursorPos = [0,pos(2)];
+        if (dat.FinalCursorPos(2)-b5.StartTarget_pos(2)) >= 0
+            b5.FillingEffort_scale = [b5.BarOutline_scale(1),...
+                dat.FinalCursorPos(2)-b5.StartTarget_pos(2)];
+            b5.FillingEffort_pos       = Params.WsCenter - [0, b5.Frame_scale(2)/2] + ...
+                    [0, b5.FillingEffort_scale(2)/2];
+        else
+            b5.FillingEffort_scale = [b5.BarOutline_scale(1),...
+                -max((dat.FinalCursorPos(2)-b5.StartTarget_pos(2)), ...
+                (b5.Pass_pos(2) - b5.StartTarget_pos(2)))];
+            b5.FillingEffort_pos       = Params.WsCenter - [0, b5.Frame_scale(2)/2] - ...
+                    [0, b5.FillingEffort_scale(2)/2];
+        end
+        
 	% Check for acquisition of start target
   	posOk = TrialInBox(pos, b5.StartTarget_pos, Params.StartTarget.Win);
 
@@ -93,10 +93,10 @@ end
 
 %% 2. CHECK FOR Y-AXIS MOVEMENT ON LOAD CELL
 if ~dat.OutcomeID
-    b5.BarOutline_draw          = DRAW_BOTH;
-    b5.FillingEffort_draw       = DRAW_BOTH;
-    b5.Pass_draw                = DRAW_BOTH;
-    b5.ProbeTarget_draw         = DRAW_BOTH;
+%     b5.BarOutline_draw          = DRAW_BOTH;
+%     b5.FillingEffort_draw       = DRAW_BOTH;
+%     b5.Pass_draw                = DRAW_BOTH;
+%     b5.ProbeTarget_draw         = DRAW_BOTH;
     
     b5.GoTone_play_io = 1;
     b5.FillingEffort_scale(2) = 0;
@@ -143,14 +143,14 @@ if ~dat.OutcomeID
         if ~posOk && isempty(dat.ReactionTime)
             dat.ReactionTime = b5.time_o - t_start;
         end
-        if ~isempty(dat.ReactionTime) && posPassOk
+        if ~isempty(dat.ReactionTime) && (posPassOk || ~posOk)
             dat.TrialChoice = 'Pass';
             done = true;
             dat.OutcomeID 	= 0;
             dat.OutcomeStr 	= 'success';
         end
         
-        if ~isempty(dat.ReactionTime) && posProbeOk
+        if ~isempty(dat.ReactionTime) && (posProbeOk || posOk)
             done = true;
             dat.TrialChoice = 'Probe Effort';
             dat.OutcomeID 	= 0;
