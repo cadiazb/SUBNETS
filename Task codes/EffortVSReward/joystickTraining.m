@@ -107,7 +107,7 @@ if ~dat.OutcomeID
 
 	done            = false;
     dat.FinalCursorPos = b5.StartTarget_pos;
-    tmpJuiceState = 'off'
+    tmpJuiceState = 'off';
 
 	t_start = b5.time_o;
 	while ~done
