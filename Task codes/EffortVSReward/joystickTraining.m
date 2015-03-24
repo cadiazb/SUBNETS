@@ -108,7 +108,9 @@ if ~dat.OutcomeID
 	done            = false;
     dat.FinalCursorPos = b5.StartTarget_pos;
     tmpJuiceState = 'off';
-
+    tmpJuiceMin = 0.5; %[s]
+    tmpJuice_start = b5.time_o;
+    
 	t_start = b5.time_o;
 	while ~done
         drawnow;
@@ -160,10 +162,16 @@ if ~dat.OutcomeID
         end
         if ~posOk
             b5.ProbeTarget_draw         = DRAW_BOTH;
-            tmpJuiceState = 'on';
+            if (b5.time_o - tmpJuice_start) > tmpJuiceMin
+                tmpJuiceState = 'on';
+                tmpJuice_start = b5.time_o;
+            end
         else
             b5.ProbeTarget_draw         = DRAW_NONE;
-            tmpJuiceState = 'off';
+            if (b5.time_o - tmpJuice_start) > tmpJuiceMin
+                tmpJuiceState = 'off';
+                tmpJuice_start = b5.time_o;
+            end
         end
         
         if ~isempty(dat.ReactionTime) && (posPassOk || ~posOk)
