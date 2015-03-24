@@ -40,7 +40,7 @@ b5 = bmi5_mmap(b5);
 b5.StartTarget_draw = DRAW_NONE;
 b5 = bmi5_mmap(b5);
 
-done   = false;
+done   = true;
 gotPos = false;
 
 t_start = b5.time_o;
@@ -107,6 +107,7 @@ if ~dat.OutcomeID
 
 	done            = false;
     dat.FinalCursorPos = b5.StartTarget_pos;
+    tmpJuiceState = 'off'
 
 	t_start = b5.time_o;
 	while ~done
@@ -128,18 +129,18 @@ if ~dat.OutcomeID
                     [0, b5.FillingEffort_scale(2)/2];
         end
         
-        % Observe X-axis force
-        if (dat.FinalCursorPos(1)-b5.StartTarget_pos(1)) >= 0
-            b5.FillingEffort_scale = [dat.FinalCursorPos(1)-b5.StartTarget_pos(1),... 
-                b5.BarOutline_scale(2)];
-            b5.FillingEffort_pos = Params.WsCenter - [0, b5.Frame_scale(2)/2] + ...
-                    [b5.FillingEffort_scale(1)/2,0];
-        else
-            b5.FillingEffort_scale = [-(dat.FinalCursorPos(1)-b5.StartTarget_pos(1)),...
-                b5.BarOutline_scale(2)];
-            b5.FillingEffort_pos       = Params.WsCenter - [0, b5.Frame_scale(2)/2] - ...
-                    [b5.FillingEffort_scale(1)/2,0];
-        end
+%         % Observe X-axis force
+%         if (dat.FinalCursorPos(1)-b5.StartTarget_pos(1)) >= 0
+%             b5.FillingEffort_scale = [dat.FinalCursorPos(1)-b5.StartTarget_pos(1),... 
+%                 b5.BarOutline_scale(2)];
+%             b5.FillingEffort_pos(1) = Params.WsCenter(1) - b5.Frame_scale(1)/2 + ...
+%                     b5.FillingEffort_scale(1)/2;
+%         else
+%             b5.FillingEffort_scale = [-(dat.FinalCursorPos(1)-b5.StartTarget_pos(1)),...
+%                 b5.BarOutline_scale(2)];
+%             b5.FillingEffort_pos(1)       = Params.WsCenter(1) - b5.Frame_scale(1)/2 - ...
+%                     b5.FillingEffort_scale(1)/2;
+%         end
 %         if b5.FillingEffort_scale(2) < 25
 %             b5.FillingEffort_scale(2) = 0;
 %             b5.FillingEffort_pos       = Params.WsCenter - [0, b5.Frame_scale(2)/2] + ...
@@ -157,6 +158,14 @@ if ~dat.OutcomeID
         if ~posOk && isempty(dat.ReactionTime)
             dat.ReactionTime = b5.time_o - t_start;
         end
+        if ~posOk
+            b5.ProbeTarget_draw         = DRAW_BOTH;
+            tmpJuiceState = 'on';
+        else
+            b5.ProbeTarget_draw         = DRAW_NONE;
+            tmpJuiceState = 'off';
+        end
+        
         if ~isempty(dat.ReactionTime) && (posPassOk || ~posOk)
 %             dat.TrialChoice = 'Pass';
 %             done = true;
@@ -192,6 +201,8 @@ if ~dat.OutcomeID
                 dat.OutcomeStr 	= 'cancel @ reaction';
             end
 %         end
+        % Temporarily give juice right away
+        b5 = LJJuicer(Params, b5, tmpJuiceState);
 	end
 end
 

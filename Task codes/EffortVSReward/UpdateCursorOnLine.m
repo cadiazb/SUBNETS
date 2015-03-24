@@ -7,7 +7,6 @@ function [Params, dat, b5] = UpdateCursorOnLine(Params, dat, b5)
     n = 100; %number of samples read from labjack
     Vin = 5; % Power supply [V]
     ZeroBalance = Vin*2e-3*0.6;
-    ZeroOffset = [0.0015 0 -0.0001 0]';
     Polarity = [1 1 1 1]';
     tao = 50;
     itmp = zeros(size(b5.isometricAIN_sensors_o,1), 1);
@@ -16,7 +15,7 @@ function [Params, dat, b5] = UpdateCursorOnLine(Params, dat, b5)
         b5 = bmi5_mmap(b5); 
         itmp = itmp + b5.isometricAIN_sensors_o;
     end
-    itmp = ((itmp./n) - ZeroOffset) .* Polarity;
+    itmp = ((itmp./n) - Params.LoadCell.ZeroOffset) .* Polarity;
     itmp = itmp ./(Vin*2e-3);
     
 %     newForce = [itmp(1), itmp(3)];

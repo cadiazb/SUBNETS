@@ -176,6 +176,9 @@ Params.TimeoutReachTarget       = 4; % max time to reach reaching target
 Params.TrialLength              = 10;   % Fixed trial length [s]
 Params.InterTrialDelay 			= 0;  % delay between each trial [sec]
 
+%% Callibrate Load Cell
+[Params, b5] = CallibrateLoadCell(Params, b5);
+
 %%  WORKSPACE, in mm
 Params.WsBounds             	= [-150 -150 ; 150 150]; % [Xmin Ymin; Xmax Ymax]
 Params.WsCenter 				= mean(Params.WsBounds,1) + [0, 75];
@@ -197,7 +200,7 @@ b5.Cursor_scale 				= [0 0];        % [mm] % note: diameter!
 %% Start Target
 b5.StartTarget_color			= [1 0 0 1];
 b5.StartTarget_scale 			= [20 20];
-Params.StartTarget.Win  		= 20; % radius
+Params.StartTarget.Win  		= 40; % radius
 Params.StartTarget.Locations 	= {Params.WsCenter + [-40 -40]}; % cell array of locations
 
 %% Rewards
