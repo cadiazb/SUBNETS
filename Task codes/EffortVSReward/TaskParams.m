@@ -324,7 +324,7 @@ b5.PassString_color = [1 1 1 1];
 
 %% Adaptive sampling parameters
 Params.UseRewardAdaptation      = false;
-Params.MaxRewardVector          = floor(linspace(Params.PassReward+1,Params.MaxReward,numel(Params.EffortVector )))';
+Params.MaxRewardVector          = floor(linspace(Params.MaxReward,Params.MaxReward,numel(Params.EffortVector )))';
 Params.RewardAdaptation         = [Params.EffortVector;...
                                         floor(linspace(Params.PassReward+1,Params.MaxReward,numel(Params.EffortVector )))]';
 Params.Npre                     = 4; % Number of samples per probe before increasing MaxReward
