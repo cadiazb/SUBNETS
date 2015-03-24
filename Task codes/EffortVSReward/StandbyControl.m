@@ -33,6 +33,7 @@ set(uiH.PurgeTime, 'Callback',      @PurgeTime_Callback);
 set(uiH.PurgeTimeMin, 'Callback',   @PurgeTimeMin_Callback);
 set(uiH.PurgeTimeMax, 'Callback',   @PurgeTimeMax_Callback);
 set(uiH.OpenButton, 'Callback',     @OpenButton_Callback);
+set(uiH.SolenoidButton, 'Callback',     @SolenoidButton_Callback);
 set(uiH.CueButton, 'Callback',      @CueButton_Callback);
 set(uiH.CueRewardButton, 'Callback',@CueRewardButton_Callback);
 set(uiH.CueRewardDelay, 'Callback', @CueRewardDelay_Callback);
@@ -153,6 +154,20 @@ controlWindow.doSomething = @doSomething;
             set(hObject, 'String', 'Open')
         end
         
+    end
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+    function SolenoidButton_Callback(hObject, ~)
+        tmpSolenoidState = Params.Solenoid;
+        
+        if strcmp(tmpSolenoidState, 'off')
+            Params.Solenoid = 'on';
+            set(hObject, 'string', '<html>Solenoid<br>Enabled')
+        end
+        if strcmp(tmpSolenoidState, 'on')
+            Params.Solenoid = 'off';
+            set(hObject, 'string', '<html>Solenoid<br>Disabled')
+        end
     end
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -438,6 +453,9 @@ controlWindow.doSomething = @doSomething;
         
         set(uiH.CueOn, 'String', num2str(ParamsGUI.CueOn));
         set(uiH.CueRewardDelay, 'String', num2str(ParamsGUI.CueRewardDelay));
+        
+        Params.Solenoid = 'off';
+        set(uiH.SolenoidButton, 'String', '<html>Solenoid<br>Disabled');
         
         
     end

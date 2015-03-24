@@ -210,6 +210,9 @@ if ~dat.OutcomeID
             end
 %         end
         % Temporarily give juice right away
+        if strcmp(Params.Solenoid, 'off')
+            tmpJuiceState = 'off';
+        end
         b5 = LJJuicer(Params, b5, tmpJuiceState);
 	end
 end

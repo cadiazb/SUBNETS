@@ -251,6 +251,7 @@ b5.RewardTone_scale         = 1;    % (units?)
 Params.BlockSize 				=1000;
 
 %% LJJuicer parameters
+Params.Solenoid = 'off'; % Global variable for bypass
 
 Params.LJJuicerDOUT = 1; % Which digital output connected to solenoid [1-4]
 b5 = LJJuicer(Params, b5, 'off');
