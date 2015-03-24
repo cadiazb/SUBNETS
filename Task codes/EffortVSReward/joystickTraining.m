@@ -93,8 +93,8 @@ end
 
 %% 2. CHECK FOR Y-AXIS MOVEMENT ON LOAD CELL
 if ~dat.OutcomeID
-%     b5.BarOutline_draw          = DRAW_BOTH;
-%     b5.FillingEffort_draw       = DRAW_BOTH;
+    b5.BarOutline_draw          = DRAW_BOTH;
+    b5.FillingEffort_draw       = DRAW_BOTH;
 %     b5.Pass_draw                = DRAW_BOTH;
 %     b5.ProbeTarget_draw         = DRAW_BOTH;
     
@@ -114,6 +114,7 @@ if ~dat.OutcomeID
         [Params, dat, b5] = UpdateCursorOnLine(Params, dat, b5); % syncs b5 twice
         pos = b5.Cursor_pos;
         dat.FinalCursorPos = [0,pos(2)];
+        % Observe Y-axis force
         if (dat.FinalCursorPos(2)-b5.StartTarget_pos(2)) >= 0
             b5.FillingEffort_scale = [b5.BarOutline_scale(1),...
                 dat.FinalCursorPos(2)-b5.StartTarget_pos(2)];
@@ -126,11 +127,24 @@ if ~dat.OutcomeID
             b5.FillingEffort_pos       = Params.WsCenter - [0, b5.Frame_scale(2)/2] - ...
                     [0, b5.FillingEffort_scale(2)/2];
         end
-        if b5.FillingEffort_scale(2) < 25
-            b5.FillingEffort_scale(2) = 0;
-            b5.FillingEffort_pos       = Params.WsCenter - [0, b5.Frame_scale(2)/2] + ...
-                    [0, b5.FillingEffort_scale(2)/2];
+        
+        % Observe X-axis force
+        if (dat.FinalCursorPos(1)-b5.StartTarget_pos(1)) >= 0
+            b5.FillingEffort_scale = [dat.FinalCursorPos(1)-b5.StartTarget_pos(1),... 
+                b5.BarOutline_scale(2)];
+            b5.FillingEffort_pos = Params.WsCenter - [0, b5.Frame_scale(2)/2] + ...
+                    [b5.FillingEffort_scale(1)/2,0];
+        else
+            b5.FillingEffort_scale = [-(dat.FinalCursorPos(1)-b5.StartTarget_pos(1)),...
+                b5.BarOutline_scale(2)];
+            b5.FillingEffort_pos       = Params.WsCenter - [0, b5.Frame_scale(2)/2] - ...
+                    [b5.FillingEffort_scale(1)/2,0];
         end
+%         if b5.FillingEffort_scale(2) < 25
+%             b5.FillingEffort_scale(2) = 0;
+%             b5.FillingEffort_pos       = Params.WsCenter - [0, b5.Frame_scale(2)/2] + ...
+%                     [0, b5.FillingEffort_scale(2)/2];
+%         end
         
         b5 = bmi5_mmap(b5);
         
@@ -144,31 +158,31 @@ if ~dat.OutcomeID
             dat.ReactionTime = b5.time_o - t_start;
         end
         if ~isempty(dat.ReactionTime) && (posPassOk || ~posOk)
-            dat.TrialChoice = 'Pass';
-            done = true;
-            dat.OutcomeID 	= 0;
-            dat.OutcomeStr 	= 'success';
+%             dat.TrialChoice = 'Pass';
+%             done = true;
+%             dat.OutcomeID 	= 0;
+%             dat.OutcomeStr 	= 'success';
         end
         
         if ~isempty(dat.ReactionTime) && (posProbeOk || posOk)
-            done = true;
-            dat.TrialChoice = 'Probe Effort';
-            dat.OutcomeID 	= 0;
-            dat.OutcomeStr 	= 'Succes';
+%             done = true;
+%             dat.TrialChoice = 'Probe Effort';
+%             dat.OutcomeID 	= 0;
+%             dat.OutcomeStr 	= 'Succes';
         end
 
 		% check for TIMEOUT
         if ~isempty(dat.ReactionTime) && ~done
             if (b5.time_o - t_start - dat.ReactionTime) > Params.TimeoutReachTarget
-                dat.MovementTime = b5.time_o - t_start - dat.ReactionTime;
-                dat.TrialChoice = '';
-                done            = true;
-                dat.OutcomeID 	= 4;
-                dat.OutcomeStr 	= 'cancel @ reach movement timeout';
+%                 dat.MovementTime = b5.time_o - t_start - dat.ReactionTime;
+%                 dat.TrialChoice = '';
+%                 done            = true;
+%                 dat.OutcomeID 	= 4;
+%                 dat.OutcomeStr 	= 'cancel @ reach movement timeout';
             end
         end
         
-        if isempty(dat.ReactionTime)
+%         if isempty(dat.ReactionTime)
             if (b5.time_o - t_start) > Params.ReactionTimeDelay
                 dat.ReactionTime = b5.time_o - t_start;
                 dat.TrialChoice = '';
@@ -177,7 +191,7 @@ if ~dat.OutcomeID
                 dat.OutcomeID 	= 4;
                 dat.OutcomeStr 	= 'cancel @ reaction';
             end
-        end
+%         end
 	end
 end
 
