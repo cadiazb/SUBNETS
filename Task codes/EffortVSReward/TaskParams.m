@@ -202,6 +202,9 @@ Params.MovementWindow           = 0.3; % For effort line, time to move [s]
 Params.TrialLength              = 3.6;   % Fixed trial length [s]
 Params.InterTrialDelay 			= 0.4;  % delay between each trial [sec]
 
+%% CallibrateLoadCell
+[Params, b5] = CallibrateLoadCell(Params, b5);
+Params.LoadCell.ZeroOffset = [0 0 0 0]';
 %%  WORKSPACE, in mm
 Params.WsBounds             	= [-150 -150 ; 150 150]; % [Xmin Ymin; Xmax Ymax]
 Params.WsCenter 				= mean(Params.WsBounds,1);
