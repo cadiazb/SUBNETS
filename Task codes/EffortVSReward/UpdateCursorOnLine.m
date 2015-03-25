@@ -14,7 +14,7 @@ function [Params, dat, b5] = UpdateCursorOnLine(Params, dat, b5)
         b5 = bmi5_mmap(b5); 
         itmp = itmp - b5.isometricAIN_sensors_o;
     end
-    itmp = (itmp./n)./(Vin*2e-3);
+    itmp = ((itmp./n)-Params.LoadCell.ZeroOffset)./(Vin*2e-3);
     
 %     newForce = [itmp(1), itmp(3)];
     newForce(2) = -sign(itmp(1))*(log(1+abs(itmp(1))/tao)*1/log(1+1/tao));
