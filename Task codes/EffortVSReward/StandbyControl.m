@@ -60,6 +60,7 @@ standbyControlInit();
 
 % Create global bmi5 fifo
 global bmi5_in bmi5_out;
+global SolenoidEnable;
 
 % Initialize output data structure
 controlWindow = [];
@@ -162,10 +163,12 @@ controlWindow.doSomething = @doSomething;
         
         if strcmp(tmpSolenoidState, 'off')
             Params.Solenoid = 'on';
+            SolenoidEnable = 1;
             set(hObject, 'string', '<html>Solenoid<br>Enabled')
         end
         if strcmp(tmpSolenoidState, 'on')
             Params.Solenoid = 'off';
+            SolenoidEnable = 0;
             set(hObject, 'string', '<html>Solenoid<br>Disabled')
         end
     end
@@ -455,6 +458,7 @@ controlWindow.doSomething = @doSomething;
         set(uiH.CueRewardDelay, 'String', num2str(ParamsGUI.CueRewardDelay));
         
         Params.Solenoid = 'off';
+        SolenoidEnable = 0;
         set(uiH.SolenoidButton, 'String', '<html>Solenoid<br>Disabled');
         
         

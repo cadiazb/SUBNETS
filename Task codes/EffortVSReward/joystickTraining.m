@@ -1,6 +1,7 @@
 function [Params, dat, b5] = joystickTraining(Params, dat, b5)
 
 global DEBUG
+global SolenoidEnable;
 
 % FOR DRAWING OBJECTS
 DRAW_NONE     = 0;
@@ -210,8 +211,9 @@ if ~dat.OutcomeID
             end
 %         end
         % Temporarily give juice right away
-        if strcmp(Params.Solenoid, 'off')
+        if ~SolenoidEnable
             tmpJuiceState = 'off';
+            b5.ProbeTarget_draw         = DRAW_NONE;
         end
         b5 = LJJuicer(Params, b5, tmpJuiceState);
 	end
