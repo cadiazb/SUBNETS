@@ -1,4 +1,4 @@
-function [Params, dat, b5] = joystickTraining(Params, dat, b5)
+function [Params, dat, b5] = joystickTraining(Params, dat, b5, controlWindow)
 
 global DEBUG
 global SolenoidEnable;
@@ -109,8 +109,10 @@ if ~dat.OutcomeID
 	done            = false;
     dat.FinalCursorPos = b5.StartTarget_pos;
     tmpJuiceState = 'off';
-    tmpJuiceMin = 0.5; %[s]
+    tmpJuiceMin = 0.1; %[s]
+    tmpJuiceMax = 0.7; %[s]
     tmpJuice_start = b5.time_o;
+    tmpJuice_stop = b5.time_o;
     
 	t_start = b5.time_o;
 	while ~done
@@ -163,15 +165,19 @@ if ~dat.OutcomeID
         end
         if ~posOk
             b5.ProbeTarget_draw         = DRAW_BOTH;
-            if (b5.time_o - tmpJuice_start) > tmpJuiceMin
+            if ((b5.time_o - tmpJuice_stop) > tmpJuiceMin) && strcmp(tmpJuiceState, 'off')
                 tmpJuiceState = 'on';
-                tmpJuice_start = b5.time_o;
+                if (b5.time_o - tmpJuice_start) > (tmpJuiceMax+1)
+                    tmpJuice_start = b5.time_o;
+                end
             end
         else
             b5.ProbeTarget_draw         = DRAW_NONE;
-            if (b5.time_o - tmpJuice_start) > tmpJuiceMin
+            if ((b5.time_o - tmpJuice_start) > tmpJuiceMin)
                 tmpJuiceState = 'off';
-                tmpJuice_start = b5.time_o;
+%                 if (b5.time_o - tmpJuice_start) > (tmpJuiceMax+2)
+                    tmpJuice_stop = b5.time_o;
+%                 end
             end
         end
         
@@ -216,6 +222,10 @@ if ~dat.OutcomeID
             b5.ProbeTarget_draw         = DRAW_NONE;
         end
         b5 = LJJuicer(Params, b5, tmpJuiceState);
+        
+        if strcmp(tmpJuiceState, 'on') && SolenoidEnable && ((b5.time_o - tmpJuice_start) > tmpJuiceMax)
+            controlWindow.SolenoidEnable();
+        end
 	end
 end
 

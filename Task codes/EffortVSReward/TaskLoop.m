@@ -240,7 +240,7 @@ for itrial = startTrial : Params.NumTrials
     case 4
         Params.UseRewardAdaptation          = false;
 		[Params, Data(trial), b5] = ...
-        joystickTraining( Params, Data(trial), b5 );
+        joystickTraining( Params, Data(trial), b5, controlWindow);
 	otherwise
 		error('Unknown Trial Type');
 	end

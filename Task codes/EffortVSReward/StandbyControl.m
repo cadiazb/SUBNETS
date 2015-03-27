@@ -75,6 +75,7 @@ controlWindow.setPurgeTime = @SetPurgeTime;
 controlWindow.quit = @Quit_Callback;
 controlWindow.message = @message;
 controlWindow.doSomething = @doSomething;
+controlWindow.SolenoidEnable = @SolenoidButton;
 
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -158,15 +159,20 @@ controlWindow.doSomething = @doSomething;
     end
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+    function SolenoidButton()
+        SolenoidButton_Callback(uiH.SolenoidButton,[])
+    end
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
     function SolenoidButton_Callback(hObject, ~)
-        tmpSolenoidState = Params.Solenoid;
+        tmpSolenoidState = SolenoidEnable;
         
-        if strcmp(tmpSolenoidState, 'off')
+        if ~tmpSolenoidState
             Params.Solenoid = 'on';
             SolenoidEnable = 1;
             set(hObject, 'string', '<html>Solenoid<br>Enabled')
         end
-        if strcmp(tmpSolenoidState, 'on')
+        if tmpSolenoidState
             Params.Solenoid = 'off';
             SolenoidEnable = 0;
             set(hObject, 'string', '<html>Solenoid<br>Disabled')
