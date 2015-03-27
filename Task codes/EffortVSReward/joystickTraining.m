@@ -115,6 +115,7 @@ if ~dat.OutcomeID
     tmpJuice_stop = b5.time_o;
     
 	t_start = b5.time_o;
+    [Params.StartTarget.Win(1), Params.StartTarget.Win(2)] = controlWindow.GetSensitivity();
 	while ~done
         drawnow;
         [Params, dat, b5] = UpdateCursorOnLine(Params, dat, b5); % syncs b5 twice

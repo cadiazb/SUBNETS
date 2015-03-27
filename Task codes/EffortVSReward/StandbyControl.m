@@ -43,6 +43,9 @@ set(uiH.Quit, 'Callback',           @Quit_Callback);
 set(uiH.QuitButton, 'Callback',     @Quit_Callback);
 set(figH, 'CloseRequestFcn',        @Quit_Callback);
 
+set(uiH.xSensitivitySlider, 'Callback', @SensitivitySlider_Callback);
+set(uiH.ySensitivitySlider, 'Callback', @SensitivitySlider_Callback);
+
 if exist('standAlone', 'var') && ~standAlone
     set(uiH.Quit, 'Callback', @bmi5Quit_Callback)
     set(uiH.QuitButton, 'Callback', @bmi5Quit_Callback)
@@ -76,6 +79,7 @@ controlWindow.quit = @Quit_Callback;
 controlWindow.message = @message;
 controlWindow.doSomething = @doSomething;
 controlWindow.SolenoidEnable = @SolenoidButton;
+controlWindow.GetSensitivity =  @handleSensitivity;
 
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -117,6 +121,13 @@ controlWindow.SolenoidEnable = @SolenoidButton;
         
         set(uiH.Msg,'String',...
             sprintf('Rewarded %.0f ms', 1000*(b5.time_o - juiceStart)));
+    end
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+    function SensitivitySlider_Callback(~, ~)
+        
+        set(uiH.xSensitivityText, 'String', num2str(get(uiH.xSensitivitySlider, 'Value')));
+        set(uiH.ySensitivityText, 'String', num2str(get(uiH.ySensitivitySlider, 'Value')));
     end
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -359,6 +370,14 @@ controlWindow.SolenoidEnable = @SolenoidButton;
     end
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+    function [tmpX, tmpY] = handleSensitivity()
+        
+        tmpX = get(uiH.xSensitivitySlider, 'value');
+        tmpY = get(uiH.ySensitivitySlider, 'value');
+        
+    end
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 % --- Executes on menu select in About.
     function About_Callback(hObject, ~)
         
@@ -467,7 +486,8 @@ controlWindow.SolenoidEnable = @SolenoidButton;
         SolenoidEnable = 0;
         set(uiH.SolenoidButton, 'String', '<html>Solenoid<br>Disabled');
         
-        
+        set(uiH.xSensitivitySlider, 'value', Params.StartTarget.Win(1));
+        set(uiH.ySensitivitySlider, 'value', Params.StartTarget.Win(2));
     end
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
