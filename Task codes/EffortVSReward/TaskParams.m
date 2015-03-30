@@ -201,7 +201,7 @@ b5.Cursor_scale 				= [0 0];        % [mm] % note: diameter!
 %% Start Target
 b5.StartTarget_color			= [1 0 0 1];
 b5.StartTarget_scale 			= [20 20];
-Params.StartTarget.Win  		= [20 30]; % radius
+Params.StartTarget.Win  		= [60 60]; % radius
 Params.StartTarget.Locations 	= {Params.WsCenter + [-40 -40]}; % cell array of locations
 
 %% Rewards
