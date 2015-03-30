@@ -96,12 +96,17 @@ end
 if ~dat.OutcomeID
     b5.BarOutline_draw          = DRAW_BOTH;
     b5.FillingEffort_draw       = DRAW_BOTH;
+    b5.FillingEffortHor_draw       = DRAW_BOTH;
 %     b5.Pass_draw                = DRAW_BOTH;
 %     b5.ProbeTarget_draw         = DRAW_BOTH;
     
     b5.GoTone_play_io = 1;
     b5.FillingEffort_scale(2) = 0;
     b5.FillingEffort_pos       = Params.WsCenter - [0, b5.Frame_scale(2)/2];
+    b5 = bmi5_mmap(b5);
+    
+    b5.FillingEffortHor_scale(1) = 0;
+    b5.FillingEffortHor_pos       = Params.WsCenter - [0, b5.Frame_scale(2)/2];
     b5 = bmi5_mmap(b5);
     
     dat.GoCue_time_o = b5.GoTone_time_o;
@@ -119,6 +124,7 @@ if ~dat.OutcomeID
     [Params.StartTarget.Win(1), Params.StartTarget.Win(2)] = controlWindow.GetSensitivity();
 	while ~done
         drawnow;
+        [Params.StartTarget.Win(1), Params.StartTarget.Win(2)] = controlWindow.GetSensitivity();
         [Params, dat, b5] = UpdateCursorOnLine(Params, dat, b5); % syncs b5 twice
         pos = b5.Cursor_pos;
         dat.FinalCursorPos = [0,pos(2)];
@@ -136,18 +142,18 @@ if ~dat.OutcomeID
                     [0, b5.FillingEffort_scale(2)/2];
         end
         
-%         % Observe X-axis force
-%         if (dat.FinalCursorPos(1)-b5.StartTarget_pos(1)) >= 0
-%             b5.FillingEffort_scale = [dat.FinalCursorPos(1)-b5.StartTarget_pos(1),... 
-%                 b5.BarOutline_scale(2)];
-%             b5.FillingEffort_pos(1) = Params.WsCenter(1) - b5.Frame_scale(1)/2 + ...
-%                     b5.FillingEffort_scale(1)/2;
-%         else
-%             b5.FillingEffort_scale = [-(dat.FinalCursorPos(1)-b5.StartTarget_pos(1)),...
-%                 b5.BarOutline_scale(2)];
-%             b5.FillingEffort_pos(1)       = Params.WsCenter(1) - b5.Frame_scale(1)/2 - ...
-%                     b5.FillingEffort_scale(1)/2;
-%         end
+        % Observe X-axis force
+        if (pos(1)-b5.StartTarget_pos(1)) >= 0
+            b5.FillingEffortHor_scale = [pos(1)-b5.StartTarget_pos(1),... 
+                b5.FillingEffortHor_scale(2)];
+            b5.FillingEffortHor_pos(1) = Params.WsCenter(1) + ...
+                    b5.FillingEffortHor_scale(1)/2;
+        else
+            b5.FillingEffortHor_scale = [-(pos(1)-b5.StartTarget_pos(1)),...
+                b5.FillingEffortHor_scale(2)];
+            b5.FillingEffortHor_pos(1)       = Params.WsCenter(1) - ...
+                    b5.FillingEffortHor_scale(1)/2;
+        end
 %         if b5.FillingEffort_scale(2) < 25
 %             b5.FillingEffort_scale(2) = 0;
 %             b5.FillingEffort_pos       = Params.WsCenter - [0, b5.Frame_scale(2)/2] + ...
@@ -239,7 +245,7 @@ if ~dat.OutcomeID
         % Pause controlled by force applied on load cell
         if ~posOk && SolenoidEnable
             tmpForce = sqrt((pos(1) - b5.StartTarget_pos(1))^2 + (pos(2)- b5.StartTarget_pos(2))^2);
-            tmpJuice_Freq = (tmpForce * 20 /300) + 0
+            tmpJuice_Freq = (tmpForce * 20 /300) + 0;
             
             while((b5.time_o - tmpJuice_stop) < (1/tmpJuice_Freq))
                 b5 = bmi5_mmap(b5);
