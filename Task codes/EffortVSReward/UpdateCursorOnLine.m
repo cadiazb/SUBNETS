@@ -48,10 +48,10 @@ function [Params, dat, b5] = UpdateCursorOnLine(Params, dat, b5)
     
     %% Collect kinematics
     tmpIndex = find(isnan(dat.ForceTrace(:,1)), 1, 'first');
-    dat.ForceTrace(tmpIndex,1)   = b5.isometricAIN_time_o;
-    dat.ForceTrace(tmpIndex,2)   = itmp(1);
-    dat.ForceTrace(tmpIndex,3)   = itmp(3);
-    dat.ForceTrace(tmpIndex,4:5) = newForce; 
+%     dat.ForceTrace(tmpIndex,1)   = b5.isometricAIN_time_o;
+%     dat.ForceTrace(tmpIndex,2)   = itmp(1);
+%     dat.ForceTrace(tmpIndex,3)   = itmp(3);
+%     dat.ForceTrace(tmpIndex,4:5) = newForce; 
 
     
     %% Sync
