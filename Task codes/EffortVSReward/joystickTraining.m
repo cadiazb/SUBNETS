@@ -1,7 +1,7 @@
 function [Params, dat, b5] = joystickTraining(Params, dat, b5, controlWindow)
 
 global DEBUG
-global SolenoidEnable;
+global SolenoidEnable QUIT_FLAG;
 
 % FOR DRAWING OBJECTS
 DRAW_NONE     = 0;
@@ -109,10 +109,11 @@ if ~dat.OutcomeID
 	done            = false;
     dat.FinalCursorPos = b5.StartTarget_pos;
     tmpJuiceState = 'off';
-    tmpJuiceMin = 0.1; %[s]
-    tmpJuiceMax = 0.7; %[s]
+    tmpJuiceMin = 0.05; %[s]
+    tmpJuiceMax = 0.1; %[s]
     tmpJuice_start = b5.time_o;
     tmpJuice_stop = b5.time_o;
+    tmpJuice_NextStart = b5.time_o;
     
 	t_start = b5.time_o;
     [Params.StartTarget.Win(1), Params.StartTarget.Win(2)] = controlWindow.GetSensitivity();
@@ -166,20 +167,21 @@ if ~dat.OutcomeID
         end
         if ~posOk
             b5.ProbeTarget_draw         = DRAW_BOTH;
-            if ((b5.time_o - tmpJuice_stop) > tmpJuiceMin) && strcmp(tmpJuiceState, 'off')
+%             if ((b5.time_o - tmpJuice_stop) > tmpJuiceMin) && strcmp(tmpJuiceState, 'off')
+            if strcmp(tmpJuiceState, 'off')
                 tmpJuiceState = 'on';
-                if (b5.time_o - tmpJuice_start) > (tmpJuiceMax+1)
+%                 if (b5.time_o - tmpJuice_start) > (tmpJuiceMax+1)
                     tmpJuice_start = b5.time_o;
-                end
+%                 end
             end
         else
             b5.ProbeTarget_draw         = DRAW_NONE;
-            if ((b5.time_o - tmpJuice_start) > tmpJuiceMin)
+%             if ((b5.time_o - tmpJuice_start) > tmpJuiceMin)
                 tmpJuiceState = 'off';
 %                 if (b5.time_o - tmpJuice_start) > (tmpJuiceMax+2)
                     tmpJuice_stop = b5.time_o;
 %                 end
-            end
+%             end
         end
         
         if ~isempty(dat.ReactionTime) && (posPassOk || ~posOk)
@@ -208,7 +210,8 @@ if ~dat.OutcomeID
         end
         
 %         if isempty(dat.ReactionTime)
-            if (b5.time_o - t_start) > Params.ReactionTimeDelay
+%             if (b5.time_o - t_start) > Params.ReactionTimeDelay
+            if QUIT_FLAG
                 dat.ReactionTime = b5.time_o - t_start;
                 dat.TrialChoice = '';
                 dat.MovementTime = NaN;
@@ -223,10 +226,29 @@ if ~dat.OutcomeID
             b5.ProbeTarget_draw         = DRAW_NONE;
         end
         b5 = LJJuicer(Params, b5, tmpJuiceState);
-        
-        if strcmp(tmpJuiceState, 'on') && SolenoidEnable && ((b5.time_o - tmpJuice_start) > tmpJuiceMax)
-            controlWindow.SolenoidEnable();
+        if SolenoidEnable
+            while ((b5.time_o - tmpJuice_start) < tmpJuiceMax)
+                b5 = bmi5_mmap(b5);
+            end
         end
+        tmpJuiceState = 'off';
+        b5.ProbeTarget_draw         = DRAW_NONE;
+        b5 = LJJuicer(Params, b5, tmpJuiceState);
+        tmpJuice_stop = b5.time_o;
+        
+        % Pause controlled by force applied on load cell
+        if ~posOk && SolenoidEnable
+            tmpForce = sqrt((pos(1) - b5.StartTarget_pos(1))^2 + (pos(2)- b5.StartTarget_pos(2))^2);
+            tmpJuice_Freq = (tmpForce * 20 /300) + 0
+            
+            while((b5.time_o - tmpJuice_stop) < (1/tmpJuice_Freq))
+                b5 = bmi5_mmap(b5);
+            end
+        end
+        
+%         if strcmp(tmpJuiceState, 'on') && SolenoidEnable && ((b5.time_o - tmpJuice_start) > tmpJuiceMax)
+%             controlWindow.SolenoidEnable();
+%         end
 	end
 end
 
