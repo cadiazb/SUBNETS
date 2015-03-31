@@ -18,7 +18,8 @@ dat.ProbeEffort         = DrawFromVec(Params.EffortVector);
 
 %% Generate ProbeTarget position
 b5.ProbeTarget_pos 		= b5.StartTarget_pos + ...
-                                [0,dat.ProbeEffort * b5.Frame_scale(2)];
+                                [0,dat.ProbeEffort * b5.Frame_scale(2)] ...
+                                + [100,0];
 
 %% Generate the amounts of reward
 dat.ProbeReward = DrawFromVec(Params.RewardsVector);
@@ -168,6 +169,14 @@ if ~dat.OutcomeID
         posPassOk 	= ((pos(2) - b5.StartTarget_pos(2)) <=...
             -(b5.ProbeTarget_pos(2) - b5.StartTarget_pos(2)));
         
+        if ~posOk
+            if (pos(1) > (b5.StartTarget_pos(1))) && ...
+                    ((abs(pos(2) - b5.StartTarget_pos(2)) < Params.StartTarget.Win(2)) || ...
+                    ((pos(1) - b5.StartTarget_pos(1)) > abs(pos(2) - b5.StartTarget_pos(2))))
+                posOk = ~posOk;
+            end
+        end
+        
         if ~posOk && isempty(dat.ReactionTime)
             dat.ReactionTime = b5.time_o - t_start;
         end
@@ -244,13 +253,13 @@ if ~dat.OutcomeID
         
         % Pause controlled by force applied on load cell
         if ~posOk && SolenoidEnable
-            if abs(pos(1))>abs(pos(2))
+            if abs(pos(1) - b5.StartTarget_pos(1))>abs(pos(2) - b5.StartTarget_pos(2))
 %                 tmpForce = sqrt((pos(1) - b5.StartTarget_pos(1))^2 + (pos(2)- b5.StartTarget_pos(2))^2);
                 tmpForce = abs((pos(1) - b5.StartTarget_pos(1)));
-                tmpJuice_Freq = (tmpForce * 5 /300) + 0;
+                tmpJuice_Freq = (tmpForce * 10 /300) + 0;
             end
             
-            if abs(pos(2))>abs(pos(1))
+            if abs(pos(2) - b5.StartTarget_pos(2))>abs(pos(1)- b5.StartTarget_pos(1))
 %                 tmpForce = sqrt((pos(1) - b5.StartTarget_pos(1))^2 + (pos(2)- b5.StartTarget_pos(2))^2);
                 tmpForce = abs((pos(2)- b5.StartTarget_pos(2)));
                 tmpJuice_Freq = (tmpForce * 40 /300) + 0;
