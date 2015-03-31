@@ -169,13 +169,13 @@ if ~dat.OutcomeID
         posPassOk 	= ((pos(2) - b5.StartTarget_pos(2)) <=...
             -(b5.ProbeTarget_pos(2) - b5.StartTarget_pos(2)));
         
-        if ~posOk
-            if (pos(1) > (b5.StartTarget_pos(1))) && ...
-                    ((abs(pos(2) - b5.StartTarget_pos(2)) < Params.StartTarget.Win(2)) || ...
-                    ((pos(1) - b5.StartTarget_pos(1)) > abs(pos(2) - b5.StartTarget_pos(2))))
-                posOk = ~posOk;
-            end
-        end
+%         if ~posOk
+%             if (pos(1) > (b5.StartTarget_pos(1))) && ...
+%                     ((abs(pos(2) - b5.StartTarget_pos(2)) < Params.StartTarget.Win(2)) || ...
+%                     ((pos(1) - b5.StartTarget_pos(1)) > abs(pos(2) - b5.StartTarget_pos(2))))
+%                 posOk = ~posOk;
+%             end
+%         end
         
         if ~posOk && isempty(dat.ReactionTime)
             dat.ReactionTime = b5.time_o - t_start;
