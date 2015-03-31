@@ -486,8 +486,10 @@ controlWindow.GetSensitivity =  @handleSensitivity;
         SolenoidEnable = 0;
         set(uiH.SolenoidButton, 'String', '<html>Solenoid<br>Disabled');
         
+        % Get X and Y sensitivity to trigger reward
         set(uiH.xSensitivitySlider, 'value', Params.StartTarget.Win(1));
         set(uiH.ySensitivitySlider, 'value', Params.StartTarget.Win(2));
+        SensitivitySlider_Callback([],[])
     end
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
