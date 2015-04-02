@@ -126,8 +126,8 @@ controlWindow.GetSensitivity =  @handleSensitivity;
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
     function SensitivitySlider_Callback(~, ~)
         
-        set(uiH.xSensitivityText, 'String', num2str(get(uiH.xSensitivitySlider, 'Value')));
-        set(uiH.ySensitivityText, 'String', num2str(get(uiH.ySensitivitySlider, 'Value')));
+        set(uiH.xSensitivityText, 'String', sprintf('%.2f',get(uiH.xSensitivitySlider, 'Value')));
+        set(uiH.ySensitivityText, 'String', sprintf('%.2f',get(uiH.ySensitivitySlider, 'Value')));
     end
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
