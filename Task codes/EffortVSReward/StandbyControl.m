@@ -120,7 +120,7 @@ controlWindow.GetSensitivity =  @handleSensitivity;
         b5 = bmi5_mmap(b5);
         
         set(uiH.Msg,'String',...
-            sprintf('Rewarded %.0f ms', 1000*(b5.time_o - juiceStart)));
+            sprintf('Rewarded %.0f ms on %s', 1000*(b5.time_o - juiceStart), datestr(now)));
     end
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%

@@ -239,10 +239,11 @@ if ~dat.OutcomeID
             b5.ProbeTarget_draw         = DRAW_NONE;
         end
         b5 = LJJuicer(Params, b5, tmpJuiceState);
-        if SolenoidEnable
+        if SolenoidEnable && strcmp(tmpJuiceState, 'on')
             while ((b5.time_o - tmpJuice_start) < tmpJuiceMax)
                 b5 = bmi5_mmap(b5);
             end
+            controlWindow.message(['Last reward ' datestr(now)]);
         end
         tmpJuiceState = 'off';
         b5.ProbeTarget_draw         = DRAW_NONE;
