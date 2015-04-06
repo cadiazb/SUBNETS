@@ -261,7 +261,7 @@ if ~dat.OutcomeID
 %             if abs(pos(2) - b5.StartTarget_pos(2))>abs(pos(1)- b5.StartTarget_pos(1))
 %                 tmpForce = sqrt((pos(1) - b5.StartTarget_pos(1))^2 + (pos(2)- b5.StartTarget_pos(2))^2);
                 tmpForce = abs((pos(2)- b5.StartTarget_pos(2)));
-                tmpJuice_Freq = (tmpForce * 40 /300) + 0;
+                tmpJuice_Freq = (tmpForce * 20 /300) + 0;
 %             end
             
             while((b5.time_o - tmpJuice_stop) < (1/tmpJuice_Freq))
