@@ -98,6 +98,8 @@ if ~dat.OutcomeID
     b5.BarOutline_draw          = DRAW_BOTH;
     b5.FillingEffort_draw       = DRAW_BOTH;
     b5.FillingEffortHor_draw       = DRAW_BOTH;
+    b5.xSensitivity_draw       = DRAW_BOTH;
+    b5.ySensitivity_draw       = DRAW_BOTH;
 %     b5.Pass_draw                = DRAW_BOTH;
 %     b5.ProbeTarget_draw         = DRAW_BOTH;
     
@@ -120,6 +122,7 @@ if ~dat.OutcomeID
     tmpJuice_start = b5.time_o;
     tmpJuice_stop = b5.time_o;
     tmpJuice_NextStart = b5.time_o;
+    RewardLog(1:10000) = {''}; 
     
 	t_start = b5.time_o;
     [Params.StartTarget.Win(1), Params.StartTarget.Win(2)] = controlWindow.GetSensitivity();
@@ -160,6 +163,17 @@ if ~dat.OutcomeID
 %             b5.FillingEffort_pos       = Params.WsCenter - [0, b5.Frame_scale(2)/2] + ...
 %                     [0, b5.FillingEffort_scale(2)/2];
 %         end
+        
+        % Update sensitivites rectangle
+        b5.ySensitivity_scale = [b5.BarOutline_scale(1),...
+                2*Params.StartTarget.Win(2)];
+        b5.ySensitivity_pos       = Params.WsCenter - [0, b5.Frame_scale(2)/2];
+        
+        b5.xSensitivity_scale = [2*Params.StartTarget.Win(1),... 
+                b5.xSensitivity_scale(2)];
+        b5.xSensitivity_pos(1) = Params.WsCenter(1);
+        
+        
         
         b5 = bmi5_mmap(b5);
         
@@ -244,6 +258,7 @@ if ~dat.OutcomeID
                 b5 = bmi5_mmap(b5);
             end
             controlWindow.message(['Last reward ' datestr(now)]);
+            RewardLog(find(cellfun(@isempty, RewardLog), 1, 'first')) = {datestr(now)};
         end
         tmpJuiceState = 'off';
         b5.ProbeTarget_draw         = DRAW_NONE;
@@ -263,10 +278,25 @@ if ~dat.OutcomeID
                 tmpForce = abs((pos(2)- b5.StartTarget_pos(2)));
                 tmpJuice_Freq = (tmpForce * 20 /300) + 0;
 %             end
-            
+            controlWindow.UpdateRewardFreq(tmpJuice_Freq);
+            if all(~cellfun(@isempty, RewardLog))
+                RewardLog(end+1:end+10000) = {''};
+            end
             while((b5.time_o - tmpJuice_stop) < (1/tmpJuice_Freq))
                 b5 = bmi5_mmap(b5);
             end
+        else
+            controlWindow.UpdateRewardFreq(0);
+            if (b5.time_o - tmpJuice_start) > 60
+                if ~all(cellfun(@isempty, RewardLog)) || all(~cellfun(@isempty, RewardLog))
+                    RewardLog(cellfun(@isempty, RewardLog)) = [];
+                    save(fullfile(Params.DataTrialDir,['RewardLog_' datestr(now,30)]), 'RewardLog');
+                    drawnow;
+                    clear RewardLog
+                    RewardLog(1:10000) = {''};
+                end
+            end
+                
         end
         
 %         if strcmp(tmpJuiceState, 'on') && SolenoidEnable && ((b5.time_o - tmpJuice_start) > tmpJuiceMax)

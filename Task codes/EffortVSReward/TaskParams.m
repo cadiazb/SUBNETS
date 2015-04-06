@@ -28,6 +28,8 @@ bmi5_cmd('make open_square Frame 0.01');
 bmi5_cmd('make open_square BarOutline 0.03');
 bmi5_cmd('make square FillingEffort');
 bmi5_cmd('make square FillingEffortHor');
+bmi5_cmd('make square xSensitivity');
+bmi5_cmd('make square ySensitivity');
 bmi5_cmd('make square Pass');
 bmi5_cmd('make circle Cursor');
 
@@ -227,6 +229,18 @@ b5.FillingEffortHor_color     = [1 1 0 1];
 b5.FillingEffortHor_scale     = b5.Frame_scale .* [1, 0.1];
 b5.FillingEffortHor_pos       = Params.WsCenter - [0, b5.Frame_scale(2)/2] + ...
                     [b5.FillingEffortHor_scale(1)/2,0];
+                
+% ySensitivity
+b5.ySensitivity_color     = [1 1 0 0.05];
+b5.ySensitivity_scale     = b5.Frame_scale .* [0.25, 1];
+b5.ySensitivity_pos       = Params.WsCenter - [0, b5.Frame_scale(2)/2] + ...
+                    [0, b5.ySensitivity_scale(2)/2];     
+                
+% ySensitivity
+b5.xSensitivity_color     = [1 1 0 0.05];
+b5.xSensitivity_scale     = b5.Frame_scale .* [1, 0.1];
+b5.xSensitivity_pos       = Params.WsCenter - [0, b5.Frame_scale(2)/2] + ...
+                    [b5.xSensitivity_scale(1)/2,0];                
 
 % Go/NoGo
 b5.ProbeTarget_color = [1 1 0 1];

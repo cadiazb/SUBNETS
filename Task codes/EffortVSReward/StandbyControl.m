@@ -80,6 +80,7 @@ controlWindow.message = @message;
 controlWindow.doSomething = @doSomething;
 controlWindow.SolenoidEnable = @SolenoidButton;
 controlWindow.GetSensitivity =  @handleSensitivity;
+controlWindow.UpdateRewardFreq =  @UpdateRewardFreq;
 
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -374,6 +375,13 @@ controlWindow.GetSensitivity =  @handleSensitivity;
         
         tmpX = get(uiH.xSensitivitySlider, 'value');
         tmpY = get(uiH.ySensitivitySlider, 'value');
+        
+    end
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+    function UpdateRewardFreq(frequency)
+        
+        set(uiH.RewardFreqText, 'string', sprintf('Reward frequency = %.0fHz',frequency));
         
     end
 
