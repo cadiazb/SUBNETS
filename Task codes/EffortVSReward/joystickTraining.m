@@ -184,9 +184,10 @@ if ~dat.OutcomeID
             -(b5.ProbeTarget_pos(2) - b5.StartTarget_pos(2)));
         
         if ~posOk
-            if abs(pos(1) - b5.StartTarget_pos(1)) > Params.StartTarget.Win(1) 
+            if (abs(pos(1) - b5.StartTarget_pos(1)) > Params.StartTarget.Win(1)) || ((pos(2) - b5.StartTarget_pos(2)) < 0)
                 posOk = ~posOk;
             end
+            
         end
         
         if ~posOk && isempty(dat.ReactionTime)
@@ -276,7 +277,7 @@ if ~dat.OutcomeID
 %             if abs(pos(2) - b5.StartTarget_pos(2))>abs(pos(1)- b5.StartTarget_pos(1))
 %                 tmpForce = sqrt((pos(1) - b5.StartTarget_pos(1))^2 + (pos(2)- b5.StartTarget_pos(2))^2);
                 tmpForce = abs((pos(2)- b5.StartTarget_pos(2)));
-                tmpJuice_Freq = (tmpForce * 20 /300) + 0;
+                tmpJuice_Freq = (tmpForce * 40 /300) + 0;
 %             end
             controlWindow.UpdateRewardFreq(tmpJuice_Freq);
             if all(~cellfun(@isempty, RewardLog))
