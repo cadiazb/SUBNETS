@@ -184,7 +184,7 @@ if ~dat.OutcomeID
             -(b5.ProbeTarget_pos(2) - b5.StartTarget_pos(2)));
         
         if ~posOk
-            if (abs(pos(1) - b5.StartTarget_pos(1)) > Params.StartTarget.Win(1)) || ((pos(2) - b5.StartTarget_pos(2)) < 0)
+            if (abs(pos(1) - b5.StartTarget_pos(1)) > Params.StartTarget.Win(1)) %|| ((pos(2) - b5.StartTarget_pos(2)) < 0)
                 posOk = ~posOk;
             end
             
