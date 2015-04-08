@@ -118,7 +118,7 @@ if ~dat.OutcomeID
     dat.FinalCursorPos = b5.StartTarget_pos;
     tmpJuiceState = 'off';
     tmpJuiceMin = 0.05; %[s]
-    tmpJuiceMax = 1; %[s]
+    tmpJuiceMax = 0.1; %[s]
     tmpJuice_start = b5.time_o;
     tmpJuice_stop = b5.time_o;
     tmpJuice_NextStart = b5.time_o;
