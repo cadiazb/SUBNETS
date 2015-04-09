@@ -80,6 +80,7 @@ controlWindow.message = @message;
 controlWindow.doSomething = @doSomething;
 controlWindow.SolenoidEnable = @SolenoidButton;
 controlWindow.GetSensitivity =  @handleSensitivity;
+controlWindow.GetProbeTarget_pos =  @GetProbeTarget_pos;
 controlWindow.UpdateRewardFreq =  @UpdateRewardFreq;
 
 
@@ -375,6 +376,13 @@ controlWindow.UpdateRewardFreq =  @UpdateRewardFreq;
         
         tmpX = get(uiH.xSensitivitySlider, 'value');
         tmpY = get(uiH.ySensitivitySlider, 'value');
+        
+    end
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+    function pos = GetProbeTarget_pos()
+        
+        pos = get(uiH.ProbeTargetSlider, 'value');
         
     end
 

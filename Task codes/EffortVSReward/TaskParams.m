@@ -32,6 +32,7 @@ bmi5_cmd('make square xSensitivity');
 bmi5_cmd('make square ySensitivity');
 bmi5_cmd('make square Pass');
 bmi5_cmd('make circle Cursor');
+bmi5_cmd('make circle SolenoidOpen');
 
 bmi5_cmd('make labjack isometric 4 4');
 bmi5_cmd('make tone GoTone');
@@ -206,6 +207,11 @@ b5.StartTarget_scale 			= [20 20];
 Params.StartTarget.Win  		= [40 60]; % radius
 Params.StartTarget.Locations 	= {Params.WsCenter + [-40 -40]}; % cell array of locations
 
+%% Solenoid Open
+b5.SolenoidOpen_color			= [0 0 1 0.2];
+b5.SolenoidOpen_scale 			= [20 20];
+b5.SolenoidOpen_pos 			= Params.WsBounds(2,:);
+
 %% Rewards
 Params.RewardsVector        = 200; %[ms]
 
@@ -244,7 +250,7 @@ b5.xSensitivity_pos       = Params.WsCenter - [0, b5.Frame_scale(2)/2] + ...
 
 % Go/NoGo
 b5.ProbeTarget_color = [1 1 0 1];
-b5.ProbeTarget_scale = [b5.BarOutline_scale(1), 2];
+b5.ProbeTarget_scale = [b5.BarOutline_scale(1)*3, 10];
 b5.ProbeTarget_pos = Params.WsCenter ;
 
 Params.EffortVector = [0.5];
