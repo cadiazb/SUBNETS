@@ -123,6 +123,8 @@ if ~dat.OutcomeID
     tmpJuice_start = b5.time_o;
     tmpJuice_stop = b5.time_o;
     tmpJuice_NextStart = b5.time_o;
+    tmpVisualLead = 0.5; %[s]
+    tmpPauseAfterReward = 1 %[s];
     RewardLog(1:10000) = {''}; 
     
 	t_start = b5.time_o;
@@ -262,21 +264,56 @@ if ~dat.OutcomeID
                 dat.OutcomeStr 	= 'cancel @ reaction';
             end
 %         end
+        % Turn on screen only when reward is about to be earned
+        if controlWindow.GetVisibleCheckbutton()
+            b5.BarOutline_draw          = DRAW_BOTH;
+            b5.FillingEffort_draw       = DRAW_BOTH;
+%             b5.FillingEffortHor_draw    = DRAW_BOTH;
+            b5.xSensitivity_draw        = DRAW_BOTH;
+            b5.ySensitivity_draw        = DRAW_BOTH;
+            b5.ProbeTarget_draw         = DRAW_BOTH;
+        else
+            b5.BarOutline_draw          = DRAW_NONE;
+            b5.FillingEffort_draw       = DRAW_NONE;
+            b5.FillingEffortHor_draw    = DRAW_NONE;
+            b5.xSensitivity_draw        = DRAW_NONE;
+            b5.ySensitivity_draw        = DRAW_NONE;
+            b5.ProbeTarget_draw         = DRAW_NONE;
+        end
         % Temporarily give juice right away
         if ~SolenoidEnable
             tmpJuiceState = 'off';
         end
-        b5 = LJJuicer(Params, b5, tmpJuiceState);
         if SolenoidEnable && strcmp(tmpJuiceState, 'on')
-            while ((b5.time_o - tmpJuice_start) < tmpJuiceMax)
+            b5.FillingEffort_draw       = DRAW_BOTH;
+            b5.ProbeTarget_draw         = DRAW_BOTH;
+            while ((b5.time_o - tmpJuice_start) < tmpVisualLead)
                 b5 = bmi5_mmap(b5);
             end
+        end
+        b5 = LJJuicer(Params, b5, tmpJuiceState);
+        if SolenoidEnable && strcmp(tmpJuiceState, 'on')
+            while ((b5.time_o - tmpJuice_start) < (tmpJuiceMax+tmpVisualLead))
+                b5 = bmi5_mmap(b5);
+            end
+            
+            b5.FillingEffort_draw       = DRAW_NONE;
+            b5.ProbeTarget_draw         = DRAW_NONE;
+            
             controlWindow.message(['Last reward ' datestr(now)]);
             RewardLog(find(cellfun(@isempty, RewardLog), 1, 'first')) = {datestr(now)};
+            tmpPauseAfterReward = 1;
         end
         tmpJuiceState = 'off';
         b5 = LJJuicer(Params, b5, tmpJuiceState);
         tmpJuice_stop = b5.time_o;
+        %Pause after reward
+        if tmpPauseAfterReward
+            while (b5.time_o - tmpJuice_stop) < (tmpPauseAfterReward)
+                b5 = bmi5_mmap(b5);
+            end
+            tmpPauseAfterReward = 0;
+        end
         
         % Pause controlled by force applied on load cell
         if ~posOk && SolenoidEnable

@@ -82,6 +82,7 @@ controlWindow.SolenoidEnable = @SolenoidButton;
 controlWindow.GetSensitivity =  @handleSensitivity;
 controlWindow.GetProbeTarget_pos =  @GetProbeTarget_pos;
 controlWindow.UpdateRewardFreq =  @UpdateRewardFreq;
+controlWindow.GetVisibleCheckbutton = @GetVisibleCheckbutton;
 
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -383,6 +384,13 @@ controlWindow.UpdateRewardFreq =  @UpdateRewardFreq;
     function pos = GetProbeTarget_pos()
         
         pos = get(uiH.ProbeTargetSlider, 'value');
+        
+    end
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+    function visibleON = GetVisibleCheckbutton()
+        
+        visibleON = get(uiH.VisibleCheckbutton, 'value');
         
     end
 
