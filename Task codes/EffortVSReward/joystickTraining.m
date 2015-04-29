@@ -119,13 +119,15 @@ if ~dat.OutcomeID
     dat.FinalCursorPos = b5.StartTarget_pos;
     tmpJuiceState = 'off';
     tmpJuiceMin = 0.05; %[s]
-    tmpJuiceMax = 0.1; %[s]
+    tmpJuiceMax = 0.4; %[s]
     tmpJuice_start = b5.time_o;
     tmpJuice_stop = b5.time_o;
     tmpJuice_NextStart = b5.time_o;
     tmpVisualLead = 0.5; %[s]
-    tmpPauseAfterReward = 1 %[s];
-    RewardLog(1:10000) = {''}; 
+    tmpPauseAfterReward = 1; %[s];
+    RewardLog(1:10000) = {''};
+    
+    NHPaway = 0;
     
 	t_start = b5.time_o;
     [Params.StartTarget.Win(1), Params.StartTarget.Win(2)] = controlWindow.GetSensitivity();
@@ -212,6 +214,7 @@ if ~dat.OutcomeID
             dat.ReactionTime = b5.time_o - t_start;
         end
         if ~posOk
+            NHPaway = 0;
 %             if ((b5.time_o - tmpJuice_stop) > tmpJuiceMin) && strcmp(tmpJuiceState, 'off')
             if strcmp(tmpJuiceState, 'off')
                 tmpJuiceState = 'on';
@@ -265,7 +268,7 @@ if ~dat.OutcomeID
             end
 %         end
         % Turn on screen only when reward is about to be earned
-        if controlWindow.GetVisibleCheckbutton()
+        if controlWindow.GetVisibleCheckbutton() || NHPaway
             b5.BarOutline_draw          = DRAW_BOTH;
             b5.FillingEffort_draw       = DRAW_BOTH;
 %             b5.FillingEffortHor_draw    = DRAW_BOTH;
@@ -283,6 +286,11 @@ if ~dat.OutcomeID
         % Temporarily give juice right away
         if ~SolenoidEnable
             tmpJuiceState = 'off';
+            if controlWindow.GetVisibleCheckbutton()
+                NHPaway = 1;
+            else
+                NHPaway = 0;
+            end
         end
         if SolenoidEnable && strcmp(tmpJuiceState, 'on')
             b5.FillingEffort_draw       = DRAW_BOTH;
@@ -338,6 +346,7 @@ if ~dat.OutcomeID
         else
             controlWindow.UpdateRewardFreq(0);
             if (b5.time_o - tmpJuice_start) > 60
+                NHPaway = 1;
                 if ~all(cellfun(@isempty, RewardLog)) || all(~cellfun(@isempty, RewardLog))
                     RewardLog(cellfun(@isempty, RewardLog)) = [];
                     save(fullfile(Params.DataTrialDir,['RewardLog_' datestr(now,30)]), 'RewardLog');
