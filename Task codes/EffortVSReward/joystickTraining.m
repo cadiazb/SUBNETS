@@ -14,12 +14,12 @@ b5.StartTarget_pos = Params.WsCenter - [0, b5.Frame_scale(2)/2];
 
 %% Draw Probe effort from vector
 % Draw reward from 'Training vector' or from Adaptive Vector
-dat.ProbeEffort         = DrawFromVec(Params.EffortVector);
+dat.ProbeEffort         = controlWindow.GetProbeTarget_pos() / b5.Frame_scale(2);
 
 %% Generate ProbeTarget position
 b5.ProbeTarget_pos 		= b5.StartTarget_pos + ...
                                 [0,dat.ProbeEffort * b5.Frame_scale(2)] ...
-                                + [100,0];
+                                + [0,0];
 
 %% Generate the amounts of reward
 dat.ProbeReward = DrawFromVec(Params.RewardsVector);
@@ -31,11 +31,11 @@ dat.OutcomeStr 	= 'Success';
 %% Hide all screen objects
 b5.StartTarget_draw             = DRAW_NONE;
 b5.Frame_draw                   = DRAW_NONE;
-b5.BarOutline_draw              = DRAW_NONE;
-b5.FillingEffort_draw           = DRAW_NONE;
+b5.BarOutline_draw              = DRAW_BOTH;
+b5.FillingEffort_draw           = DRAW_BOTH;
 b5.Pass_draw                    = DRAW_NONE;
 b5.Cursor_draw                  = DRAW_NONE;
-b5.ProbeTarget_draw             = DRAW_NONE;
+b5.ProbeTarget_draw             = DRAW_BOTH;
 
 b5 = bmi5_mmap(b5);
 %% 1. ACQUIRE START TARGET
@@ -179,8 +179,8 @@ if ~dat.OutcomeID
         b5.xSensitivity_pos(1) = Params.WsCenter(1);
         
         % Update Probe target pos
-        b5.ProbeTarget_pos = [0, b5.StartTarget_pos(2) + ...
-            controlWindow.GetProbeTarget_pos()];
+%         b5.ProbeTarget_pos = [0, b5.StartTarget_pos(2) + ...
+%             controlWindow.GetProbeTarget_pos()];
         
         
         
@@ -214,7 +214,6 @@ if ~dat.OutcomeID
             dat.ReactionTime = b5.time_o - t_start;
         end
         if ~posOk
-            NHPaway = 0;
 %             if ((b5.time_o - tmpJuice_stop) > tmpJuiceMin) && strcmp(tmpJuiceState, 'off')
             if strcmp(tmpJuiceState, 'off')
                 tmpJuiceState = 'on';
@@ -232,17 +231,17 @@ if ~dat.OutcomeID
         end
         
         if ~isempty(dat.ReactionTime) && (posPassOk || ~posOk)
-%             dat.TrialChoice = 'Pass';
-%             done = true;
-%             dat.OutcomeID 	= 0;
-%             dat.OutcomeStr 	= 'success';
+            dat.TrialChoice = 'Pass';
+            done = true;
+            dat.OutcomeID 	= 0;
+            dat.OutcomeStr 	= 'success';
         end
         
         if ~isempty(dat.ReactionTime) && (posProbeOk || posOk)
-%             done = true;
-%             dat.TrialChoice = 'Probe Effort';
-%             dat.OutcomeID 	= 0;
-%             dat.OutcomeStr 	= 'Succes';
+            done = true;
+            dat.TrialChoice = 'Probe Effort';
+            dat.OutcomeID 	= 0;
+            dat.OutcomeStr 	= 'Succes';
         end
 
 		% check for TIMEOUT
@@ -257,8 +256,7 @@ if ~dat.OutcomeID
         end
         
 %         if isempty(dat.ReactionTime)
-%             if (b5.time_o - t_start) > Params.ReactionTimeDelay
-            if QUIT_FLAG
+            if QUIT_FLAG || ((b5.time_o - t_start) > Params.ReactionTimeDelay)
                 dat.ReactionTime = b5.time_o - t_start;
                 dat.TrialChoice = '';
                 dat.MovementTime = NaN;
@@ -268,95 +266,95 @@ if ~dat.OutcomeID
             end
 %         end
         % Turn on screen only when reward is about to be earned
-        if controlWindow.GetVisibleCheckbutton() || NHPaway
-            b5.BarOutline_draw          = DRAW_BOTH;
-            b5.FillingEffort_draw       = DRAW_BOTH;
-%             b5.FillingEffortHor_draw    = DRAW_BOTH;
-            b5.xSensitivity_draw        = DRAW_BOTH;
-            b5.ySensitivity_draw        = DRAW_BOTH;
-            b5.ProbeTarget_draw         = DRAW_BOTH;
-        else
-            b5.BarOutline_draw          = DRAW_NONE;
-            b5.FillingEffort_draw       = DRAW_NONE;
-            b5.FillingEffortHor_draw    = DRAW_NONE;
-            b5.xSensitivity_draw        = DRAW_NONE;
-            b5.ySensitivity_draw        = DRAW_NONE;
-            b5.ProbeTarget_draw         = DRAW_NONE;
-        end
+%         if controlWindow.GetVisibleCheckbutton() || NHPaway
+%             b5.BarOutline_draw          = DRAW_BOTH;
+%             b5.FillingEffort_draw       = DRAW_BOTH;
+% %             b5.FillingEffortHor_draw    = DRAW_BOTH;
+%             b5.xSensitivity_draw        = DRAW_BOTH;
+%             b5.ySensitivity_draw        = DRAW_BOTH;
+%             b5.ProbeTarget_draw         = DRAW_BOTH;
+%         else
+%             b5.BarOutline_draw          = DRAW_NONE;
+%             b5.FillingEffort_draw       = DRAW_NONE;
+%             b5.FillingEffortHor_draw    = DRAW_NONE;
+%             b5.xSensitivity_draw        = DRAW_NONE;
+%             b5.ySensitivity_draw        = DRAW_NONE;
+%             b5.ProbeTarget_draw         = DRAW_NONE;
+%         end
         % Temporarily give juice right away
         if ~SolenoidEnable
             tmpJuiceState = 'off';
-            if controlWindow.GetVisibleCheckbutton()
-                NHPaway = 1;
-            else
-                NHPaway = 0;
-            end
+%             if controlWindow.GetVisibleCheckbutton()
+%                 NHPaway = 1;
+%             else
+%                 NHPaway = 0;
+%             end
         end
-        if SolenoidEnable && strcmp(tmpJuiceState, 'on')
-            b5.FillingEffort_draw       = DRAW_BOTH;
-            b5.ProbeTarget_draw         = DRAW_BOTH;
-            while ((b5.time_o - tmpJuice_start) < tmpVisualLead)
-                b5 = bmi5_mmap(b5);
-            end
-        end
-        b5 = LJJuicer(Params, b5, tmpJuiceState);
-        if SolenoidEnable && strcmp(tmpJuiceState, 'on')
-            while ((b5.time_o - tmpJuice_start) < (tmpJuiceMax+tmpVisualLead))
-                b5 = bmi5_mmap(b5);
-            end
-            
-            b5.FillingEffort_draw       = DRAW_NONE;
-            b5.ProbeTarget_draw         = DRAW_NONE;
-            
-            controlWindow.message(['Last reward ' datestr(now)]);
-            RewardLog(find(cellfun(@isempty, RewardLog), 1, 'first')) = {datestr(now)};
-            tmpPauseAfterReward = 1;
-        end
-        tmpJuiceState = 'off';
-        b5 = LJJuicer(Params, b5, tmpJuiceState);
-        tmpJuice_stop = b5.time_o;
+%         if SolenoidEnable && strcmp(tmpJuiceState, 'on')
+%             b5.FillingEffort_draw       = DRAW_BOTH;
+%             b5.ProbeTarget_draw         = DRAW_BOTH;
+%             while ((b5.time_o - tmpJuice_start) < tmpVisualLead)
+%                 b5 = bmi5_mmap(b5);
+%             end
+%         end
+%         b5 = LJJuicer(Params, b5, tmpJuiceState);
+%         if SolenoidEnable && strcmp(tmpJuiceState, 'on')
+%             while ((b5.time_o - tmpJuice_start) < (tmpJuiceMax+tmpVisualLead))
+%                 b5 = bmi5_mmap(b5);
+%             end
+%             
+%             b5.FillingEffort_draw       = DRAW_NONE;
+%             b5.ProbeTarget_draw         = DRAW_NONE;
+%             
+%             controlWindow.message(['Last reward ' datestr(now)]);
+%             RewardLog(find(cellfun(@isempty, RewardLog), 1, 'first')) = {datestr(now)};
+%             tmpPauseAfterReward = 1;
+%         end
+%         tmpJuiceState = 'off';
+%         b5 = LJJuicer(Params, b5, tmpJuiceState);
+%         tmpJuice_stop = b5.time_o;
         %Pause after reward
-        if tmpPauseAfterReward
-            while (b5.time_o - tmpJuice_stop) < (tmpPauseAfterReward)
-                b5 = bmi5_mmap(b5);
-            end
-            tmpPauseAfterReward = 0;
-        end
+%         if tmpPauseAfterReward
+%             while (b5.time_o - tmpJuice_stop) < (tmpPauseAfterReward)
+%                 b5 = bmi5_mmap(b5);
+%             end
+%             tmpPauseAfterReward = 0;
+%         end
         
         % Pause controlled by force applied on load cell
-        if ~posOk && SolenoidEnable
-%             if abs(pos(1) - b5.StartTarget_pos(1))>abs(pos(2) - b5.StartTarget_pos(2))
+%         if ~posOk && SolenoidEnable
+% %             if abs(pos(1) - b5.StartTarget_pos(1))>abs(pos(2) - b5.StartTarget_pos(2))
+% % %                 tmpForce = sqrt((pos(1) - b5.StartTarget_pos(1))^2 + (pos(2)- b5.StartTarget_pos(2))^2);
+% %                 tmpForce = abs((pos(1) - b5.StartTarget_pos(1)));
+% %                 tmpJuice_Freq = (tmpForce * 10 /300) + 0;
+% %             end
+%             
+% %             if abs(pos(2) - b5.StartTarget_pos(2))>abs(pos(1)- b5.StartTarget_pos(1))
 % %                 tmpForce = sqrt((pos(1) - b5.StartTarget_pos(1))^2 + (pos(2)- b5.StartTarget_pos(2))^2);
-%                 tmpForce = abs((pos(1) - b5.StartTarget_pos(1)));
-%                 tmpJuice_Freq = (tmpForce * 10 /300) + 0;
+%                 tmpForce = abs((pos(2)- b5.StartTarget_pos(2)));
+%                 tmpJuice_Freq = (tmpForce * 30 /300) + 0;
+% %             end
+%             controlWindow.UpdateRewardFreq(tmpJuice_Freq);
+%             if all(~cellfun(@isempty, RewardLog))
+%                 RewardLog(end+1:end+10000) = {''};
 %             end
-            
-%             if abs(pos(2) - b5.StartTarget_pos(2))>abs(pos(1)- b5.StartTarget_pos(1))
-%                 tmpForce = sqrt((pos(1) - b5.StartTarget_pos(1))^2 + (pos(2)- b5.StartTarget_pos(2))^2);
-                tmpForce = abs((pos(2)- b5.StartTarget_pos(2)));
-                tmpJuice_Freq = (tmpForce * 30 /300) + 0;
+%             while((b5.time_o - tmpJuice_stop) < (1/tmpJuice_Freq))
+%                 b5 = bmi5_mmap(b5);
 %             end
-            controlWindow.UpdateRewardFreq(tmpJuice_Freq);
-            if all(~cellfun(@isempty, RewardLog))
-                RewardLog(end+1:end+10000) = {''};
-            end
-            while((b5.time_o - tmpJuice_stop) < (1/tmpJuice_Freq))
-                b5 = bmi5_mmap(b5);
-            end
-        else
-            controlWindow.UpdateRewardFreq(0);
-            if (b5.time_o - tmpJuice_start) > 60
-                NHPaway = 1;
-                if ~all(cellfun(@isempty, RewardLog)) || all(~cellfun(@isempty, RewardLog))
-                    RewardLog(cellfun(@isempty, RewardLog)) = [];
-                    save(fullfile(Params.DataTrialDir,['RewardLog_' datestr(now,30)]), 'RewardLog');
-                    drawnow;
-                    clear RewardLog
-                    RewardLog(1:10000) = {''};
-                end
-            end
-                
-        end
+%         else
+%             controlWindow.UpdateRewardFreq(0);
+%             if (b5.time_o - tmpJuice_start) > 60
+%                 NHPaway = 1;
+%                 if ~all(cellfun(@isempty, RewardLog)) || all(~cellfun(@isempty, RewardLog))
+%                     RewardLog(cellfun(@isempty, RewardLog)) = [];
+%                     save(fullfile(Params.DataTrialDir,['RewardLog_' datestr(now,30)]), 'RewardLog');
+%                     drawnow;
+%                     clear RewardLog
+%                     RewardLog(1:10000) = {''};
+%                 end
+%             end
+%                 
+%         end
         
 %         if strcmp(tmpJuiceState, 'on') && SolenoidEnable && ((b5.time_o - tmpJuice_start) > tmpJuiceMax)
 %             controlWindow.SolenoidEnable();
@@ -371,19 +369,27 @@ if dat.OutcomeID == 0
     
     fprintf('Choice\t\t%s \n',dat.TrialChoice);
     fprintf('Trial reward\t\t%d \n',dat.ActualReward);
-	
-    b5.RewardTone_play_io = 1;
     
     % Give juice reward
+    [Params, b5] = blinkShape(Params, b5, {'FillingEffort', 'ProbeTarget'}, [12 12], [0.5 0.5]);
+    b5.RewardTone_play_io = 1;
     b5 = LJJuicer(Params, b5, 'on');
     b5 = bmi5_mmap(b5);
     juiceStart = b5.time_o;
-    while (b5.time_o - juiceStart) < (dat.ActualReward / 1000)
+%     while (b5.time_o - juiceStart) < (dat.ActualReward / 1000)
+    while (b5.time_o - juiceStart) < (tmpJuiceMax)
         b5 = bmi5_mmap(b5);
     end
     b5 = LJJuicer(Params, b5, 'off');
     dat.JuiceON = juiceStart;
     dat.JuiceOFF = b5.time_o;
+    controlWindow.message(['Last reward ' datestr(now)]);
+    
+    % Pause after reward
+    startPause = b5.time_o;
+    while (b5.time_o - startPause) < (Params.InterTrialDelay)
+        b5 = bmi5_mmap(b5);
+    end
 end
 
 b5 = bmi5_mmap(b5);

@@ -171,14 +171,14 @@ Params.TimeoutReachStartTarget  = 2; % max time to acquire start target
 Params.StartTarget.Hold       	= 0;
 
 % Reaching phase
-Params.ReactionTimeDelay      	= 4; % Max time to initiate movement
+Params.ReactionTimeDelay      	= 10; % Max time to initiate movement
 
 % Go/NoGo
 Params.TimeoutReachTarget       = 4; % max time to reach reaching target
 
 % Other
 Params.TrialLength              = 10;   % Fixed trial length [s]
-Params.InterTrialDelay 			= 0;  % delay between each trial [sec]
+Params.InterTrialDelay 			= 1;  % delay between each trial [sec]
 
 %% Callibrate Load Cell
 [Params, b5] = CallibrateLoadCell(Params, b5);
