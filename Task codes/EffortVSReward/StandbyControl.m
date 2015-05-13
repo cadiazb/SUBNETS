@@ -17,7 +17,7 @@ myFolder = fileparts(which([myTag '.m']));
 paramsFile = fullfile(myFolder, 'standbyControl_lastParams.mat');
 
 % Load Opening sound effect
-[audioCue.Y, audioCue.Fs] = audioread(fullfile(myFolder, 'Opening.m4a'));
+[audioCue.Y, audioCue.Fs] = audioread(fullfile(myFolder, 'Opening'));
 
 % Open figure and get all handles to GUI objects
 figH = openfig(fullfile(myFolder, myTag));
