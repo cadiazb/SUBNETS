@@ -16,6 +16,9 @@ myFolder = fileparts(which([myTag '.m']));
 % Params file
 paramsFile = fullfile(myFolder, 'standbyControl_lastParams.mat');
 
+% Load Opening sound effect
+[audioCue.Y, audioCue.Fs] = audioread(fullfile(myFolder, 'Opening.m4a'));
+
 % Open figure and get all handles to GUI objects
 figH = openfig(fullfile(myFolder, myTag));
 set(1, 'position', [0   905   762    73]);
@@ -196,46 +199,48 @@ controlWindow.GetVisibleCheckbutton = @GetVisibleCheckbutton;
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
     function CueButton_Callback(hObject, ~)
         
-        b5 = bmi5_mmap(b5);
-        if ParamsGUI.CueOn == 0
-            tmpCueOn = b5.CueTarget_draw;
-            if tmpCueOn == DRAW_BOTH
-                b5.CueTarget_draw = DRAW_NONE;
-                set(hObject, 'background', [0.94 0.94 0.94])
-            end
-
-            if tmpCueOn == DRAW_NONE
-                b5.CueTarget_draw = DRAW_BOTH;
-                set(hObject, 'background', [0 1 0])
-            end
-
-            b5 = bmi5_mmap(b5);
-        elseif b5.CueTarget_draw == DRAW_NONE
-            
-            b5.CueTarget_draw = DRAW_BOTH;
-            set(hObject, 'background', [0 1 0])
-            b5 = bmi5_mmap(b5);
-            
-            cueStart = b5.time_o;
-            
-            while (b5.time_o - cueStart) <= ParamsGUI.CueOn
-                b5 = bmi5_mmap(b5);
-            end
-            
-            b5.CueTarget_draw = DRAW_NONE;
-            set(hObject, 'background', [0.94 0.94 0.94])
-            b5 = bmi5_mmap(b5);
-            
-        end
+        sound(audioCue.Y, audioCue.Fs)
+%         b5 = bmi5_mmap(b5);
+%         if ParamsGUI.CueOn == 0
+%             tmpCueOn = b5.CueTarget_draw;
+%             if tmpCueOn == DRAW_BOTH
+%                 b5.CueTarget_draw = DRAW_NONE;
+%                 set(hObject, 'background', [0.94 0.94 0.94])
+%             end
+% 
+%             if tmpCueOn == DRAW_NONE
+%                 b5.CueTarget_draw = DRAW_BOTH;
+%                 set(hObject, 'background', [0 1 0])
+%             end
+% 
+%             b5 = bmi5_mmap(b5);
+%         elseif b5.CueTarget_draw == DRAW_NONE
+%             
+%             b5.CueTarget_draw = DRAW_BOTH;
+%             set(hObject, 'background', [0 1 0])
+%             b5 = bmi5_mmap(b5);
+%             
+%             cueStart = b5.time_o;
+%             
+%             while (b5.time_o - cueStart) <= ParamsGUI.CueOn
+%                 b5 = bmi5_mmap(b5);
+%             end
+%             
+%             b5.CueTarget_draw = DRAW_NONE;
+%             set(hObject, 'background', [0.94 0.94 0.94])
+%             b5 = bmi5_mmap(b5);
+%             
+%         end
     end
 
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
     function CueRewardButton_Callback(hObject, ~)
         
-        b5 = bmi5_mmap(b5);
-        b5.CueTarget_draw = DRAW_BOTH;
-        set(hObject, 'background', [0 1 0])
+        sound(audioCue.Y, audioCue.Fs);
+%         b5 = bmi5_mmap(b5);
+%         b5.CueTarget_draw = DRAW_BOTH;
+%         set(hObject, 'background', [0 1 0])
         b5 = bmi5_mmap(b5);
         
         cueStart = b5.time_o;
@@ -245,8 +250,8 @@ controlWindow.GetVisibleCheckbutton = @GetVisibleCheckbutton;
         end
         
         controlWindow.rewardNow();
-        b5.CueTarget_draw = DRAW_NONE;
-        set(hObject, 'background', [0.94 0.94 0.94])
+%         b5.CueTarget_draw = DRAW_NONE;
+%         set(hObject, 'background', [0.94 0.94 0.94])
         b5 = bmi5_mmap(b5);  
         
     end
