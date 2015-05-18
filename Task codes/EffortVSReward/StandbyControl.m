@@ -32,6 +32,9 @@ set(uiH.PurgeLine, 'Callback',      @PurgeLine_Callback);
 set(uiH.RewardTime, 'Callback',     @RewardTime_Callback);
 set(uiH.RewardTimeMin, 'Callback',  @RewardTimeMin_Callback);
 set(uiH.RewardTimeMax, 'Callback',  @RewardTimeMax_Callback);
+set(uiH.EarnedRewardSlider, 'Callback',     @EarnedRewardSlider_Callback);
+set(uiH.EarnedRewardMax, 'Callback',  @EarnedRewardMax_Callback);
+set(uiH.EarnedRewardMin, 'Callback',  @EarnedRewardMin_Callback);
 set(uiH.PurgeTime, 'Callback',      @PurgeTime_Callback);
 set(uiH.PurgeTimeMin, 'Callback',   @PurgeTimeMin_Callback);
 set(uiH.PurgeTimeMax, 'Callback',   @PurgeTimeMax_Callback);
@@ -66,7 +69,7 @@ standbyControlInit();
 
 % Create global bmi5 fifo
 global bmi5_in bmi5_out;
-global SolenoidEnable;
+global SolenoidEnable Solenoid_open;
 
 % Initialize output data structure
 controlWindow = [];
@@ -86,6 +89,7 @@ controlWindow.GetSensitivity =  @handleSensitivity;
 controlWindow.GetProbeTarget_pos =  @GetProbeTarget_pos;
 controlWindow.UpdateRewardFreq =  @UpdateRewardFreq;
 controlWindow.GetVisibleCheckbutton = @GetVisibleCheckbutton;
+controlWindow.GetEarnedReward = @GetEarnedReward;
 
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -162,14 +166,14 @@ controlWindow.GetVisibleCheckbutton = @GetVisibleCheckbutton;
         tmpString = get(hObject, 'string');
         
         if strcmp(tmpString, 'Open')
-            b5 = LJJuicer(Params, b5, 'on');
-            b5 = bmi5_mmap(b5);
+            Solenoid_open = true;
             set(hObject, 'String', 'Close')
         end
         
         if strcmp(tmpString, 'Close')
             b5 = LJJuicer(Params, b5, 'off');
             b5 = bmi5_mmap(b5);
+            Solenoid_open = false;
             set(hObject, 'String', 'Open')
         end
         
@@ -275,11 +279,11 @@ controlWindow.GetVisibleCheckbutton = @GetVisibleCheckbutton;
     function RewardTimeMin_Callback(hObject, ~)
         
         if ~isnan(str2double(get(hObject,'string')))
-            if ParamsGUI.RewardTime.Value < str2double(hObject.String)
+            if ParamsGUI.RewardTime.Value < str2double(get(hObject,'string'))
                 set(hObject, 'String', num2str(ParamsGUI.RewardTime.Range(1)));
                 message('Current reward time is shorter that new min')
             else
-                set(uiH.RewardTime, 'Min', str2double(hObject.String'))
+                set(uiH.RewardTime, 'Min', str2double(get(hObject,'string')'))
                 UpdateParams();
             end
         else
@@ -293,11 +297,11 @@ controlWindow.GetVisibleCheckbutton = @GetVisibleCheckbutton;
     function RewardTimeMax_Callback(hObject, ~)
         
         if ~isnan(str2double(get(hObject,'string')))
-            if ParamsGUI.RewardTime.Value > str2double(hObject.String)
+            if ParamsGUI.RewardTime.Value > str2double(get(hObject,'string'))
                 set(hObject, 'String', num2str(ParamsGUI.RewardTime.Range(2)));
                 message('Current reward time is longer that new max')
             else
-                set(uiH.RewardTime, 'Max', str2double(hObject.String))
+                set(uiH.RewardTime, 'Max', str2double(get(hObject,'string')))
                 UpdateParams();
             end
         else
@@ -308,14 +312,57 @@ controlWindow.GetVisibleCheckbutton = @GetVisibleCheckbutton;
     end
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+    function EarnedRewardSlider_Callback(~, ~)
+        
+        UpdateParams();
+        set(uiH.EarnedRewardText, 'string', sprintf('%.1fms',ParamsGUI.EarnedReward.Value));
+        
+    end
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+    function EarnedRewardMax_Callback(hObject, ~)
+        
+        if ~isnan(str2double(get(hObject,'string')))
+            if ParamsGUI.EarnedReward.Value > str2double(get(hObject,'string'))
+                set(uiH.EarnedRewardSlider, 'Value', str2double(get(hObject,'string')))
+                message('Current earned reward adjusted to new max')
+            end
+            set(uiH.EarnedRewardSlider, 'Max', str2double(get(hObject,'string')))
+            UpdateParams();
+            EarnedRewardSlider_Callback(uiH.EarnedRewardSlider,[]);
+        else
+            set(hObject, 'String', num2str(ParamsGUI.EarnedReward.Range(2)));
+            message('Value entered is not numeric')
+        end
+        
+    end
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+    function EarnedRewardMin_Callback(hObject, ~)
+        
+        if ~isnan(str2double(get(hObject,'string')))
+            if ParamsGUI.EarnedReward.Value < str2double(get(hObject,'string'))
+                set(uiH.EarnedRewardSlider, 'Value', str2double(get(hObject,'string')))
+                message('Current earned reward adjusted to new min')
+            end
+            set(uiH.EarnedRewardSlider, 'Min', str2double(get(hObject,'string')))
+            UpdateParams();
+            EarnedRewardSlider_Callback(uiH.EarnedRewardSlider,[]);
+        else
+            set(hObject, 'String', num2str(ParamsGUI.EarnedReward.Range(1)));
+            message('Value entered is not numeric')
+        end
+        
+    end
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
     function PurgeTimeMin_Callback(hObject, ~)
         
         if ~isnan(str2double(get(hObject,'string')))
-            if ParamsGUI.PurgeTime.Value < str2double(hObject.String)
+            if ParamsGUI.PurgeTime.Value < str2double(get(hObject,'string'))
                 set(hObject, 'String', num2str(ParamsGUI.PurgeTime.Range(1)));
                 message('Current purge time is shorter that new min')
             else
-                set(uiH.PurgeTime, 'Min', str2double(hObject.String))
+                set(uiH.PurgeTime, 'Min', str2double(get(hObject,'string')))
                 UpdateParams();
             end
         else
@@ -329,11 +376,11 @@ controlWindow.GetVisibleCheckbutton = @GetVisibleCheckbutton;
     function PurgeTimeMax_Callback(hObject, ~)
         
         if ~isnan(str2double(get(hObject,'string')))
-            if ParamsGUI.PurgeTime.Value > str2double(hObject.String)
+            if ParamsGUI.PurgeTime.Value > str2double(get(hObject,'string'))
                 set(hObject, 'String', num2str(ParamsGUI.PurgeTime.Range(2)));
                 message('Current purge time is longer that new max')
             else
-                set(uiH.PurgeTime, 'Max', str2double(hObject.String))
+                set(uiH.PurgeTime, 'Max', str2double(get(hObject,'string')))
                 UpdateParams();
             end
         else
@@ -391,7 +438,12 @@ controlWindow.GetVisibleCheckbutton = @GetVisibleCheckbutton;
         pos = get(uiH.ProbeTargetSlider, 'value');
         
     end
-
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+    function EarnedReward = GetEarnedReward()
+        
+        EarnedReward = ParamsGUI.EarnedReward.Value;
+        
+    end
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
     function visibleON = GetVisibleCheckbutton()
         
@@ -455,6 +507,7 @@ controlWindow.GetVisibleCheckbutton = @GetVisibleCheckbutton;
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 % Initialize standby control window
     function standbyControlInit
+        Solenoid_open = false;
         try
             tmpParams = load(paramsFile);
             ParamsGUI = tmpParams.ParamsGUI;
@@ -462,6 +515,8 @@ controlWindow.GetVisibleCheckbutton = @GetVisibleCheckbutton;
         catch
             ParamsGUI.RewardTime.Range = [0, 1000]; % [ms]
             ParamsGUI.RewardTime.Value = 300; % [ms]
+            ParamsGUI.EarnedReward.Range = [0, 5]; % [s]
+            ParamsGUI.EarnedReward.Value = 0.5; % [s]
             ParamsGUI.PurgeTime.Range = [0, 5]; % [s]
             ParamsGUI.PurgeTime.Value = 2; % [s]
             ParamsGUI.CueOn             = 0; %[s]
@@ -471,6 +526,8 @@ controlWindow.GetVisibleCheckbutton = @GetVisibleCheckbutton;
         if ~exist('ParamsGUI', 'var') || isempty(ParamsGUI)
             ParamsGUI.RewardTime.Range = [0, 1000]; % [ms]
             ParamsGUI.RewardTime.Value = 300; % [ms]
+            ParamsGUI.EarnedReward.Range = [0, 5]; % [s]
+            ParamsGUI.EarnedReward.Value = 0.5; % [s]
             ParamsGUI.PurgeTime.Range = [0, 5]; % [s]
             ParamsGUI.PurgeTime.Value = 2; % [s]
             ParamsGUI.CueOn             = 0; %[s]
@@ -479,6 +536,10 @@ controlWindow.GetVisibleCheckbutton = @GetVisibleCheckbutton;
         if ~isfield(ParamsGUI, 'RewardTime')
             ParamsGUI.RewardTime.Range = [0, 1000]; % [ms]
             ParamsGUI.RewardTime.Value = 300; % [ms]
+        end
+        if ~isfield(ParamsGUI, 'EarnedReward')
+            ParamsGUI.EarnedReward.Range = [0, 5]; % [s]
+            ParamsGUI.EarnedReward.Value = 0.5; % [s]
         end
         if ~isfield(ParamsGUI, 'PurgeTime')
             ParamsGUI.PurgeTime.Range = [0, 5]; % [s]
@@ -499,6 +560,14 @@ controlWindow.GetVisibleCheckbutton = @GetVisibleCheckbutton;
         set(uiH.RewardTime, 'Min', ParamsGUI.RewardTime.Range(1));
         set(uiH.RewardTime, 'Max', ParamsGUI.RewardTime.Range(2));
         set(uiH.RewardTime, 'Value', ParamsGUI.RewardTime.Value);
+        
+        set(uiH.EarnedRewardMin, 'String', num2str(ParamsGUI.EarnedReward.Range(1)));
+        set(uiH.EarnedRewardMax, 'String', num2str(ParamsGUI.EarnedReward.Range(2)));
+        set(uiH.EarnedRewardText, 'String', ...
+            sprintf('%.1fms',ParamsGUI.EarnedReward.Value));
+        set(uiH.EarnedRewardSlider, 'Min', ParamsGUI.EarnedReward.Range(1));
+        set(uiH.EarnedRewardSlider, 'Max', ParamsGUI.EarnedReward.Range(2));
+        set(uiH.EarnedRewardSlider, 'Value', ParamsGUI.EarnedReward.Value);
         
         set(uiH.PurgeTimeMin, 'String', num2str(ParamsGUI.PurgeTime.Range(1)));
         set(uiH.PurgeTimeMax, 'String', num2str(ParamsGUI.PurgeTime.Range(2)));
@@ -527,10 +596,14 @@ controlWindow.GetVisibleCheckbutton = @GetVisibleCheckbutton;
         ParamsGUI.RewardTime.Range = [str2double(get(uiH.RewardTimeMin,'string')), ...
             str2double(get(uiH.RewardTimeMax,'string'))];
         
+        ParamsGUI.EarnedReward.Range = [str2double(get(uiH.EarnedRewardMin,'string')), ...
+            str2double(get(uiH.EarnedRewardMax,'string'))];
+        
         ParamsGUI.PurgeTime.Range = [str2double(get(uiH.PurgeTimeMin,'string')), ...
             str2double(get(uiH.PurgeTimeMax,'string'))];
         
         ParamsGUI.RewardTime.Value = get(uiH.RewardTime,'Value');
+        ParamsGUI.EarnedReward.Value = get(uiH.EarnedRewardSlider,'Value');
         ParamsGUI.PurgeTime.Value = get(uiH.PurgeTime,'Value');
         
     end

@@ -1,7 +1,7 @@
 function [Params, dat, b5] = joystickTraining(Params, dat, b5, controlWindow)
 
 global DEBUG
-global SolenoidEnable QUIT_FLAG;
+global SolenoidEnable QUIT_FLAG Solenoid_open;
 
 % FOR DRAWING OBJECTS
 DRAW_NONE     = 0;
@@ -22,8 +22,8 @@ b5.ProbeTarget_pos 		= b5.StartTarget_pos + ...
                                 + [0,0];
 
 %% Generate the amounts of reward
-dat.ProbeReward = DrawFromVec(Params.RewardsVector);
-
+% dat.ProbeReward = DrawFromVec(Params.RewardsVector);
+dat.ProbeReward = 1000 * controlWindow.GetEarnedReward(); %[ms]
 %% Misc stuff
 dat.OutcomeID 	= 0;
 dat.OutcomeStr 	= 'Success';
@@ -100,7 +100,7 @@ if ~dat.OutcomeID
     b5.FillingEffortHor_draw   = DRAW_BOTH;
     b5.xSensitivity_draw       = DRAW_BOTH;
     b5.ySensitivity_draw       = DRAW_BOTH;
-    b5.SolenoidOpen_draw       = DRAW_NONE;
+%     b5.SolenoidOpen_draw       = DRAW_NONE;
 %     b5.Pass_draw                = DRAW_BOTH;
     b5.ProbeTarget_draw         = DRAW_BOTH;
     
@@ -118,16 +118,16 @@ if ~dat.OutcomeID
 	done            = false;
     dat.FinalCursorPos = b5.StartTarget_pos;
     tmpJuiceState = 'off';
-    tmpJuiceMin = 0.05; %[s]
-    tmpJuiceMax = 0.4; %[s]
-    tmpJuice_start = b5.time_o;
-    tmpJuice_stop = b5.time_o;
-    tmpJuice_NextStart = b5.time_o;
-    tmpVisualLead = 0.5; %[s]
-    tmpPauseAfterReward = 1; %[s];
-    RewardLog(1:10000) = {''};
+%     tmpJuiceMin = 0.05; %[s]
+%     tmpJuiceMax = 0.4; %[s]
+%     tmpJuice_start = b5.time_o;
+%     tmpJuice_stop = b5.time_o;
+%     tmpJuice_NextStart = b5.time_o;
+%     tmpVisualLead = 0.5; %[s]
+%     tmpPauseAfterReward = 1; %[s];
+%     RewardLog(1:10000) = {''};
     
-    NHPaway = 0;
+%     NHPaway = 0;
     
 	t_start = b5.time_o;
     [Params.StartTarget.Win(1), Params.StartTarget.Win(2)] = controlWindow.GetSensitivity();
@@ -359,6 +359,12 @@ if ~dat.OutcomeID
 %         if strcmp(tmpJuiceState, 'on') && SolenoidEnable && ((b5.time_o - tmpJuice_start) > tmpJuiceMax)
 %             controlWindow.SolenoidEnable();
 %         end
+
+        if Solenoid_open
+            b5 = LJJuicer(Params, b5, 'on');
+        elseif strcmp(tmpJuiceState, 'off')
+            b5 = LJJuicer(Params, b5, tmpJuiceState);
+        end
 	end
 end
 
@@ -368,7 +374,7 @@ if dat.OutcomeID == 0
     dat.ActualReward = dat.ProbeReward;
     
     fprintf('Choice\t\t%s \n',dat.TrialChoice);
-    fprintf('Trial reward\t\t%d \n',dat.ActualReward);
+    fprintf('Trial reward\t\t%.0f [ms]\n',dat.ActualReward);
     
     % Give juice reward
     [Params, b5] = blinkShape(Params, b5, {'FillingEffort', 'ProbeTarget'}, [12 12], [0.5 0.5]);
@@ -376,11 +382,12 @@ if dat.OutcomeID == 0
     b5 = LJJuicer(Params, b5, 'on');
     b5 = bmi5_mmap(b5);
     juiceStart = b5.time_o;
-%     while (b5.time_o - juiceStart) < (dat.ActualReward / 1000)
-    while (b5.time_o - juiceStart) < (tmpJuiceMax)
+    while (b5.time_o - juiceStart) < (dat.ActualReward / 1000)
         b5 = bmi5_mmap(b5);
     end
-    b5 = LJJuicer(Params, b5, 'off');
+    if ~Solenoid_open
+        b5 = LJJuicer(Params, b5, 'off');
+    end
     dat.JuiceON = juiceStart;
     dat.JuiceOFF = b5.time_o;
     controlWindow.message(['Last reward ' datestr(now)]);
