@@ -290,6 +290,11 @@ Params.AdaptiveLookbackLength       = 10;    % num trials to look back
 Params.FixedTrialLength             = false;
 Params.AllowEarlyReach              = true; % { allow subject to start
                                            % { reach before end of delay
+Params.OpeningSound.Enable          = true;
+Params.OpeningSound.Next            = 0;
+Params.OpeningSound.Counter         = 0;
+Params.OpeningSound.Repeats         = 5;
+Params.OpeningSound.Intervals         = [10 20]; %(1) wait between repeats [s], (2) wait between groups of repeats [min]
 
 
 %% SYNC

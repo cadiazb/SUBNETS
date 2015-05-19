@@ -38,6 +38,19 @@ b5.Cursor_draw                  = DRAW_NONE;
 b5.ProbeTarget_draw             = DRAW_BOTH;
 
 b5 = bmi5_mmap(b5);
+%% 0. Temp play 'Opening' sound effect
+if Params.OpeningSound.Enable && (Params.OpeningSound.Next < b5.time_o)
+    [~, b5] = controlWindow.PlayCueandReward(Params, b5);
+    b5 = LJJuicer(Params, b5, 'off');
+    Params.OpeningSound.Counter = Params.OpeningSound.Counter + 1;
+    
+    if Params.OpeningSound.Counter < Params.OpeningSound.Repeats
+        Params.OpeningSound.Next = b5.time_o + Params.OpeningSound.Intervals(1);
+    else
+        Params.OpeningSound.Next = b5.time_o + 60*Params.OpeningSound.Intervals(2);
+        Params.OpeningSound.Counter = 0;
+    end
+end
 %% 1. ACQUIRE START TARGET
 b5.StartTarget_draw = DRAW_NONE;
 b5 = bmi5_mmap(b5);
@@ -397,6 +410,10 @@ if dat.OutcomeID == 0
     while (b5.time_o - startPause) < (Params.InterTrialDelay)
         b5 = bmi5_mmap(b5);
     end
+    
+    % Reset Opening sound effect
+    Params.OpeningSound.Next = b5.time_o + 60*Params.OpeningSound.Intervals(2);
+    Params.OpeningSound.Counter = 0;
 end
 
 b5 = bmi5_mmap(b5);

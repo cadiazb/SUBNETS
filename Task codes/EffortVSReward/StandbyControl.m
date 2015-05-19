@@ -90,6 +90,8 @@ controlWindow.GetProbeTarget_pos =  @GetProbeTarget_pos;
 controlWindow.UpdateRewardFreq =  @UpdateRewardFreq;
 controlWindow.GetVisibleCheckbutton = @GetVisibleCheckbutton;
 controlWindow.GetEarnedReward = @GetEarnedReward;
+controlWindow.PlayCue = @PlayCue;
+controlWindow.PlayCueandReward = @PlayCueandReward;
 
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -201,7 +203,7 @@ controlWindow.GetEarnedReward = @GetEarnedReward;
     end
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-    function CueButton_Callback(hObject, ~)
+    function CueButton_Callback(~, ~)
         
         sound(audioCue.Y, audioCue.Fs)
 %         b5 = bmi5_mmap(b5);
@@ -236,10 +238,14 @@ controlWindow.GetEarnedReward = @GetEarnedReward;
 %             
 %         end
     end
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+    function PlayCue()   
+        sound(audioCue.Y, audioCue.Fs)
 
+    end
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-    function CueRewardButton_Callback(hObject, ~)
+    function CueRewardButton_Callback(~, ~)
         
         sound(audioCue.Y, audioCue.Fs);
 %         b5 = bmi5_mmap(b5);
@@ -259,7 +265,35 @@ controlWindow.GetEarnedReward = @GetEarnedReward;
         b5 = bmi5_mmap(b5);  
         
     end
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+    function [Params, b5] = PlayCueandReward(Params, b5)
+        
+        sound(audioCue.Y, audioCue.Fs);
+        b5 = bmi5_mmap(b5);
+        
+        cueStart = b5.time_o;
+        
+        while (b5.time_o - cueStart) <= ParamsGUI.CueRewardDelay
+            b5 = bmi5_mmap(b5);
+        end
+        
+        
+        b5 = LJJuicer(Params, b5, 'on');
+        b5 = bmi5_mmap(b5);
+        
+        juiceStart = b5.isometricDOUT_time_o;
 
+        while (b5.time_o - juiceStart) < (ParamsGUI.RewardTime.Value/1000)
+            b5 = bmi5_mmap(b5);
+        end
+        
+        b5 = LJJuicer(Params, b5, 'off');
+        b5 = bmi5_mmap(b5);
+        
+        set(uiH.Msg,'String',...
+            sprintf('Rewarded %.0f ms on %s', 1000*(b5.time_o - juiceStart), datestr(now)));  
+        
+    end
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
     function RewardTime_Callback(hObject, ~)
         
