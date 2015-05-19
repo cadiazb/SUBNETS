@@ -315,7 +315,7 @@ controlWindow.GetEarnedReward = @GetEarnedReward;
     function EarnedRewardSlider_Callback(~, ~)
         
         UpdateParams();
-        set(uiH.EarnedRewardText, 'string', sprintf('%.1fms',ParamsGUI.EarnedReward.Value));
+        set(uiH.EarnedRewardText, 'string', sprintf('%.1fs',ParamsGUI.EarnedReward.Value));
         
     end
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -564,7 +564,7 @@ controlWindow.GetEarnedReward = @GetEarnedReward;
         set(uiH.EarnedRewardMin, 'String', num2str(ParamsGUI.EarnedReward.Range(1)));
         set(uiH.EarnedRewardMax, 'String', num2str(ParamsGUI.EarnedReward.Range(2)));
         set(uiH.EarnedRewardText, 'String', ...
-            sprintf('%.1fms',ParamsGUI.EarnedReward.Value));
+            sprintf('%.1fs',ParamsGUI.EarnedReward.Value));
         set(uiH.EarnedRewardSlider, 'Min', ParamsGUI.EarnedReward.Range(1));
         set(uiH.EarnedRewardSlider, 'Max', ParamsGUI.EarnedReward.Range(2));
         set(uiH.EarnedRewardSlider, 'Value', ParamsGUI.EarnedReward.Value);
