@@ -48,9 +48,9 @@ clear tmpString tmpStringZeros
 
 % Init positions
 b5.RewardCircle_pos = b5.ProbeTarget_pos;
-b5.Reward_pos = b5.RewardCircle_pos - [20, 0];
+b5.Reward_pos = b5.RewardCircle_pos - Params.InitStringOffset;
 b5.PassRewardCircle_pos = b5.Pass_pos - [60, 0];
-b5.PassReward_pos = b5.PassRewardCircle_pos - [Params.StringOffset(1), 0];
+b5.PassReward_pos = b5.PassRewardCircle_pos - [Params.PassStringOffset(1), 0];
 
 %% Misc stuff
 dat.OutcomeID 	= 0;
@@ -124,8 +124,12 @@ if ~dat.OutcomeID
     b5 = bmi5_mmap(b5);
     t_start = b5.time_o;
     
-    b5.RewardCircle_draw = DRAW_BOTH;
-    b5.Reward_draw = DRAW_BOTH;
+    b5.BarOutline_draw      = DRAW_BOTH;
+    for ii = 1:Params.NumEffortTicks
+        b5.(sprintf('effortTick%d_draw',ii))   = DRAW_BOTH;
+    end    
+    b5.RewardCircle_draw    = DRAW_BOTH;
+    b5.Reward_draw          = DRAW_BOTH;
 
     done = false;
 
@@ -149,16 +153,12 @@ end
 if ~dat.OutcomeID
     
     [Params, b5] = moveShape(Params, b5, {'RewardCircle', 'Reward'}, ...
-        [b5.RewardCircle_pos;b5.RewardCircle_pos] + [-60, 0; -60, 0], [0 0;-20 0],[0 0;-Params.StringOffset(1) 0]);
+        [b5.RewardCircle_pos;b5.RewardCircle_pos] + [-60, 0; -60, 0], [0 0; -Params.InitStringOffset(1) 0],[0 0;-Params.StringOffset(1) 0]);
     
-    b5.BarOutline_draw          = DRAW_BOTH;
     b5.FillingEffort_draw       = DRAW_BOTH;
     b5.Pass_draw                = DRAW_BOTH;
     b5.PassRewardCircle_draw    = DRAW_BOTH;
     b5.ProbeTarget_draw         = DRAW_BOTH;
-    for ii = 1:Params.NumEffortTicks
-        b5.(sprintf('effortTick%d_draw',ii))   = DRAW_BOTH;
-    end
     b5.PassReward_draw          = DRAW_BOTH;
     b5.PassString_draw          = DRAW_BOTH;
     
@@ -250,7 +250,7 @@ if dat.OutcomeID == 0
         case 'Pass'
             [Params, b5] = blinkShape(Params, b5, {'Pass', 'PassRewardCircle', 'PassReward'}, [10, 10, 10], 0.5);
             [Params, b5] = moveShape(Params, b5, {'PassRewardCircle', 'PassReward'}, ...
-                [Params.WsBounds(1,:);Params.WsBounds(1,:)],[0 0; -Params.StringOffset(1) 0], [0 0; -Params.StringOffset(2) 0]);
+                [Params.WsBounds(1,:);Params.WsBounds(1,:)],[0 0; -Params.PassStringOffset(1) 0], [0 0; -Params.StringOffset(2) 0]);
             b5.PassRewardCircle_draw        = DRAW_NONE;
             b5.PassReward_draw              = DRAW_NONE;
     end
