@@ -379,7 +379,7 @@ Params.AdaptiveLookbackLength       = 10;    % num trials to look back
 Params.FixedTrialLength             = true;
 Params.AllowEarlyReach              = false; % { allow subject to start
                                            % { reach before end of delay
-Params.StringOffset                 = [55; 100];%[65, 115]; % To see string centered in coin
+Params.StringOffset                 = [40; 100];%[65, 115]; % To see string centered in coin
 
 %% SYNC
 b5 = bmi5_mmap(b5);
