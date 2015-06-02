@@ -190,7 +190,7 @@ Params.StartTarget.Hold       	= 0.1;
 % Instructed delay
 Params.ReachDelay               = 1;	% draw from this interval
 % Reaching phase
-Params.ReactionTimeDelay      	= 2; % Max time to initiate movement
+Params.ReactionTimeDelay      	= 3; % Max time to initiate movement
 
 % Go/NoGo
 Params.TimeoutReachTarget       = 0.6; % max time to reach reaching target
@@ -199,12 +199,12 @@ Params.TimeoutReachTarget       = 0.6; % max time to reach reaching target
 Params.MovementWindow           = 0.3; % For effort line, time to move [s]
 
 % Other
-Params.TrialLength              = 3.6;   % Fixed trial length [s]
+Params.TrialLength              = 4.6;   % Fixed trial length [s]
 Params.InterTrialDelay 			= 0.4;  % delay between each trial [sec]
 
 %% CallibrateLoadCell
 [Params, b5] = CallibrateLoadCell(Params, b5);
-Params.LoadCell.ZeroOffset = [0 0 0 0]';
+% Params.LoadCell.ZeroOffset = [0 0 0 0]';
 %%  WORKSPACE, in mm
 Params.WsBounds             	= [-150 -150 ; 150 150]; % [Xmin Ymin; Xmax Ymax]
 Params.WsCenter 				= mean(Params.WsBounds,1);
@@ -247,7 +247,7 @@ b5.Reward_color = [0 0 0 1];
 b5.Reward_pos = Params.WsCenter + [-25, b5.Frame_scale(2)/2 + 10];
 
 b5.RewardCircle_color = [0 1 0 0.75];
-b5.RewardCircle_scale = [35 35];
+b5.RewardCircle_scale = [70 60];
 
 b5.RewardCircleFeedback_color = [0 1 0 0.75];
 b5.RewardCircleFeedback_scale = [35 35];
@@ -322,7 +322,7 @@ b5.PassReward_pos = b5.PassRewardCircle_pos - [55, 0];
 b5.PassReward_v = [double(sprintf('%.0f ¢', Params.PassReward)) 0 0 0 0 0 0]';
 
 b5.PassString_v = [double('Pass') 0]';
-b5.PassString_pos = b5.Pass_pos - [15, 0];
+b5.PassString_pos = b5.Pass_pos - [30, 5];
 b5.PassString_color = [1 1 1 1];
 
 %% Adaptive sampling parameters
@@ -352,7 +352,7 @@ Params.EffortSampleSpace    = repmat(Params.EffortVector, ...
     1, ceil(Params.NumCorrectTrials/size(Params.EffortVector,2)));
 %% Total Points String
 b5.TotalPoints_color        = [0 0 0 1];
-b5.TotalPoints_pos          = b5.PointsBox_pos - [110, 0]; %-[140, 0];
+b5.TotalPoints_pos          = b5.PointsBox_pos - [140, 0]; %-[140, 0];
 b5.TotalPoints_v            = [double(sprintf('%.01f ',0)) 162 zeros(1,numel(b5.TotalPoints_v) - 5)]';
 
 %% TONES
@@ -379,8 +379,8 @@ Params.AdaptiveLookbackLength       = 10;    % num trials to look back
 Params.FixedTrialLength             = true;
 Params.AllowEarlyReach              = false; % { allow subject to start
                                            % { reach before end of delay
-Params.StringOffset                 = [85; 115];%[65, 115]; % To see string centered in coin
-Params.InitStringOffset             = [30, 0]; % To see string centered in coin
+Params.StringOffset                 = [100; 130];%[65, 115]; % To see string centered in coin
+Params.InitStringOffset             = [40, 0]; % To see string centered in coin
 Params.PassStringOffset             = [65; 0];% To see string centered in coin
 
 %% SYNC

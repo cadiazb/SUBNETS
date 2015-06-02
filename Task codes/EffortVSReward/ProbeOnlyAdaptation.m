@@ -153,7 +153,7 @@ end
 if ~dat.OutcomeID
     
     [Params, b5] = moveShape(Params, b5, {'RewardCircle', 'Reward'}, ...
-        [b5.RewardCircle_pos;b5.RewardCircle_pos] + [-60, 0; -60, 0], [0 0; -Params.InitStringOffset(1) 0],[0 0;-Params.StringOffset(1) 0]);
+        [b5.RewardCircle_pos;b5.RewardCircle_pos] + [-80, 0; -80, 0], [0 0; -Params.InitStringOffset(1) 0],[0 0;-Params.StringOffset(1) 0]);
     
     b5.FillingEffort_draw       = DRAW_BOTH;
     b5.Pass_draw                = DRAW_BOTH;

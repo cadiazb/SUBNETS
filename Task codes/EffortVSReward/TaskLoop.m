@@ -212,7 +212,7 @@ for itrial = startTrial : Params.NumTrials
 %     fprintf('Block num\t\t(%i of %i)\n',Data(trial).BlockNum,Params.BlockSize);
 	fprintf('Total Blocks\t\t%i\n',Data(trial).BlockNum);
     %% Initialize force trace
-    Data(trial).ForceTrace = NaN(2 * Params.TrialLength / 0.01 , 5);
+    Data(trial).ForceTrace = NaN(uint32(2 * Params.TrialLength / 0.01) , 5);
 
 	%% - - - - - - RUN TRIAL - - - - - -
 	b5.Trial_v = trial;
