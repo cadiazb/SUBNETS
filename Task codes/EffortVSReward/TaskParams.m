@@ -34,7 +34,7 @@ bmi5_cmd('make square Pass');
 bmi5_cmd('make circle Cursor');
 bmi5_cmd('make circle SolenoidOpen');
 
-bmi5_cmd('make labjack isometric 4 4');
+bmi5_cmd('make labjack isometric 4 2 2');
 bmi5_cmd('make tone GoTone');
 bmi5_cmd('make tone RewardTone');
 bmi5_cmd('make store int 1 Trial');
@@ -280,7 +280,7 @@ Params.BlockSize 				=1000;
 %% LJJuicer parameters
 Params.Solenoid = 'off'; % Global variable for bypass
 
-Params.LJJuicerDOUT = 1; % Which digital output connected to solenoid [1-4]
+Params.LJJuicerDOUT = 1; % Which digital output connected to solenoid [1-2]
 b5 = LJJuicer(Params, b5, 'off');
 
 %% OTHER

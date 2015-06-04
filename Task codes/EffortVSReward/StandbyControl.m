@@ -92,6 +92,8 @@ controlWindow.GetVisibleCheckbutton = @GetVisibleCheckbutton;
 controlWindow.GetEarnedReward = @GetEarnedReward;
 controlWindow.PlayCue = @PlayCue;
 controlWindow.PlayCueandReward = @PlayCueandReward;
+controlWindow.SetEarnedRewards = @SetEarnedRewards;
+controlWindow.GetAutoCue = @GetAutoCue;
 
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -292,6 +294,18 @@ controlWindow.PlayCueandReward = @PlayCueandReward;
         
         set(uiH.Msg,'String',...
             sprintf('Rewarded %.0f ms on %s', 1000*(b5.time_o - juiceStart), datestr(now)));  
+        
+    end
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+    function SetEarnedRewards(x)
+        
+        set(uiH.EarnedRewardsText, 'string', num2str(x));
+        
+    end
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+    function autoCueState= GetAutoCue()
+        
+        autoCueState = get(uiH.AutoCueCheckbutton, 'value');
         
     end
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%

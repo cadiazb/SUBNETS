@@ -216,6 +216,8 @@ for itrial = startTrial : Params.NumTrials
 	fprintf('Total Blocks\t\t%i\n',Data(trial).BlockNum);
     %% Initialize force trace
     Data(trial).ForceTrace = NaN(2 * Params.TrialLength / 0.01 , 5);
+    %% Get auto cue state
+    Params.OpeningSound.Enable = controlWindow.GetAutoCue();
 
 	%% - - - - - - RUN TRIAL - - - - - -
 	b5.Trial_v = trial;
@@ -257,6 +259,9 @@ for itrial = startTrial : Params.NumTrials
 	fprintf('Outcome\t\t\t\t%d (%s)\n',Data(trial).OutcomeID,Data(trial).OutcomeStr);
     fprintf('Reaction time\t\t%d \n', Data(trial).ReactionTime);
     fprintf('Movement time\t\t%d \n', Data(trial).MovementTime);
+    
+    %Update earned rewards on GUI
+    controlWindow.SetEarnedRewards(sum([Data(1:trial).OutcomeID] == 0));
   
 	%% Update Threshold Quest
 % 	if (Data(trial).OutcomeID == 0 || Data(trial).OutcomeID == 3) && ...
