@@ -38,7 +38,7 @@ for ii = 1:Params.NumEffortTicks
     bmi5_cmd(sprintf('make square effortTick%d',ii));
 end
 
-bmi5_cmd('make labjack isometric 4 4');
+bmi5_cmd('make labjack isometric 4 2 2');
 bmi5_cmd('make tone GoTone');
 bmi5_cmd('make tone RewardTone');
 bmi5_cmd('make store int 1 Trial');
@@ -370,7 +370,7 @@ Params.BlockSize 				=1000;
 
 %% LJJuicer parameters
 
-Params.LJJuicerDOUT = 2; % Which digital output connected to solenoid [2-4]
+% Params.LJJuicerDOUT = 2; % Which digital output connected to solenoid [2-4]
 
 %% OTHER
 Params.UseCorrectionTrials          = false; % { both of these
