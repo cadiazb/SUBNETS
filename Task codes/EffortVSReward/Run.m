@@ -1,4 +1,4 @@
-function Run(SubjectID)
+function Run(SubjectID, taskType, maxForce)
 
 if (nargin<1),
     fprintf('\nERROR: Missing Input Parameters! \n')
@@ -11,7 +11,13 @@ Params.SubjectID = SubjectID;
 
 ExperimentStart;
 
-[Params, b5] = TaskParams(Params);
+if exist('taskType', 'var') && ~isempty(taskType) ...
+        && exist('maxForce', 'var') && ~isempty(maxForce)
+    
+    [Params, b5] = TaskParams(Params, taskType, maxForce);
+else
+    [Params, b5] = TaskParams(Params,[],[]);
+end
 
 TaskLoop(Params, b5);
 

@@ -25,6 +25,7 @@ dfields = {
     'ProbeReward'
     'ProbeEffort'
     'ProbeEffortUp'
+    'TakeTrialRight'
     'TrialChoice'
     'TotalPoints'
     'ReactionTime'

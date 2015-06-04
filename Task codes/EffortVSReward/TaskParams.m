@@ -1,4 +1,4 @@
-function [Params, b5] = TaskParams(Params)
+function [Params, b5] = TaskParams(Params, taskType, maxForce)
 
 global DEBUG;
 DEBUG = false;
@@ -52,6 +52,7 @@ bmi5_cmd('make text PassString 5');
 
 % Go/NoGo
 bmi5_cmd('make square ProbeTarget');
+bmi5_cmd('make text Warning 38'); % Please release buttons in control box.
 
 eval(bmi5_cmd('mmap structure'));
 
@@ -124,19 +125,31 @@ Params.SessionCount = ct;
 % 1. SubjectCallibration: Use this task to find max force for each subject
 % 2. Go/NoGo with reward adaptaion. file = ProbeOnlyAdaptation.m
 % 3. Continous reward. file = VerticalFillingBar.m
-
-tmpTrialOK = 0;
-tmpGetTrialType = 0;
-tmpDlgOpt.Position = [990   304   350   150];
-while ~tmpTrialOK && (tmpGetTrialType < 3)
-    tmpGetTrialType = tmpGetTrialType + 1;
-    [tmpTrialType, tmpTrialOK] = mylistdlg('PromptString', 'Select trial type', ...
-        'SelectionMode','single', 'ListString', ...
-        {'Subject Callibration', 'Go/NoGo', 'Continous Reward'},...
-        'Position', tmpDlgOpt.Position);
-end
-if ~tmpTrialOK
-    error('Could not get trial type')
+if isempty(taskType)
+    tmpTrialOK = 0;
+    tmpGetTrialType = 0;
+    tmpDlgOpt.Position = [990   304   350   150];
+    while ~tmpTrialOK && (tmpGetTrialType < 3)
+        tmpGetTrialType = tmpGetTrialType + 1;
+        [tmpTrialType, tmpTrialOK] = mylistdlg('PromptString', 'Select trial type', ...
+            'SelectionMode','single', 'ListString', ...
+            {'Subject Callibration', 'Go/NoGo', 'Continous Reward'},...
+            'Position', tmpDlgOpt.Position);
+    end
+    if ~tmpTrialOK
+        error('Could not get trial type')
+    end
+else
+    switch taskType
+        case 'Subject Callibration'
+            tmpTrialType = 1;
+        case 'Go/NoGo'
+            tmpTrialType = 2;
+        case 'Continuos Reward'
+            tmpTrialType = 3;
+        otherwise
+                tmpTrialType = 1;
+    end
 end
 switch tmpTrialType
     case 1
@@ -187,19 +200,19 @@ Params.KeyboardAtBlockEnd 		= true;
 % Start trial
 Params.TimeoutReachStartTarget  = 0.1; % max time to acquire start target
 Params.StartTarget.Hold       	= 0.1;
-% Instructed delay
-Params.ReachDelay               = 1;	% draw from this interval
+% Decision delay
+Params.DecisionDelay               = 2;	% draw from this interval
 % Reaching phase
-Params.ReactionTimeDelay      	= 3; % Max time to initiate movement
+Params.ReactionTimeDelay      	= 1; % Max time to initiate movement
 
 % Go/NoGo
-Params.TimeoutReachTarget       = 0.6; % max time to reach reaching target
+Params.TimeoutReachTarget       = 1.2; % max time to reach reaching target
 
 % Continuous reward
-Params.MovementWindow           = 0.3; % For effort line, time to move [s]
+Params.MovementWindow           = 1; % For effort line, time to move [s]
 
 % Other
-Params.TrialLength              = 4.6;   % Fixed trial length [s]
+Params.TrialLength              = 3.6;   % Fixed trial length [s]
 Params.InterTrialDelay 			= 0.4;  % delay between each trial [sec]
 
 %% CallibrateLoadCell
@@ -248,6 +261,7 @@ b5.Reward_pos = Params.WsCenter + [-25, b5.Frame_scale(2)/2 + 10];
 
 b5.RewardCircle_color = [0 1 0 0.75];
 b5.RewardCircle_scale = [70 60];
+b5.RewardCircle_pos = Params.WsCenter;
 
 b5.RewardCircleFeedback_color = [0 1 0 0.75];
 b5.RewardCircleFeedback_scale = [35 35];
@@ -265,11 +279,15 @@ Params.LoadCellMax                  = 50;
 if Params.TrialTypeProbs(1)
     Params.MaxForce                 = 50;
 else
-    tmpInput = {NaN};
-    tmpDlgOpt.Position = [990   304   200   150];
-    while isnan(str2double(tmpInput{1})) || (str2double(tmpInput{1}) < 15)
-        tmpInput = myinputdlg('Measured max force (>15Lb) =', 'Subject max force',...
-            1,{'30'}, tmpDlgOpt);
+    if isempty(maxForce)
+        tmpInput = {NaN};
+        tmpDlgOpt.Position = [990   304   200   150];
+        while isnan(str2double(tmpInput{1})) || (str2double(tmpInput{1}) < 15)
+            tmpInput = myinputdlg('Measured max force (>15Lb) =', 'Subject max force',...
+                1,{'30'}, tmpDlgOpt);
+        end
+    else
+        tmpInput = {num2str(maxForce)};
     end
     Params.MaxForce = ceil(str2double(tmpInput{1})); % Measured max force per subject [N]
     
@@ -291,6 +309,7 @@ b5.FillingEffort_pos       = Params.WsCenter - [0, b5.Frame_scale(2)/2] + ...
 for ii = 1:Params.NumEffortTicks
     b5.(sprintf('effortTick%d_color',ii))   = b5.BarOutline_color;
     b5.(sprintf('effortTick%d_scale',ii))   = [6,2];
+    b5.(sprintf('effortTick%d_pos',ii))     = Params.WsCenter;
     b5.(sprintf('effortTick%d_pos',ii))(1)     = ...
         Params.WsCenter(1) + b5.BarOutline_scale(1)/2 - b5.(sprintf('effortTick%d_scale',ii))(1)/2;
     b5.(sprintf('effortTick%d_pos',ii))(2)     = ...
@@ -310,8 +329,7 @@ Params.NoGoTap    = 0.025 * b5.Frame_scale(2);
 
 b5.Pass_color     = [0 0 1 1];
 b5.Pass_scale     = b5.BarOutline_scale .* [1, 0.1];
-b5.Pass_pos       = Params.WsCenter - [0,b5.Frame_scale(2)/2 + b5.Pass_scale(2)/2] - ...
-                       [0, 30];
+b5.Pass_pos       = Params.WsCenter;
                    
 b5.PassRewardCircle_color = [0 1 0 0.75];
 b5.PassRewardCircle_scale = [35 35];
@@ -355,6 +373,12 @@ b5.TotalPoints_color        = [0 0 0 1];
 b5.TotalPoints_pos          = b5.PointsBox_pos - [140, 0]; %-[140, 0];
 b5.TotalPoints_v            = [double(sprintf('%.01f ',0)) 162 zeros(1,numel(b5.TotalPoints_v) - 5)]';
 
+%% Warning sign when control box buttons are pressed at beginning of trial
+b5.Warning_color            = [1 1 1 1];
+b5.Warning_pos              = Params.WsCenter - [300,0];
+b5.Warning_v                = double('Please release buttons in control box.');
+b5.Warning_draw             = DRAW_NONE;
+
 %% TONES
 b5.GoTone_freq 				= 1000;  % (Hz)
 b5.GoTone_duration          = 0.3;  % (sec)
@@ -363,6 +387,14 @@ b5.GoTone_scale             = 1;    % (units?)
 b5.RewardTone_freq 			= 1500; % (Hz)
 b5.RewardTone_duration      = 0.3;  % (sec)
 b5.RewardTone_scale         = 1;    % (units?)
+
+%% Control box parameters
+Params.ControlBox.RightButton_DIN = 2; % Digital input in labjack connected to right button
+Params.ControlBox.LeftButton_DIN = 1; % Digital input in labjack connected to left button
+
+% Note: Buttons are connected to pull-up resistor. This means that a
+% logical high (1) in digital inputs is a depressed button while a logical
+% low (0) in digital input is a pressed button.
 
 %% FOR CONVENIENCE DEFINE BLOCKSIZE HERE
 % Params.BlockSize 				= 35;
@@ -379,10 +411,26 @@ Params.AdaptiveLookbackLength       = 10;    % num trials to look back
 Params.FixedTrialLength             = true;
 Params.AllowEarlyReach              = false; % { allow subject to start
                                            % { reach before end of delay
-Params.StringOffset                 = [100; 130];%[65, 115]; % To see string centered in coin
-Params.InitStringOffset             = [40, 0]; % To see string centered in coin
-Params.PassStringOffset             = [65; 0];% To see string centered in coin
+Params.RewardStringOffset           = [100; 130];%[65, 115]; % To see string centered in coin
+Params.InitRewardStringOffset       = [40, 0]; % To see string centered in coin
+Params.LeftRightRewardStringOffset  = [-150, 150]; % [Left,Right] Have to use diffetent offsets to see text centered in coin
+Params.PassRewardStringOffset       = [70; 140];% To see string centered in coin
+Params.PassStringOffset             = [55; 0];% To see text centered in box
+Params.LeftRightPassRewardStringOffset  = [-150, 160]; %[Left, Right]
 
+Params.ShapeDisplacement             = 200; % Move probe and frame to the left or right on each trial for decision
+
+%% Shape X axes center positions
+Params.Xcenter_pos.BarOutline           = Params.WsCenter(1);
+Params.Xcenter_pos.Pass                 = Params.WsCenter(1);
+Params.Xcenter_pos.RewardCircle         = Params.WsCenter(1) - 80;
+Params.Xcenter_pos.PassRewardCircle     = Params.Xcenter_pos.Pass - 60;
+Params.Xcenter_pos.ProbeTarget          = Params.WsCenter(1);
+Params.Xcenter_pos.Reward               = Params.Xcenter_pos.RewardCircle;
+Params.Xcenter_pos.PassReward           = Params.Xcenter_pos.PassRewardCircle;
+Params.Xcenter_pos.PassString           = Params.Xcenter_pos.Pass;
+Params.Xcenter_pos.effortTicks          = Params.WsCenter(1) +...
+    b5.BarOutline_scale(1)/2 - b5.effortTick1_scale(1)/2;
 %% SYNC
 b5 = bmi5_mmap(b5);
                                            
