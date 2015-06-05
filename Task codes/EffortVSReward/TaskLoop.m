@@ -1,10 +1,12 @@
 function TaskLoop(Params, b5)
 
+system('wmctrl -a "subject view"');
 %global DEBUG;
-global PAUSE_FLAG KEYBOARD_FLAG;
+global PAUSE_FLAG KEYBOARD_FLAG QUIT_FLAG;
 
 PAUSE_FLAG      = false;
 KEYBOARD_FLAG   = false;
+QUIT_FLAG       = false;
 
 NoFigsFlag = true;
 
@@ -47,7 +49,15 @@ Data = dtmp;
 Data(Params.NumTrials) = dtmp;
 
 SetupGUI();
-
+drawnow;
+% Move Figure 1 to work spacce where MATLAB is
+[~,tmp] = system('wmctrl -l | grep MATLAB');
+tmp(1:find(tmp==' ',1,'first')) = [];
+while tmp(1) == ' '
+    tmp(1) = [];
+end
+system(sprintf('wmctrl -r "Figure 1" -t %.0f',str2double(tmp(1))));
+clear tmp
 %% TRIAL LOOP
 
 trial 	= 0;
@@ -307,7 +317,8 @@ for itrial = startTrial : Params.NumTrials
     end
     
     %% Save Data
-    if isempty(Params.RewardSampleSpace) || isempty(Params.EffortSampleSpace)
+    if isempty(Params.RewardSampleSpace) || isempty(Params.EffortSampleSpace) ...
+            || QUIT_FLAG
         done = true;
     end
     
@@ -371,10 +382,12 @@ function SetupGUI()
   clf
   %screen_sz = get(0,'ScreenSize');
   set(gcf,'position', [990   304   350   150]);
-  uicontrol(gcf, 'style', 'toggle', 'units', 'normalized', 'position', [.1 .4 .3 .2], ...
-    'string', 'PAUSE',    'callback', @PauseCallback);
-  uicontrol(gcf, 'style', 'push',   'units', 'normalized', 'position', [.6 .4 .3 .2], ...
-    'string', 'KEYBOARD', 'callback', @KeyboardCallback);
+  uicontrol(gcf, 'style', 'toggle', 'units', 'normalized', 'position', [.1 .6 .8 .2], ...
+    'string', 'KEYBOARD',    'callback', @KeyboardCallback);
+  uicontrol(gcf, 'style', 'push',   'units', 'normalized', 'position', [.1 .4 .8 .2], ...
+    'string', 'PAUSE', 'callback', @PauseCallback);
+  uicontrol(gcf, 'style', 'push',   'units', 'normalized', 'position', [.1 .1 .8 .2], ...
+    'string', 'QUIT', 'callback', @QuitCallback);
 end
 
 function PauseCallback(hObject, ~, ~)
@@ -388,6 +401,11 @@ end
 function KeyboardCallback(~, ~, ~)
   global KEYBOARD_FLAG
   KEYBOARD_FLAG=true;
+end
+
+function QuitCallback(~, ~, ~)
+  global QUIT_FLAG
+  QUIT_FLAG=true;
 end
 
 function [Params, b5] = DoKeyboard(Params, b5)
