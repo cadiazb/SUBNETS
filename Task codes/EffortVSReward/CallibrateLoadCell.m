@@ -7,7 +7,7 @@ function [Params, b5] = CallibrateLoadCell(Params, b5)
     tic
     for ii = 1:n
         b5 = bmi5_mmap(b5); 
-        itmp = itmp + b5.isometricAIN_sensors_o;
+        itmp = itmp - b5.isometricAIN_sensors_o;
     end
     toc
     
