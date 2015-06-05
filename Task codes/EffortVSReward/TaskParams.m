@@ -200,8 +200,10 @@ Params.KeyboardAtBlockEnd 		= true;
 % Start trial
 Params.TimeoutReachStartTarget  = 0.1; % max time to acquire start target
 Params.StartTarget.Hold       	= 0.1;
+% Subject calibration instruted delay
+Params.ReachDelay               = 1;	% draw from this interval
 % Decision delay
-Params.DecisionDelay               = 2;	% draw from this interval
+Params.DecisionDelay            = 2;	% draw from this interval
 % Reaching phase
 Params.ReactionTimeDelay      	= 1; % Max time to initiate movement
 
@@ -409,7 +411,7 @@ Params.UseCorrectionTrials          = false; % { both of these
 Params.UseAdaptiveProbability       = false; % { cannot be true
 Params.AdaptiveLookbackLength       = 10;    % num trials to look back
 Params.FixedTrialLength             = true;
-Params.AllowEarlyReach              = false; % { allow subject to start
+Params.AllowEarlyReach              = true; % { allow subject to start
                                            % { reach before end of delay
 Params.RewardStringOffset           = [100; 130];%[65, 115]; % To see string centered in coin
 Params.InitRewardStringOffset       = [40, 0]; % To see string centered in coin
