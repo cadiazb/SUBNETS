@@ -1,5 +1,6 @@
 function TaskLoop(Params, b5)
-
+% Switch workspace to bmi5 subject view
+system('wmctrl -a "subject view"');
 %global DEBUG;
 global PAUSE_FLAG KEYBOARD_FLAG QUIT_FLAG;
 
