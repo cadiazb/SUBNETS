@@ -405,6 +405,9 @@ if dat.OutcomeID == 0
     dat.JuiceOFF = b5.time_o;
     controlWindow.message(['Last reward ' datestr(now)]);
     
+    % Turn objects on screen off
+    b5 = b5ObjectsOff(b5);
+    b5 = bmi5_mmap(b5);
     % Pause after reward
     startPause = b5.time_o;
     while (b5.time_o - startPause) < (Params.InterTrialDelay)
