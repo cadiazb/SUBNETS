@@ -48,37 +48,37 @@ done   = false;
 gotPos = false;
 
 t_start = b5.time_o;
-while ~done
-
-    pos = b5.Cursor_pos;
-
-	% Check for acquisition of start target
-  	posOk = TrialInBox(pos, b5.StartTarget_pos, Params.StartTarget.Win);
-
-    if posOk
-        if ~gotPos
-            gotPos = true;
-            starthold = b5.time_o;
-        end
-        if (b5.time_o - starthold) > Params.StartTarget.Hold
-			done = true;   % Reach to start target OK
-        end
-    end
-
-	% Once start target is acquired, it must remain acquired
-    if ~posOk  
-        gotPos = false;
-        if (b5.time_o - t_start) > Params.TimeoutReachStartTarget
-            done            = true;
-            dat.OutcomeID   = 1;
-            dat.OutcomeStr	= 'cancel @ start';
-        end
-    end
-    
-    % update hand
-    [Params, dat, b5] = UpdateCursorOnLine(Params, dat, b5); % syncs b5 twice
-
-end
+% while ~done
+% 
+%     pos = b5.Cursor_pos;
+% 
+% 	% Check for acquisition of start target
+%   	posOk = TrialInBox(pos, b5.StartTarget_pos, Params.StartTarget.Win);
+% 
+%     if posOk
+%         if ~gotPos
+%             gotPos = true;
+%             starthold = b5.time_o;
+%         end
+%         if (b5.time_o - starthold) > Params.StartTarget.Hold
+% 			done = true;   % Reach to start target OK
+%         end
+%     end
+% 
+% 	% Once start target is acquired, it must remain acquired
+%     if ~posOk  
+%         gotPos = false;
+%         if (b5.time_o - t_start) > Params.TimeoutReachStartTarget
+%             done            = true;
+%             dat.OutcomeID   = 1;
+%             dat.OutcomeStr	= 'cancel @ start';
+%         end
+%     end
+%     
+%     % update hand
+%     [Params, dat, b5] = UpdateCursorOnLine(Params, dat, b5); % syncs b5 twice
+% 
+% end
 
 %% 2. INSTRUCTED DELAY PHASE
 
