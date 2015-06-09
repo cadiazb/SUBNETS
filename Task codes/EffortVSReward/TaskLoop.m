@@ -31,6 +31,7 @@ dfields = {
     'TrialChoice'
     'TotalPoints'
     'ReactionTime'
+    'MovementOnset'
     'MovementTime'
     'AlwaysReward'
     'ActualEffort'
@@ -39,6 +40,7 @@ dfields = {
     'ForceTrace'
     'GoCue_time_o'
     'ProbesAdaptationState'
+    'Decision_time_o'
     'JuiceON'
     'JuiceOFF'
 };

@@ -180,7 +180,9 @@ if ~dat.OutcomeID
     b5.PassString_draw          = DRAW_BOTH;
     
     done = false;
-
+    
+    b5 = bmi5_mmap(b5);
+    dat.Decision_time_o = b5.time_o;
     while ~done
 
         buttonsOK = all(b5.isometricDIN_DIN_o);
@@ -280,7 +282,10 @@ if ~dat.OutcomeID
             % Check for acquisition of probe target
             posProbeOk 	= dat.ProbeEffort <=(b5.FillingEffort_scale(2) / b5.BarOutline_scale(2));
 
-
+            if isempty(dat.MovementOnset) && (b5.FillingEffort_scale(1) > 0)
+                dat.MovementOnset = b5.time_o;
+            end
+                
             if posProbeOk
                     done = true;
                     dat.MovementTime = b5.time_o - t_start;
