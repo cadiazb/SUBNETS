@@ -48,6 +48,7 @@ SetupGUI();
 [b5, controlWindow] = StandbyControl(Params,b5,0);
 drawnow;
 
+system('wmctrl -a "subject view"');
 %Close Solenoid at beginning of experiment
 b5 = LJJuicer(Params, b5, 'off');
 

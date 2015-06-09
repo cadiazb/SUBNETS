@@ -14,7 +14,8 @@ b5.StartTarget_pos = Params.WsCenter - [0, b5.Frame_scale(2)/2];
 
 %% Draw Probe effort from vector
 % Draw reward from 'Training vector' or from Adaptive Vector
-dat.ProbeEffort         = controlWindow.GetProbeTarget_pos() / b5.Frame_scale(2);
+% dat.ProbeEffort         = controlWindow.GetProbeTarget_pos() / b5.Frame_scale(2);
+dat.ProbeEffort         = DrawFromVec(Params.EffortVector);
 
 %% Generate ProbeTarget position
 b5.ProbeTarget_pos 		= b5.StartTarget_pos + ...
@@ -384,7 +385,9 @@ end
 %% Trial outcome and variable adaptation
 
 if dat.OutcomeID == 0
-    dat.ActualReward = dat.ProbeReward;
+    if dat.ProbeEffort > 0
+        dat.ActualReward = dat.ProbeReward*5;
+    end
     
     fprintf('Choice\t\t%s \n',dat.TrialChoice);
     fprintf('Trial reward\t\t%.0f [ms]\n',dat.ActualReward);
@@ -410,8 +413,10 @@ if dat.OutcomeID == 0
     b5 = bmi5_mmap(b5);
     % Pause after reward
     startPause = b5.time_o;
-    while (b5.time_o - startPause) < (Params.InterTrialDelay)
-        b5 = bmi5_mmap(b5);
+    if dat.ProbeEffort < 0
+        while (b5.time_o - startPause) < (Params.InterTrialDelay)
+            b5 = bmi5_mmap(b5);
+        end
     end
     
     % Reset Opening sound effect
