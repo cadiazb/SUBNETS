@@ -41,6 +41,7 @@ bmi5_cmd('make store int 1 Trial');
 
 % Go/NoGo
 bmi5_cmd('make square ProbeTarget');
+bmi5_cmd('make square ProbeTargetTop');
 
 eval(bmi5_cmd('mmap structure'));
 
@@ -204,7 +205,7 @@ b5.Cursor_scale 				= [0 0];        % [mm] % note: diameter!
 %% Start Target
 b5.StartTarget_color			= [1 0 0 1];
 b5.StartTarget_scale 			= [20 20];
-Params.StartTarget.Win  		= [40 40]; % radius
+Params.StartTarget.Win  		= [160 40]; % radius
 Params.StartTarget.Locations 	= {Params.WsCenter + [-40 -40]}; % cell array of locations
 
 %% Solenoid Open
@@ -253,7 +254,11 @@ b5.ProbeTarget_color = [1 1 0 1];
 b5.ProbeTarget_scale = [b5.BarOutline_scale(1)*3, 10];
 b5.ProbeTarget_pos = Params.WsCenter ;
 
-Params.EffortVector = [-0.2 -0.3 -0.3 -0.3 -0.4 -0.4 -0.4 -0.5 -0.5 0.2];
+b5.ProbeTargetTop_color = [1 1 0 1];
+b5.ProbeTargetTop_scale = [b5.BarOutline_scale(1)*3, 10];
+b5.ProbeTargetTop_pos = Params.WsCenter ;
+
+Params.EffortVector = [-0.3];
 
 %% Pass
 Params.PassSensitivity  = 5;
