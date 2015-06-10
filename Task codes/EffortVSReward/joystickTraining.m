@@ -387,6 +387,8 @@ end
 if dat.OutcomeID == 0
     if dat.ProbeEffort > 0
         dat.ActualReward = dat.ProbeReward*5;
+    else
+        dat.ActualReward = dat.ProbeReward;
     end
     
     fprintf('Choice\t\t%s \n',dat.TrialChoice);
