@@ -299,7 +299,7 @@ if dat.OutcomeID == 0
     b5 = bmi5_mmap(b5);
     % Pause after reward
     startPause = b5.time_o;
-    if dat.ProbeEffort < 0
+    if dat.FinalCursorPos(2) < b5.ProbeTargetTop_pos(2)
         while (b5.time_o - startPause) < (Params.InterTrialDelay)
             b5 = bmi5_mmap(b5);
         end
