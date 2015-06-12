@@ -59,7 +59,8 @@ done  	= false;
 
 startTrial = 1;
 for itrial = startTrial : Params.NumTrials
-
+system('wmctrl -a "subject view"');
+    
     % TRIAL INFO
 	trial = trial + 1;
     Data(trial).TrialNum = trial;
