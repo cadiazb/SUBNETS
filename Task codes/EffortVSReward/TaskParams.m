@@ -172,14 +172,14 @@ Params.TimeoutReachStartTarget  = 2; % max time to acquire start target
 Params.StartTarget.Hold       	= 0;
 
 % Reaching phase
-Params.ReactionTimeDelay      	= 10; % Max time to initiate movement
+Params.ReactionTimeDelay      	= 5; % Max time to initiate movement
 
 % Go/NoGo
 Params.TimeoutReachTarget       = 4; % max time to reach reaching target
 
 % Other
-Params.TrialLength              = 10;   % Fixed trial length [s]
-Params.InterTrialDelay 			= 3;  % delay between each trial [sec]
+Params.TrialLength              = 5;   % Fixed trial length [s]
+Params.InterTrialDelay 			= 1;  % delay between each trial [sec]
 
 %% Callibrate Load Cell
 [Params, b5] = CallibrateLoadCell(Params, b5);
@@ -215,10 +215,11 @@ b5.SolenoidOpen_pos 			= Params.WsBounds(2,:);
 
 %% Rewards
 Params.RewardsVector        = 200; %[ms]
+Params.BiasingMulti         = 2;
 
 %% Effort
 Params.LoadCellMax                  = 50;
-Params.MaxForce = 5; % Measured max force per subject [N]
+Params.MaxForce = 10; % Measured max force per subject [N]
 
 % Vertical bar outline
 b5.BarOutline_color     = [0 0 1 1];
@@ -258,7 +259,8 @@ b5.ProbeTargetTop_color = [1 1 0 1];
 b5.ProbeTargetTop_scale = [b5.BarOutline_scale(1)*3, 10];
 b5.ProbeTargetTop_pos = Params.WsCenter ;
 
-Params.EffortVector = [-0.3];
+Params.EffortVector     = [-0.15];
+Params.EffortVectorTop  = [0.15];
 
 %% Pass
 Params.PassSensitivity  = 5;

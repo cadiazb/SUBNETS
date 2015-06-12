@@ -363,7 +363,7 @@ controlWindow.GetAutoCue = @GetAutoCue;
     function EarnedRewardSlider_Callback(~, ~)
         
         UpdateParams();
-        set(uiH.EarnedRewardText, 'string', sprintf('%.1fs',ParamsGUI.EarnedReward.Value));
+        set(uiH.EarnedRewardText, 'string', sprintf('%.2fs',ParamsGUI.EarnedReward.Value));
         
     end
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%

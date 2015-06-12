@@ -23,7 +23,7 @@ b5.ProbeTarget_pos 		= b5.StartTarget_pos + ...
                                 + [0,0];
                             
 b5.ProbeTargetTop_pos 		= b5.StartTarget_pos + ...
-                                [0,0.3 * b5.Frame_scale(2)] ...
+                                [0,Params.EffortVectorTop * b5.Frame_scale(2)] ...
                                 + [0,0];                            
 %% Generate the amounts of reward
 % dat.ProbeReward = DrawFromVec(Params.RewardsVector);
@@ -221,12 +221,14 @@ if ~dat.OutcomeID
         if ~isempty(dat.ReactionTime) && (posPassOk)
             dat.TrialChoice = 'Pass';
             done = true;
+            dat.MovementTime = b5.time_o - t_start - dat.ReactionTime;
             dat.OutcomeID 	= 0;
             dat.OutcomeStr 	= 'success';
         end
         
         if ~isempty(dat.ReactionTime) && (posProbeOk)
             done = true;
+            dat.MovementTime = b5.time_o - t_start - dat.ReactionTime;
             dat.TrialChoice = 'Probe Effort';
             dat.OutcomeID 	= 0;
             dat.OutcomeStr 	= 'Succes';
@@ -269,8 +271,8 @@ end
 %% Trial outcome and variable adaptation
 
 if dat.OutcomeID == 0
-    if dat.FinalCursorPos(2) >= b5.ProbeTargetTop_pos(2)
-        dat.ActualReward = dat.ProbeReward*5;
+    if strcmp(dat.TrialChoice, 'Probe Effort')
+        dat.ActualReward = dat.ProbeReward*Params.BiasingMulti;
     else
         dat.ActualReward = dat.ProbeReward;
     end
@@ -282,10 +284,10 @@ if dat.OutcomeID == 0
     [Params, b5] = blinkShape(Params, b5, {'FillingEffort', 'ProbeTarget', 'ProbeTargetTop'}, [12 12 12], [0.75 0.75 0.75]);
     b5.RewardTone_play_io = 1;
     b5 = LJJuicer(Params, b5, 'on');
-    b5 = bmi5_mmap(b5);
+    [Params, dat, b5] = UpdateCursorOnLine(Params, dat, b5); %b5 = bmi5_mmap(b5);
     juiceStart = b5.time_o;
     while (b5.time_o - juiceStart) < (dat.ActualReward / 1000)
-        b5 = bmi5_mmap(b5);
+        [Params, dat, b5] = UpdateCursorOnLine(Params, dat, b5); %b5 = bmi5_mmap(b5);
     end
     if ~Solenoid_open
         b5 = LJJuicer(Params, b5, 'off');
@@ -299,20 +301,30 @@ if dat.OutcomeID == 0
     b5 = bmi5_mmap(b5);
     % Pause after reward
     startPause = b5.time_o;
-    if dat.FinalCursorPos(2) < b5.ProbeTargetTop_pos(2)
+    %if dat.FinalCursorPos(2) < b5.ProbeTargetTop_pos(2)
         while (b5.time_o - startPause) < (Params.InterTrialDelay)
-            b5 = bmi5_mmap(b5);
+            [Params, dat, b5] = UpdateCursorOnLine(Params, dat, b5); %b5 = bmi5_mmap(b5);
         end
-    end
+    %end
     
     % Reset Opening sound effect
     Params.OpeningSound.Next = b5.time_o + 60*Params.OpeningSound.Intervals(2);
     Params.OpeningSound.Counter = 0;
     
     % Make next trial a bit harder
-    Params.EffortVector = max(-0.5,(b5.ProbeTarget_pos(2)-b5.StartTarget_pos(2)-1)/b5.Frame_scale(2));
+    if strcmp(dat.TrialChoice, 'Pass')
+        Params.EffortVector = ...
+            max(-0.5,(b5.ProbeTarget_pos(2)-b5.StartTarget_pos(2)-1)/b5.Frame_scale(2));
+    end
+    if strcmp(dat.TrialChoice, 'Probe Effort')
+        Params.EffortVectorTop = ...
+            min(1,(b5.ProbeTargetTop_pos(2)-b5.StartTarget_pos(2)+1)/b5.Frame_scale(2));
+    end
 else
-    Params.EffortVector = min(-0.3,(b5.ProbeTarget_pos(2)-b5.StartTarget_pos(2)+2)/b5.Frame_scale(2));
+    Params.EffortVector = ...
+        min(-0.15,(b5.ProbeTarget_pos(2)-b5.StartTarget_pos(2)+2)/b5.Frame_scale(2));
+    Params.EffortVectorTop = ...
+        max(0.15,(b5.ProbeTargetTop_pos(2)-b5.StartTarget_pos(2)-2)/b5.Frame_scale(2));
 end
 
 b5 = bmi5_mmap(b5);
