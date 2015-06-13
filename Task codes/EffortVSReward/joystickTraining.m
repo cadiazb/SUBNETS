@@ -218,7 +218,8 @@ if ~dat.OutcomeID
             dat.ReactionTime = b5.time_o - t_start;
         end
         
-        if ~isempty(dat.ReactionTime) && (posPassOk)
+        if ~isempty(dat.ReactionTime) && (posPassOk) && ...
+                (abs(pos(1) - b5.StartTarget_pos(1)) < Params.StartTarget.Win(1))
             dat.TrialChoice = 'Pass';
             done = true;
             dat.MovementTime = b5.time_o - t_start - dat.ReactionTime;
@@ -226,7 +227,8 @@ if ~dat.OutcomeID
             dat.OutcomeStr 	= 'success';
         end
         
-        if ~isempty(dat.ReactionTime) && (posProbeOk)
+        if ~isempty(dat.ReactionTime) && (posProbeOk) && ...
+                (abs(pos(1) - b5.StartTarget_pos(1)) < Params.StartTarget.Win(1))
             done = true;
             dat.MovementTime = b5.time_o - t_start - dat.ReactionTime;
             dat.TrialChoice = 'Probe Effort';
