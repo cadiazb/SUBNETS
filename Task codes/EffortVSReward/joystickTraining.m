@@ -316,17 +316,23 @@ if dat.OutcomeID == 0
     % Make next trial a bit harder
     if strcmp(dat.TrialChoice, 'Pass')
         Params.EffortVector = ...
-            max(-0.5,(b5.ProbeTarget_pos(2)-b5.StartTarget_pos(2)-1)/b5.Frame_scale(2));
+            max(-0.6,(b5.ProbeTarget_pos(2)-b5.StartTarget_pos(2)-1)/b5.Frame_scale(2));
     end
     if strcmp(dat.TrialChoice, 'Probe Effort')
         Params.EffortVectorTop = ...
             min(1,(b5.ProbeTargetTop_pos(2)-b5.StartTarget_pos(2)+1)/b5.Frame_scale(2));
+        
+        b5.xSensitivity_scale(1) = max(60,b5.xSensitivity_scale(1) - 5);
+        controlWindow.SetSensitivity(b5.xSensitivity_scale(1)/2,b5.ySensitivity_scale(2)/2);
     end
 else
     Params.EffortVector = ...
-        min(-0.15,(b5.ProbeTarget_pos(2)-b5.StartTarget_pos(2)+2)/b5.Frame_scale(2));
+        min(-0.3,(b5.ProbeTarget_pos(2)-b5.StartTarget_pos(2)+2)/b5.Frame_scale(2));
     Params.EffortVectorTop = ...
         max(0.15,(b5.ProbeTargetTop_pos(2)-b5.StartTarget_pos(2)-2)/b5.Frame_scale(2));
+    
+    b5.xSensitivity_scale(1) = min(600,b5.xSensitivity_scale(1) + 10);
+    controlWindow.SetSensitivity(b5.xSensitivity_scale(1)/2,b5.ySensitivity_scale(2)/2);
 end
 
 b5 = bmi5_mmap(b5);

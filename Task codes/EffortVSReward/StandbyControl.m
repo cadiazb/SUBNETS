@@ -86,6 +86,7 @@ controlWindow.message = @message;
 controlWindow.doSomething = @doSomething;
 controlWindow.SolenoidEnable = @SolenoidButton;
 controlWindow.GetSensitivity =  @handleSensitivity;
+controlWindow.SetSensitivity =  @setHandleSensitivity;
 controlWindow.GetProbeTarget_pos =  @GetProbeTarget_pos;
 controlWindow.UpdateRewardFreq =  @UpdateRewardFreq;
 controlWindow.GetVisibleCheckbutton = @GetVisibleCheckbutton;
@@ -477,6 +478,16 @@ controlWindow.GetAutoCue = @GetAutoCue;
         
         tmpX = get(uiH.xSensitivitySlider, 'value');
         tmpY = get(uiH.ySensitivitySlider, 'value');
+        
+    end
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+    function setHandleSensitivity(tmpX, tmpY)
+        
+        set(uiH.xSensitivitySlider, 'value', tmpX);
+        set(uiH.ySensitivitySlider, 'value', tmpY);
+        
+        set(uiH.xSensitivityText, 'String', sprintf('%.2f',get(uiH.xSensitivitySlider, 'Value')));
+        set(uiH.ySensitivityText, 'String', sprintf('%.2f',get(uiH.ySensitivitySlider, 'Value')));
         
     end
 
