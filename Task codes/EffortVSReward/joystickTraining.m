@@ -322,7 +322,7 @@ if dat.OutcomeID == 0
         Params.EffortVectorTop = ...
             min(1,(b5.ProbeTargetTop_pos(2)-b5.StartTarget_pos(2)+1)/b5.Frame_scale(2));
         
-        b5.xSensitivity_scale(1) = max(60,b5.xSensitivity_scale(1) - 10);
+        b5.xSensitivity_scale(1) = max(100,b5.xSensitivity_scale(1) - 10);
         controlWindow.SetSensitivity(b5.xSensitivity_scale(1)/2,b5.ySensitivity_scale(2)/2);
     end
 else
@@ -331,7 +331,7 @@ else
     Params.EffortVectorTop = ...
         max(0.15,(b5.ProbeTargetTop_pos(2)-b5.StartTarget_pos(2)-2)/b5.Frame_scale(2));
     
-    b5.xSensitivity_scale(1) = min(300,b5.xSensitivity_scale(1) + 5);
+    b5.xSensitivity_scale(1) = min(400,b5.xSensitivity_scale(1) + 5);
     controlWindow.SetSensitivity(b5.xSensitivity_scale(1)/2,b5.ySensitivity_scale(2)/2);
 end
 

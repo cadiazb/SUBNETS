@@ -205,7 +205,7 @@ b5.Cursor_scale 				= [0 0];        % [mm] % note: diameter!
 %% Start Target
 b5.StartTarget_color			= [1 0 0 1];
 b5.StartTarget_scale 			= [20 20];
-Params.StartTarget.Win  		= [150 40]; % radius
+Params.StartTarget.Win  		= [200 40]; % radius
 Params.StartTarget.Locations 	= {Params.WsCenter + [-40 -40]}; % cell array of locations
 
 %% Solenoid Open
@@ -215,7 +215,7 @@ b5.SolenoidOpen_pos 			= Params.WsBounds(2,:);
 
 %% Rewards
 Params.RewardsVector        = 200; %[ms]
-Params.BiasingMulti         = 5;
+Params.BiasingMulti         = 3;
 
 %% Effort
 Params.LoadCellMax                  = 50;
