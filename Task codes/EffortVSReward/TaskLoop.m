@@ -26,6 +26,7 @@ dfields = {
 	'ReachDelay'
     'ProbeReward'
     'ProbeEffort'
+    'TopTargetOn'
     'TrialChoice'
     'ReactionTime'
     'MovementTime'

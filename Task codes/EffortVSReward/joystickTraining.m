@@ -17,6 +17,9 @@ b5.StartTarget_pos = Params.WsCenter - [0, b5.Frame_scale(2)/2];
 % dat.ProbeEffort         = controlWindow.GetProbeTarget_pos() / b5.Frame_scale(2);
 dat.ProbeEffort         = DrawFromVec(Params.EffortVector);
 
+%Choose target to show
+dat.TopTargetOn = DrawFromVec([0, 1]);
+
 %% Generate ProbeTarget position
 b5.ProbeTarget_pos 		= b5.StartTarget_pos + ...
                                 [0,dat.ProbeEffort * b5.Frame_scale(2)] ...
@@ -120,8 +123,11 @@ if ~dat.OutcomeID
     b5.ySensitivity_draw       = DRAW_BOTH;
 %     b5.SolenoidOpen_draw       = DRAW_NONE;
 %     b5.Pass_draw                = DRAW_BOTH;
-    b5.ProbeTarget_draw         = DRAW_BOTH;
-    b5.ProbeTargetTop_draw      = DRAW_BOTH;
+    if dat.TopTargetOn
+        b5.ProbeTargetTop_draw         = DRAW_BOTH;
+    else
+        b5.ProbeTarget_draw      = DRAW_BOTH;
+    end
     
     b5.GoTone_play_io = 1;
     b5.FillingEffort_scale(2) = 0;
@@ -219,7 +225,8 @@ if ~dat.OutcomeID
         end
         
         if ~isempty(dat.ReactionTime) && (posPassOk) && ...
-                (abs(pos(1) - b5.StartTarget_pos(1)) < Params.StartTarget.Win(1))
+                (abs(pos(1) - b5.StartTarget_pos(1)) < Params.StartTarget.Win(1)) && ...
+                ~dat.TopTargetOn
             dat.TrialChoice = 'Pass';
             done = true;
             dat.MovementTime = b5.time_o - t_start - dat.ReactionTime;
@@ -228,7 +235,8 @@ if ~dat.OutcomeID
         end
         
         if ~isempty(dat.ReactionTime) && (posProbeOk) && ...
-                (abs(pos(1) - b5.StartTarget_pos(1)) < Params.StartTarget.Win(1))
+                (abs(pos(1) - b5.StartTarget_pos(1)) < Params.StartTarget.Win(1)) && ...
+                dat.TopTargetOn
             done = true;
             dat.MovementTime = b5.time_o - t_start - dat.ReactionTime;
             dat.TrialChoice = 'Probe Effort';
@@ -316,20 +324,20 @@ if dat.OutcomeID == 0
     % Make next trial a bit harder
     if strcmp(dat.TrialChoice, 'Pass')
         Params.EffortVector = ...
-            max(-0.6,(b5.ProbeTarget_pos(2)-b5.StartTarget_pos(2)-1)/b5.Frame_scale(2));
+            max(-0.2,(b5.ProbeTarget_pos(2)-b5.StartTarget_pos(2)-1)/b5.Frame_scale(2));
     end
     if strcmp(dat.TrialChoice, 'Probe Effort')
         Params.EffortVectorTop = ...
-            min(1,(b5.ProbeTargetTop_pos(2)-b5.StartTarget_pos(2)+1)/b5.Frame_scale(2));
+            min(0.2,(b5.ProbeTargetTop_pos(2)-b5.StartTarget_pos(2)+1)/b5.Frame_scale(2));
         
-        b5.xSensitivity_scale(1) = max(100,b5.xSensitivity_scale(1) - 10);
+        b5.xSensitivity_scale(1) = max(160,b5.xSensitivity_scale(1) - 10);
         controlWindow.SetSensitivity(b5.xSensitivity_scale(1)/2,b5.ySensitivity_scale(2)/2);
     end
 else
     Params.EffortVector = ...
-        min(-0.3,(b5.ProbeTarget_pos(2)-b5.StartTarget_pos(2)+2)/b5.Frame_scale(2));
+        min(-0.2,(b5.ProbeTarget_pos(2)-b5.StartTarget_pos(2)+2)/b5.Frame_scale(2));
     Params.EffortVectorTop = ...
-        max(0.15,(b5.ProbeTargetTop_pos(2)-b5.StartTarget_pos(2)-2)/b5.Frame_scale(2));
+        max(0.2,(b5.ProbeTargetTop_pos(2)-b5.StartTarget_pos(2)-2)/b5.Frame_scale(2));
     
     b5.xSensitivity_scale(1) = min(160,b5.xSensitivity_scale(1) + 5);
     controlWindow.SetSensitivity(b5.xSensitivity_scale(1)/2,b5.ySensitivity_scale(2)/2);
@@ -344,7 +352,8 @@ b5 = bmi5_mmap(b5);
 % b5.FillingEffort_draw           = DRAW_NONE;
 % b5.Pass_draw                    = DRAW_NONE;
 % b5.Cursor_draw                  = DRAW_NONE;
-% b5.ProbeTarget_draw             = DRAW_NONE;
+b5.ProbeTarget_draw             = DRAW_NONE;
+b5.ProbeTargetTop_draw             = DRAW_NONE;
 
 %%% XXX TODO: NEED WAY TO LOG (MORE) INTERESTING TRIAL EVENTS
 

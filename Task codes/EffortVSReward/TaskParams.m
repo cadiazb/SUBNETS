@@ -259,8 +259,8 @@ b5.ProbeTargetTop_color = [1 1 0 1];
 b5.ProbeTargetTop_scale = [b5.BarOutline_scale(1)*3, 10];
 b5.ProbeTargetTop_pos = Params.WsCenter ;
 
-Params.EffortVector     = [-0.3];
-Params.EffortVectorTop  = [0.15];
+Params.EffortVector     = [-0.2];
+Params.EffortVectorTop  = [0.2];
 
 %% Pass
 Params.PassSensitivity  = 5;
