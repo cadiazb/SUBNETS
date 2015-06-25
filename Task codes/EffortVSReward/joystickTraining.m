@@ -42,8 +42,8 @@ b5.BarOutline_draw              = DRAW_BOTH;
 b5.FillingEffort_draw           = DRAW_BOTH;
 b5.Pass_draw                    = DRAW_NONE;
 b5.Cursor_draw                  = DRAW_NONE;
-b5.ProbeTarget_draw             = DRAW_BOTH;
-b5.ProbeTargetTop_draw          = DRAW_BOTH;
+b5.ProbeTarget_draw             = DRAW_NONE;
+b5.ProbeTargetTop_draw          = DRAW_NONE;
 
 b5 = bmi5_mmap(b5);
 %% 0. Temp play 'Opening' sound effect

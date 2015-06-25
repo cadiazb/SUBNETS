@@ -215,7 +215,7 @@ b5.SolenoidOpen_pos 			= Params.WsBounds(2,:);
 
 %% Rewards
 Params.RewardsVector        = 200; %[ms]
-Params.BiasingMulti         = 3;
+Params.BiasingMulti         = 1;
 
 %% Effort
 Params.LoadCellMax                  = 50;
