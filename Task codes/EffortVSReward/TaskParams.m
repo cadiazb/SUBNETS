@@ -169,7 +169,7 @@ Params.KeyboardAtBlockEnd 		= true;
 %% DELAYS, PENALTIES and TIMEOUTS [sec]
 % Start trial
 Params.TimeoutReachStartTarget  = 2; % max time to acquire start target
-Params.StartTarget.Hold       	= 0;
+Params.StartTarget.Hold       	= 0.1;
 
 % Reaching phase
 Params.ReactionTimeDelay      	= 5; % Max time to initiate movement
@@ -179,7 +179,7 @@ Params.TimeoutReachTarget       = 4; % max time to reach reaching target
 
 % Other
 Params.TrialLength              = 5;   % Fixed trial length [s]
-Params.InterTrialDelay 			= 1;  % delay between each trial [sec]
+Params.InterTrialDelay 			= 2;  % delay between each trial [sec]
 
 %% Callibrate Load Cell
 [Params, b5] = CallibrateLoadCell(Params, b5);

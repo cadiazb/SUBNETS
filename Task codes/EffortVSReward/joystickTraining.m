@@ -38,8 +38,8 @@ dat.OutcomeStr 	= 'Success';
 %% Hide all screen objects
 b5.StartTarget_draw             = DRAW_NONE;
 b5.Frame_draw                   = DRAW_NONE;
-b5.BarOutline_draw              = DRAW_BOTH;
-b5.FillingEffort_draw           = DRAW_BOTH;
+b5.BarOutline_draw              = DRAW_NONE;
+b5.FillingEffort_draw           = DRAW_NONE;
 b5.Pass_draw                    = DRAW_NONE;
 b5.Cursor_draw                  = DRAW_NONE;
 b5.ProbeTarget_draw             = DRAW_NONE;
@@ -63,7 +63,7 @@ end
 b5.StartTarget_draw = DRAW_NONE;
 b5 = bmi5_mmap(b5);
 
-done   = true;
+done   = false;
 gotPos = false;
 
 t_start = b5.time_o;
@@ -291,7 +291,7 @@ if dat.OutcomeID == 0
     fprintf('Trial reward\t\t%.0f [ms]\n',dat.ActualReward);
     
     % Give juice reward
-    [Params, b5] = blinkShape(Params, b5, {'FillingEffort', 'ProbeTarget', 'ProbeTargetTop'}, [12 12 12], [0.75 0.75 0.75]);
+%     [Params, b5] = blinkShape(Params, b5, {'FillingEffort', 'ProbeTarget', 'ProbeTargetTop'}, [12 12 12], [0.75 0.75 0.75]);
     b5.RewardTone_play_io = 1;
     b5 = LJJuicer(Params, b5, 'on');
     [Params, dat, b5] = UpdateCursorOnLine(Params, dat, b5); %b5 = bmi5_mmap(b5);
@@ -306,16 +306,16 @@ if dat.OutcomeID == 0
     dat.JuiceOFF = b5.time_o;
     controlWindow.message(['Last reward ' datestr(now)]);
     
-    % Turn objects on screen off
+%     % Turn objects on screen off
     b5 = b5ObjectsOff(b5);
     b5 = bmi5_mmap(b5);
-    % Pause after reward
-    startPause = b5.time_o;
-    %if dat.FinalCursorPos(2) < b5.ProbeTargetTop_pos(2)
-        while (b5.time_o - startPause) < (Params.InterTrialDelay)
-            [Params, dat, b5] = UpdateCursorOnLine(Params, dat, b5); %b5 = bmi5_mmap(b5);
-        end
-    %end
+%     % Pause after reward
+%     startPause = b5.time_o;
+%     %if dat.FinalCursorPos(2) < b5.ProbeTargetTop_pos(2)
+%         while (b5.time_o - startPause) < (Params.InterTrialDelay)
+%             [Params, dat, b5] = UpdateCursorOnLine(Params, dat, b5); %b5 = bmi5_mmap(b5);
+%         end
+%     %end
     
     % Reset Opening sound effect
     Params.OpeningSound.Next = b5.time_o + 60*Params.OpeningSound.Intervals(2);
@@ -334,6 +334,18 @@ if dat.OutcomeID == 0
         controlWindow.SetSensitivity(b5.xSensitivity_scale(1)/2,b5.ySensitivity_scale(2)/2);
     end
 else
+    %Clean screen
+    % Turn objects on screen off
+    b5 = b5ObjectsOff(b5);
+    b5 = bmi5_mmap(b5);
+    % Pause after fail reach
+    if dat.OutcomeID ~= 1
+        startPause = b5.time_o;
+        while (b5.time_o - startPause) < (Params.InterTrialDelay)
+            [Params, dat, b5] = UpdateCursorOnLine(Params, dat, b5); %b5 = bmi5_mmap(b5);
+        end
+    end
+
     Params.EffortVector = ...
         min(-0.2,(b5.ProbeTarget_pos(2)-b5.StartTarget_pos(2)+2)/b5.Frame_scale(2));
     Params.EffortVectorTop = ...
