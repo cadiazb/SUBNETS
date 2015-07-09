@@ -169,7 +169,7 @@ Params.KeyboardAtBlockEnd 		= true;
 %% DELAYS, PENALTIES and TIMEOUTS [sec]
 % Start trial
 Params.TimeoutReachStartTarget  = 2; % max time to acquire start target
-Params.StartTarget.Hold       	= 0.1;
+Params.StartTarget.Hold       	= 0.5;
 
 % Reaching phase
 Params.ReactionTimeDelay      	= 5; % Max time to initiate movement
@@ -259,8 +259,8 @@ b5.ProbeTargetTop_color = [1 1 0 1];
 b5.ProbeTargetTop_scale = [b5.BarOutline_scale(1)*3, 10];
 b5.ProbeTargetTop_pos = Params.WsCenter ;
 
-Params.EffortVector     = [-0.2];
-Params.EffortVectorTop  = [0.2];
+Params.EffortVector     = [-0.4];
+Params.EffortVectorTop  = [0.4];
 
 %% Pass
 Params.PassSensitivity  = 5;
