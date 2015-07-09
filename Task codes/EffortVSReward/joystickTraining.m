@@ -324,11 +324,11 @@ if dat.OutcomeID == 0
     % Make next trial a bit harder
     if strcmp(dat.TrialChoice, 'Pass')
         Params.EffortVector = ...
-            max(-0.4,(b5.ProbeTarget_pos(2)-b5.StartTarget_pos(2)-1)/b5.Frame_scale(2));
+            max(-0.2,(b5.ProbeTarget_pos(2)-b5.StartTarget_pos(2)-1)/b5.Frame_scale(2));
     end
     if strcmp(dat.TrialChoice, 'Probe Effort')
         Params.EffortVectorTop = ...
-            min(0.4,(b5.ProbeTargetTop_pos(2)-b5.StartTarget_pos(2)+1)/b5.Frame_scale(2));
+            min(0.2,(b5.ProbeTargetTop_pos(2)-b5.StartTarget_pos(2)+1)/b5.Frame_scale(2));
         
         b5.xSensitivity_scale(1) = max(160,b5.xSensitivity_scale(1) - 10);
         controlWindow.SetSensitivity(b5.xSensitivity_scale(1)/2,b5.ySensitivity_scale(2)/2);
@@ -347,9 +347,9 @@ else
     end
 
     Params.EffortVector = ...
-        min(-0.4,(b5.ProbeTarget_pos(2)-b5.StartTarget_pos(2)+2)/b5.Frame_scale(2));
+        min(-0.2,(b5.ProbeTarget_pos(2)-b5.StartTarget_pos(2)+2)/b5.Frame_scale(2));
     Params.EffortVectorTop = ...
-        max(0.4,(b5.ProbeTargetTop_pos(2)-b5.StartTarget_pos(2)-2)/b5.Frame_scale(2));
+        max(0.2,(b5.ProbeTargetTop_pos(2)-b5.StartTarget_pos(2)-2)/b5.Frame_scale(2));
     
     b5.xSensitivity_scale(1) = min(160,b5.xSensitivity_scale(1) + 5);
     controlWindow.SetSensitivity(b5.xSensitivity_scale(1)/2,b5.ySensitivity_scale(2)/2);
