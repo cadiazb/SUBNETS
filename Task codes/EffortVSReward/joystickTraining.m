@@ -225,23 +225,37 @@ if ~dat.OutcomeID
         end
         
         if ~isempty(dat.ReactionTime) && (posPassOk) && ...
-                (abs(pos(1) - b5.StartTarget_pos(1)) < Params.StartTarget.Win(1)) && ...
-                ~dat.TopTargetOn
-            dat.TrialChoice = 'Pass';
-            done = true;
-            dat.MovementTime = b5.time_o - t_start - dat.ReactionTime;
-            dat.OutcomeID 	= 0;
-            dat.OutcomeStr 	= 'success';
+                (abs(pos(1) - b5.StartTarget_pos(1)) < Params.StartTarget.Win(1))
+            if ~dat.TopTargetOn
+                dat.TrialChoice = 'Pass';
+                done = true;
+                dat.MovementTime = b5.time_o - t_start - dat.ReactionTime;
+                dat.OutcomeID 	= 0;
+                dat.OutcomeStr 	= 'success';
+            else
+                dat.TrialChoice = 'Pass';
+                done = true;
+                dat.MovementTime = b5.time_o - t_start - dat.ReactionTime;
+                dat.OutcomeID 	= 5;
+                dat.OutcomeStr 	= 'Cancel @ choice';
+            end
         end
         
         if ~isempty(dat.ReactionTime) && (posProbeOk) && ...
-                (abs(pos(1) - b5.StartTarget_pos(1)) < Params.StartTarget.Win(1)) && ...
-                dat.TopTargetOn
-            done = true;
-            dat.MovementTime = b5.time_o - t_start - dat.ReactionTime;
-            dat.TrialChoice = 'Probe Effort';
-            dat.OutcomeID 	= 0;
-            dat.OutcomeStr 	= 'Succes';
+                (abs(pos(1) - b5.StartTarget_pos(1)) < Params.StartTarget.Win(1))
+            if dat.TopTargetOn
+                done = true;
+                dat.MovementTime = b5.time_o - t_start - dat.ReactionTime;
+                dat.TrialChoice = 'Probe Effort';
+                dat.OutcomeID 	= 0;
+                dat.OutcomeStr 	= 'Succes';
+            else
+                dat.TrialChoice = 'Probe Effort';
+                done = true;
+                dat.MovementTime = b5.time_o - t_start - dat.ReactionTime;
+                dat.OutcomeID 	= 5;
+                dat.OutcomeStr 	= 'Cancel @ choice';
+            end
         end
 
 		% check for TIMEOUT
