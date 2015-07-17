@@ -186,7 +186,7 @@ Params.InterTrialDelay 			= 2;  % delay between each trial [sec]
 
 %%  WORKSPACE, in mm
 Params.WsBounds             	= [-150 -150 ; 150 150]; % [Xmin Ymin; Xmax Ymax]
-Params.WsCenter 				= mean(Params.WsBounds,1) + [0, 75];
+Params.WsCenter 				= mean(Params.WsBounds,1) + [0, 0];
 
 
 b5.Frame_color  = [1 1 1 1];
@@ -229,34 +229,34 @@ b5.BarOutline_pos       = Params.WsCenter;
 % Vertical filling
 b5.FillingEffort_color     = [1 1 0 1];
 b5.FillingEffort_scale     = b5.Frame_scale .* [0.25, 1];
-b5.FillingEffort_pos       = Params.WsCenter - [0, b5.Frame_scale(2)/2] + ...
+b5.FillingEffort_pos       = Params.WsCenter - [0, 0] + ...
                     [0, b5.FillingEffort_scale(2)/2];
                 
 % Horizontal filling
 b5.FillingEffortHor_color     = [1 1 0 1];
 b5.FillingEffortHor_scale     = b5.Frame_scale .* [1, 0.1];
-b5.FillingEffortHor_pos       = Params.WsCenter - [0, b5.Frame_scale(2)/2] + ...
+b5.FillingEffortHor_pos       = Params.WsCenter - [0, 0] + ...
                     [b5.FillingEffortHor_scale(1)/2,0];
                 
 % ySensitivity
 b5.ySensitivity_color     = [1 1 0 0.05];
 b5.ySensitivity_scale     = b5.Frame_scale .* [0.25, 1];
-b5.ySensitivity_pos       = Params.WsCenter - [0, b5.Frame_scale(2)/2] + ...
+b5.ySensitivity_pos       = Params.WsCenter - [0, 0] + ...
                     [0, b5.ySensitivity_scale(2)/2];     
                 
 % ySensitivity
 b5.xSensitivity_color     = [1 1 0 0.05];
 b5.xSensitivity_scale     = b5.Frame_scale .* [1, 0.1];
-b5.xSensitivity_pos       = Params.WsCenter - [0, b5.Frame_scale(2)/2] + ...
+b5.xSensitivity_pos       = Params.WsCenter - [0, 0] + ...
                     [b5.xSensitivity_scale(1)/2,0];                
 
 % Go/NoGo
 b5.ProbeTarget_color = [1 1 0 1];
-b5.ProbeTarget_scale = [b5.BarOutline_scale(1)*3, 10];
+b5.ProbeTarget_scale = [1200, 200];
 b5.ProbeTarget_pos = Params.WsCenter ;
 
 b5.ProbeTargetTop_color = [1 1 0 1];
-b5.ProbeTargetTop_scale = [b5.BarOutline_scale(1)*3, 10];
+b5.ProbeTargetTop_scale = b5.ProbeTarget_scale;
 b5.ProbeTargetTop_pos = Params.WsCenter ;
 
 Params.EffortVector     = [-0.2];
@@ -268,7 +268,7 @@ Params.NoGoTap    = 0.025 * b5.Frame_scale(2);
 
 b5.Pass_color     = b5.ProbeTarget_color;
 b5.Pass_scale     = b5.ProbeTarget_scale;
-b5.Pass_pos       = Params.WsCenter - [0,b5.Frame_scale(2)/2 + b5.Pass_scale(2)/2] - ...
+b5.Pass_pos       = Params.WsCenter - [0,0 + b5.Pass_scale(2)/2] - ...
                        [0, 150];
 
 %% TONES

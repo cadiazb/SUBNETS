@@ -10,7 +10,8 @@ DRAW_OPERATOR = 2;
 DRAW_BOTH     = 3;
 
 %% Generate a StartTarget position
-b5.StartTarget_pos = Params.WsCenter - [0, b5.Frame_scale(2)/2]; 
+% b5.StartTarget_pos = Params.WsCenter - [0, b5.Frame_scale(2)/2];
+b5.StartTarget_pos = Params.WsCenter - [0, 0];
 
 %% Draw Probe effort from vector
 % Draw reward from 'Training vector' or from Adaptive Vector
@@ -23,11 +24,11 @@ dat.TopTargetOn = DrawFromVec([0, 1]);
 %% Generate ProbeTarget position
 b5.ProbeTarget_pos 		= b5.StartTarget_pos + ...
                                 [0,dat.ProbeEffort * b5.Frame_scale(2)] ...
-                                + [0,0];
+                                + [0,-b5.ProbeTarget_scale(2)/2];
                             
 b5.ProbeTargetTop_pos 		= b5.StartTarget_pos + ...
                                 [0,Params.EffortVectorTop * b5.Frame_scale(2)] ...
-                                + [0,0];                            
+                                + [0,b5.ProbeTargetTop_scale(2)/2];                            
 %% Generate the amounts of reward
 % dat.ProbeReward = DrawFromVec(Params.RewardsVector);
 dat.ProbeReward = 1000 * controlWindow.GetEarnedReward(); %[ms]
@@ -76,13 +77,13 @@ while ~done
         if (dat.FinalCursorPos(2)-b5.StartTarget_pos(2)) >= 0
             b5.FillingEffort_scale = [b5.BarOutline_scale(1),...
                 dat.FinalCursorPos(2)-b5.StartTarget_pos(2)];
-            b5.FillingEffort_pos       = Params.WsCenter - [0, b5.Frame_scale(2)/2] + ...
+            b5.FillingEffort_pos       = Params.WsCenter - [0, 0] + ...
                     [0, b5.FillingEffort_scale(2)/2];
         else
             b5.FillingEffort_scale = [b5.BarOutline_scale(1),...
                 -max((dat.FinalCursorPos(2)-b5.StartTarget_pos(2)), ...
                 (b5.Pass_pos(2) - b5.StartTarget_pos(2)))];
-            b5.FillingEffort_pos       = Params.WsCenter - [0, b5.Frame_scale(2)/2] - ...
+            b5.FillingEffort_pos       = Params.WsCenter - [0, 0] - ...
                     [0, b5.FillingEffort_scale(2)/2];
         end
         
@@ -131,11 +132,11 @@ if ~dat.OutcomeID
     
     b5.GoTone_play_io = 1;
     b5.FillingEffort_scale(2) = 0;
-    b5.FillingEffort_pos       = Params.WsCenter - [0, b5.Frame_scale(2)/2];
+    b5.FillingEffort_pos       = Params.WsCenter - [0, 0];
     b5 = bmi5_mmap(b5);
     
     b5.FillingEffortHor_scale(1) = 0;
-    b5.FillingEffortHor_pos       = Params.WsCenter - [0, b5.Frame_scale(2)/2];
+    b5.FillingEffortHor_pos       = Params.WsCenter - [0, 0];
     b5 = bmi5_mmap(b5);
     
     dat.GoCue_time_o = b5.GoTone_time_o;
@@ -157,13 +158,13 @@ if ~dat.OutcomeID
         if (dat.FinalCursorPos(2)-b5.StartTarget_pos(2)) >= 0
             b5.FillingEffort_scale = [b5.BarOutline_scale(1),...
                 dat.FinalCursorPos(2)-b5.StartTarget_pos(2)];
-            b5.FillingEffort_pos       = Params.WsCenter - [0, b5.Frame_scale(2)/2] + ...
+            b5.FillingEffort_pos       = Params.WsCenter - [0, 0] + ...
                     [0, b5.FillingEffort_scale(2)/2];
         else
             b5.FillingEffort_scale = [b5.BarOutline_scale(1),...
                 -max((dat.FinalCursorPos(2)-b5.StartTarget_pos(2)), ...
                 (b5.Pass_pos(2) - b5.StartTarget_pos(2)))];
-            b5.FillingEffort_pos       = Params.WsCenter - [0, b5.Frame_scale(2)/2] - ...
+            b5.FillingEffort_pos       = Params.WsCenter - [0, 0] - ...
                     [0, b5.FillingEffort_scale(2)/2];
         end
         
@@ -188,7 +189,7 @@ if ~dat.OutcomeID
         % Update sensitivites rectangle
         b5.ySensitivity_scale = [b5.BarOutline_scale(1),...
                 2*Params.StartTarget.Win(2)];
-        b5.ySensitivity_pos       = Params.WsCenter - [0, b5.Frame_scale(2)/2];
+        b5.ySensitivity_pos       = Params.WsCenter - [0, 0];
         
         b5.xSensitivity_scale = [2*Params.StartTarget.Win(1),... 
                 b5.xSensitivity_scale(2)];
@@ -199,8 +200,8 @@ if ~dat.OutcomeID
         
 		% Check for acquisition of a reach target
         posOk = TrialInBox(pos,b5.StartTarget_pos,Params.StartTarget.Win);
-        posProbeOk 	= pos(2) >= b5.ProbeTargetTop_pos(2);
-        posPassOk 	= pos(2) <= b5.ProbeTarget_pos(2);
+        posProbeOk 	= pos(2) >= (b5.ProbeTargetTop_pos(2) - b5.ProbeTargetTop_scale(2)/2);
+        posPassOk 	= pos(2) <= (b5.ProbeTarget_pos(2) + b5.ProbeTarget_scale(2)/2);
         
         if ~posOk
             if (abs(pos(1) - b5.StartTarget_pos(1)) > Params.StartTarget.Win(1)) %|| ((pos(2) - b5.StartTarget_pos(2)) < 0)
@@ -336,17 +337,17 @@ if dat.OutcomeID == 0
     Params.OpeningSound.Counter = 0;
     
     % Make next trial a bit harder
-    if strcmp(dat.TrialChoice, 'Pass')
-        Params.EffortVector = ...
-            max(-0.2,(b5.ProbeTarget_pos(2)-b5.StartTarget_pos(2)-1)/b5.Frame_scale(2));
-    end
-    if strcmp(dat.TrialChoice, 'Probe Effort')
-        Params.EffortVectorTop = ...
-            min(0.2,(b5.ProbeTargetTop_pos(2)-b5.StartTarget_pos(2)+1)/b5.Frame_scale(2));
-        
-        b5.xSensitivity_scale(1) = max(160,b5.xSensitivity_scale(1) - 10);
-        controlWindow.SetSensitivity(b5.xSensitivity_scale(1)/2,b5.ySensitivity_scale(2)/2);
-    end
+%     if strcmp(dat.TrialChoice, 'Pass')
+%         Params.EffortVector = ...
+%             max(-0.2,(b5.ProbeTarget_pos(2)-b5.StartTarget_pos(2)-1)/b5.Frame_scale(2));
+%     end
+%     if strcmp(dat.TrialChoice, 'Probe Effort')
+%         Params.EffortVectorTop = ...
+%             min(0.2,(b5.ProbeTargetTop_pos(2)-b5.StartTarget_pos(2)+1)/b5.Frame_scale(2));
+%         
+%         b5.xSensitivity_scale(1) = max(160,b5.xSensitivity_scale(1) - 10);
+%         controlWindow.SetSensitivity(b5.xSensitivity_scale(1)/2,b5.ySensitivity_scale(2)/2);
+%     end
 else
     %Clean screen
     % Turn objects on screen off
@@ -360,10 +361,10 @@ else
         end
     end
 
-    Params.EffortVector = ...
-        min(-0.2,(b5.ProbeTarget_pos(2)-b5.StartTarget_pos(2)+2)/b5.Frame_scale(2));
-    Params.EffortVectorTop = ...
-        max(0.2,(b5.ProbeTargetTop_pos(2)-b5.StartTarget_pos(2)-2)/b5.Frame_scale(2));
+%     Params.EffortVector = ...
+%         min(-0.2,(b5.ProbeTarget_pos(2)-b5.StartTarget_pos(2)+2)/b5.Frame_scale(2));
+%     Params.EffortVectorTop = ...
+%         max(0.2,(b5.ProbeTargetTop_pos(2)-b5.StartTarget_pos(2)-2)/b5.Frame_scale(2));
     
     b5.xSensitivity_scale(1) = min(160,b5.xSensitivity_scale(1) + 5);
     controlWindow.SetSensitivity(b5.xSensitivity_scale(1)/2,b5.ySensitivity_scale(2)/2);
