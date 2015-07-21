@@ -19,7 +19,7 @@ b5.StartTarget_pos = Params.WsCenter - [0, 0];
 dat.ProbeEffort         = DrawFromVec(Params.EffortVector);
 
 %Choose target to show
-dat.TopTargetOn = DrawFromVec([0, 1]);
+dat.TopTargetOn = DrawFromProbVec([1-Params.TopTargetProbability, Params.TopTargetProbability]);
 
 %% Generate ProbeTarget position
 b5.ProbeTarget_pos 		= b5.StartTarget_pos + ...
@@ -354,7 +354,14 @@ else
     b5 = b5ObjectsOff(b5);
     b5 = bmi5_mmap(b5);
     % Pause after fail reach
-    if dat.OutcomeID ~= 1
+    if dat.OutcomeID == 5
+        startPause = b5.time_o;
+        while (b5.time_o - startPause) < (Params.WrongChoiceDelay)
+            [Params, dat, b5] = UpdateCursorOnLine(Params, dat, b5); %b5 = bmi5_mmap(b5);
+        end
+    end
+    
+    if dat.OutcomeID == 4
         startPause = b5.time_o;
         while (b5.time_o - startPause) < (Params.InterTrialDelay)
             [Params, dat, b5] = UpdateCursorOnLine(Params, dat, b5); %b5 = bmi5_mmap(b5);

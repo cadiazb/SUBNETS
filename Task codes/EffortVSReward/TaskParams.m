@@ -172,14 +172,15 @@ Params.TimeoutReachStartTarget  = 2; % max time to acquire start target
 Params.StartTarget.Hold       	= 0.5;
 
 % Reaching phase
-Params.ReactionTimeDelay      	= 5; % Max time to initiate movement
+Params.ReactionTimeDelay      	= 2; % Max time to initiate movement
 
 % Go/NoGo
-Params.TimeoutReachTarget       = 4; % max time to reach reaching target
+Params.TimeoutReachTarget       = 1.5; % max time to reach reaching target
 
 % Other
-Params.TrialLength              = 5;   % Fixed trial length [s]
+Params.TrialLength              = 2;   % Fixed trial length [s]
 Params.InterTrialDelay 			= 2;  % delay between each trial [sec]
+Params.WrongChoiceDelay         = 5; % Delay when wrong target is chosen [sec]
 
 %% Callibrate Load Cell
 [Params, b5] = CallibrateLoadCell(Params, b5);
@@ -261,6 +262,8 @@ b5.ProbeTargetTop_pos = Params.WsCenter ;
 
 Params.EffortVector     = [-0.2];
 Params.EffortVectorTop  = [0.2];
+
+Params.TopTargetProbability = 0.65;
 
 %% Pass
 Params.PassSensitivity  = 5;
