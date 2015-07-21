@@ -1,6 +1,6 @@
 function TaskLoop(Params, b5)
 % Switch workspace to bmi5 subject view
-system('wmctrl -a "subject view"');
+% system('wmctrl -a "subject view"');
 %global DEBUG;
 global PAUSE_FLAG KEYBOARD_FLAG QUIT_FLAG;
 
@@ -49,7 +49,7 @@ SetupGUI();
 [b5, controlWindow] = StandbyControl(Params,b5,0);
 drawnow;
 
-system('wmctrl -a "subject view"');
+% system('wmctrl -a "subject view"');
 %Close Solenoid at beginning of experiment
 b5 = LJJuicer(Params, b5, 'off');
 
@@ -60,7 +60,7 @@ done  	= false;
 
 startTrial = 1;
 for itrial = startTrial : Params.NumTrials
-system('wmctrl -a "subject view"');
+% system('wmctrl -a "subject view"');
     
     % TRIAL INFO
 	trial = trial + 1;
