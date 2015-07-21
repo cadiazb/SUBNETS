@@ -19,7 +19,7 @@ b5.StartTarget_pos = Params.WsCenter - [0, 0];
 dat.ProbeEffort         = DrawFromVec(Params.EffortVector);
 
 %Choose target to show
-dat.TopTargetOn = DrawFromProbVec([1-Params.TopTargetProbability, Params.TopTargetProbability]);
+dat.TopTargetOn = DrawFromProbVec([1-Params.TopTargetProbability, Params.TopTargetProbability]) - 1;
 
 %% Generate ProbeTarget position
 b5.ProbeTarget_pos 		= b5.StartTarget_pos + ...
