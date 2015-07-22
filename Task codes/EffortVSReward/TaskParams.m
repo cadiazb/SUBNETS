@@ -263,7 +263,7 @@ b5.ProbeTargetTop_pos = Params.WsCenter ;
 Params.EffortVector     = [-0.2];
 Params.EffortVectorTop  = [0.2];
 
-Params.TopTargetProbability = 0.65;
+Params.TopTargetProbability = 0.40;
 
 %% Pass
 Params.PassSensitivity  = 5;
