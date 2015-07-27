@@ -28,6 +28,7 @@ dfields = {
     'ProbeEffort'
     'TopTargetOn'
     'TrialChoice'
+    'TrialChoiceID'
     'ReactionTime'
     'MovementTime'
     'AlwaysReward'
@@ -293,17 +294,16 @@ for itrial = startTrial : Params.NumTrials
     end
 
     %% calculate the reward based on the short-term performance
-%         if trial>10
-%             
-%             PTrialIDs=[Data(trial-9:trial).OutcomeID];
-% %     NtrialsP=max(find( PTrialIDs==0));
+%         if sum([Data.OutcomeID] == 0) > 30
+%             % TopReward = BottomReward * Params.BiasingMulti
+%             tmpIdx = find([Data.OutcomeID]==0,20,'last');
+%             [tmpReward,Params.RewardModel] = AdaptiveSampling(...
+%                             [Data(tmpIdx).ActualReward], ...
+%                                 [Data(tmpIdx).TrialChoiceID], ...
+%                                     Params.RewardModel);
+%                                 
+%             Params.BiasingMulti = tmpReward / Data(itrial).ProbeReward;
 % 
-% 
-% errlistP = [Data(trial-9:trial).OutcomeID];
-% NerrorsP = sum(errlistP~=0);
-% NcorrectP = 10 - NerrorsP;
-%     
-%     Params.TempPerf=NcorrectP/10;
 %         end
     
     %% Save Data

@@ -238,12 +238,14 @@ if ~dat.OutcomeID
                 (abs(pos(1) - b5.StartTarget_pos(1)) < Params.StartTarget.Win(1))
             if ~dat.TopTargetOn
                 dat.TrialChoice = 'Pass';
+                dat.TrialChoiceID = 0; %0 means reached down
                 done = true;
                 dat.MovementTime = b5.time_o - t_start - dat.ReactionTime;
                 dat.OutcomeID 	= 0;
                 dat.OutcomeStr 	= 'success';
             else
                 dat.TrialChoice = 'Pass';
+                dat.TrialChoiceID = 0; %0 means reached down
                 done = true;
                 dat.MovementTime = b5.time_o - t_start - dat.ReactionTime;
                 dat.OutcomeID 	= 5;
@@ -257,10 +259,12 @@ if ~dat.OutcomeID
                 done = true;
                 dat.MovementTime = b5.time_o - t_start - dat.ReactionTime;
                 dat.TrialChoice = 'Probe Effort';
+                dat.TrialChoiceID = 1; %1 means reached up
                 dat.OutcomeID 	= 0;
                 dat.OutcomeStr 	= 'Succes';
             else
                 dat.TrialChoice = 'Probe Effort';
+                dat.TrialChoiceID = 1; %1 means reached up
                 done = true;
                 dat.MovementTime = b5.time_o - t_start - dat.ReactionTime;
                 dat.OutcomeID 	= 5;
