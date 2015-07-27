@@ -65,7 +65,8 @@ b5.StartTarget_draw = DRAW_NONE;
 b5 = bmi5_mmap(b5);
 
 done   = false;
-gotPos = false;
+gotPos = false;b5.BarOutline_draw              = DRAW_NONE;
+b5.FillingEffort_draw           = DRAW_NONE;
 
 t_start = b5.time_o;
 while ~done
@@ -95,6 +96,14 @@ while ~done
             gotPos = true;
             starthold = b5.time_o;
         end
+        
+        %Show features on screen when MP lets go
+        b5.BarOutline_draw              = DRAW_BOTH;
+        b5.FillingEffort_draw           = DRAW_BOTH;
+        b5.FillingEffortHor_draw        = DRAW_BOTH;
+        b5.xSensitivity_draw            = DRAW_BOTH;
+        b5.ySensitivity_draw            = DRAW_BOTH;
+        
         if (b5.time_o - starthold) > Params.StartTarget.Hold
 			done = true;   % Reach to start target OK
         end
