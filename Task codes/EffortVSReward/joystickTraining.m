@@ -18,9 +18,6 @@ b5.StartTarget_pos = Params.WsCenter - [0, 0];
 % dat.ProbeEffort         = controlWindow.GetProbeTarget_pos() / b5.Frame_scale(2);
 dat.ProbeEffort         = DrawFromVec(Params.EffortVector);
 
-%Choose target to show
-dat.TopTargetOn = DrawFromProbVec([1-Params.TopTargetProbability, Params.TopTargetProbability]) - 1;
-
 %% Generate ProbeTarget position
 b5.ProbeTarget_pos 		= b5.StartTarget_pos + ...
                                 [0,dat.ProbeEffort * b5.Frame_scale(2)] ...
@@ -133,11 +130,8 @@ if ~dat.OutcomeID
     b5.ySensitivity_draw       = DRAW_BOTH;
 %     b5.SolenoidOpen_draw       = DRAW_NONE;
 %     b5.Pass_draw                = DRAW_BOTH;
-    if dat.TopTargetOn
-        b5.ProbeTargetTop_draw         = DRAW_BOTH;
-    else
-        b5.ProbeTarget_draw      = DRAW_BOTH;
-    end
+    b5.ProbeTargetTop_draw         = DRAW_BOTH;
+    b5.ProbeTarget_draw      = DRAW_BOTH;
     
     b5.GoTone_play_io = 1;
     b5.FillingEffort_scale(2) = 0;
@@ -236,40 +230,22 @@ if ~dat.OutcomeID
         
         if ~isempty(dat.ReactionTime) && (posPassOk) && ...
                 (abs(pos(1) - b5.StartTarget_pos(1)) < Params.StartTarget.Win(1))
-            if ~dat.TopTargetOn
-                dat.TrialChoice = 'Pass';
-                dat.TrialChoiceID = 0; %0 means reached down
-                done = true;
-                dat.MovementTime = b5.time_o - t_start - dat.ReactionTime;
-                dat.OutcomeID 	= 0;
-                dat.OutcomeStr 	= 'success';
-            else
-                dat.TrialChoice = 'Pass';
-                dat.TrialChoiceID = 0; %0 means reached down
-                done = true;
-                dat.MovementTime = b5.time_o - t_start - dat.ReactionTime;
-                dat.OutcomeID 	= 5;
-                dat.OutcomeStr 	= 'Cancel @ choice';
-            end
+            dat.TrialChoice = 'Pass';
+            dat.TrialChoiceID = 0; %0 means reached down
+            done = true;
+            dat.MovementTime = b5.time_o - t_start - dat.ReactionTime;
+            dat.OutcomeID 	= 0;
+            dat.OutcomeStr 	= 'success';
         end
         
         if ~isempty(dat.ReactionTime) && (posProbeOk) && ...
                 (abs(pos(1) - b5.StartTarget_pos(1)) < Params.StartTarget.Win(1))
-            if dat.TopTargetOn
-                done = true;
-                dat.MovementTime = b5.time_o - t_start - dat.ReactionTime;
-                dat.TrialChoice = 'Probe Effort';
-                dat.TrialChoiceID = 1; %1 means reached up
-                dat.OutcomeID 	= 0;
-                dat.OutcomeStr 	= 'Succes';
-            else
-                dat.TrialChoice = 'Probe Effort';
-                dat.TrialChoiceID = 1; %1 means reached up
-                done = true;
-                dat.MovementTime = b5.time_o - t_start - dat.ReactionTime;
-                dat.OutcomeID 	= 5;
-                dat.OutcomeStr 	= 'Cancel @ choice';
-            end
+            done = true;
+            dat.MovementTime = b5.time_o - t_start - dat.ReactionTime;
+            dat.TrialChoice = 'Probe Effort';
+            dat.TrialChoiceID = 1; %1 means reached up
+            dat.OutcomeID 	= 0;
+            dat.OutcomeStr 	= 'Succes';
         end
 
 		% check for TIMEOUT
