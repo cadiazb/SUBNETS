@@ -219,8 +219,8 @@ Params.RewardsVector        = 200; %[ms]
 Params.BiasingMulti         = 0.5;
 
 %Model for adaptation of reward
-Params.RewardModel.xo          = 105;
-Params.RewardModel.w            = 0.16;
+Params.RewardModel.xo          = 75;
+Params.RewardModel.w            = 1.5e3;
 
 %% Effort
 Params.LoadCellMax                  = 50;

@@ -293,6 +293,7 @@ for itrial = startTrial : Params.NumTrials
     end
 
     %% calculate the reward based on the short-term performance
+    try
         if sum([Data.OutcomeID] == 0) > 30
             % TopReward = BottomReward * Params.BiasingMulti
             tmpIdx = find([Data.OutcomeID]==0,20,'last');
@@ -301,9 +302,10 @@ for itrial = startTrial : Params.NumTrials
                                 [Data(tmpIdx).TrialChoiceID], ...
                                     Params.RewardModel);
                                 
-            Params.BiasingMulti = tmpReward / Data(itrial).ProbeReward;
+            Params.BiasingMulti = min(5e3, max(100, tmpReward)) / Data(itrial).ProbeReward;
 
         end
+    end
     
     %% Save Data
     if QUIT_FLAG
