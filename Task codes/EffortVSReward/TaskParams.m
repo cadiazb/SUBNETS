@@ -216,7 +216,7 @@ b5.SolenoidOpen_pos 			= Params.WsBounds(2,:);
 
 %% Rewards
 Params.RewardsVector        = 200; %[ms]
-Params.BiasingMulti         = 0.5;
+Params.BiasingMulti         = 0.1;
 
 %Model for adaptation of reward
 Params.RewardModel.xo          = 75;
@@ -256,18 +256,18 @@ b5.xSensitivity_pos       = Params.WsCenter - [0, 0] + ...
                     [b5.xSensitivity_scale(1)/2,0];                
 
 % Go/NoGo
-b5.ProbeTarget_color = [1 1 0 1];
-b5.ProbeTarget_scale = [1200, 200];
+b5.ProbeTarget_color = [0.8 1 0 1];
+b5.ProbeTarget_scale = [1000, 180];
 b5.ProbeTarget_pos = Params.WsCenter ;
 
-b5.ProbeTargetTop_color = [1 1 0 1];
+b5.ProbeTargetTop_color = [0.8 1 0 1];
 b5.ProbeTargetTop_scale = b5.ProbeTarget_scale;
 b5.ProbeTargetTop_pos = Params.WsCenter ;
 
 Params.EffortVector     = [-0.2];
 Params.EffortVectorTop  = [0.2];
 
-Params.TopTargetProbability = 0.40;
+Params.TopTargetProbability = 0.50;
 
 %% Pass
 Params.PassSensitivity  = 5;

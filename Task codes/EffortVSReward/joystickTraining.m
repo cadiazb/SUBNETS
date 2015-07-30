@@ -107,12 +107,19 @@ while ~done
     end
 
 	% Once start target is acquired, it must remain acquired
-    if ~posOk  
-        gotPos = false;
-        if (b5.time_o - t_start) > Params.TimeoutReachStartTarget
+    if ~posOk
+        if gotPos
+            gotPos = false;
             done            = true;
-            dat.OutcomeID   = 1;
-            dat.OutcomeStr	= 'cancel @ start';
+            dat.OutcomeID   = 2;
+            dat.OutcomeStr	= 'cancel @ start hold';
+            b5 = b5ObjectsOff(b5);
+        else
+            if (b5.time_o - t_start) > Params.TimeoutReachStartTarget
+                done            = true;
+                dat.OutcomeID   = 1;
+                dat.OutcomeStr	= 'cancel @ start';
+            end
         end
     end
     
@@ -357,7 +364,7 @@ else
         end
     end
     
-    if dat.OutcomeID == 1 %Cancel @ start
+    if (dat.OutcomeID == 1) || (dat.OutcomeID == 1) %Cancel @ start || Cancel @ start hold
         startPause = b5.time_o;
         while (b5.time_o - startPause) < (Params.InterTrialDelay)
             [Params, dat, b5] = UpdateCursorOnLine(Params, dat, b5); %b5 = bmi5_mmap(b5);
