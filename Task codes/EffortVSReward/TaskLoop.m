@@ -28,6 +28,7 @@ dfields = {
     'ProbeEffort'
     'TrialChoice'
     'TrialChoiceID'
+    'RecentAvgChoice'
     'ReactionTime'
     'MovementTime'
     'AlwaysReward'
@@ -263,6 +264,8 @@ for itrial = startTrial : Params.NumTrials
 	fprintf('Outcome\t\t\t\t%d (%s)\n',Data(trial).OutcomeID,Data(trial).OutcomeStr);
     fprintf('Reaction time\t\t%d \n', Data(trial).ReactionTime);
     fprintf('Movement time\t\t%d \n', Data(trial).MovementTime);
+    fprintf('BiasingMulti\t\t%d \n', Params.BiasingMulti);
+    fprintf('TrialsSinceAdapt\t\t%d \n', Params.TrialsSinceAdapt);
     
     %Update earned rewards on GUI
     controlWindow.SetEarnedRewards(sum([Data(1:trial).OutcomeID] == 0));
@@ -293,20 +296,32 @@ for itrial = startTrial : Params.NumTrials
     end
 
     %% calculate the reward based on the short-term performance
-%     try
-%         if sum([Data.OutcomeID] == 0) > 30
-%             % TopReward = BottomReward * Params.BiasingMulti
-%             tmpIdx = find([Data.OutcomeID]==0,20,'last');
-%             [tmpReward,Params.RewardModel] = AdaptiveSampling(...
-%                             [Data(tmpIdx).ActualReward], ...
-%                                 [Data(tmpIdx).TrialChoiceID], ...
-%                                     Params.RewardModel);
-%                                 
-%             Params.BiasingMulti = min(5e3, max(100, tmpReward)) / Data(itrial).ProbeReward;
-% 
-%         end
-%     end
     
+    if (sum([Data.OutcomeID] == 0) > 9 ) % if we've done enough trials
+        % find 10 most recent & compute local average
+        tmpIdx = find([Data.OutcomeID]==0,10,'last');
+        Data(trial).RecentAvgChoice=sum([Data(tmpIdx).TrialChoiceID]==1)/10;
+        
+        % don't change anything unless he's working now
+        if Data(trial).OutcomeID==0
+            % if recent average seems stable & it's been a while since we
+            % adapted, then change BiasingMulti
+            if ( std([Data(tmpIdx).RecentAvgChoice]) < 0.1 ) && (Params.TrialsSinceAdapt > 29)
+                if Data(trial).RecentAvgChoice > 0.5 % if choosing up more than 50%
+                    Params.BiasingMulti = 0.9*Params.BiasingMulti; % make top reward smaller
+                elseif Data(trial).RecentAvgChoice < 0.5
+                    Params.BiasingMulti = 1.1*Params.BiasingMulti;
+                end
+                Params.TrialsSinceAdapt = 0;
+                
+            else
+                Params.TrialsSinceAdapt = Params.TrialsSinceAdapt + 1;
+            end
+        end
+    else
+        Data(trial).RecentAvgChoice=NaN;
+    end
+  
     %% Save Data
     if QUIT_FLAG
         done = true;

@@ -221,6 +221,7 @@ Params.BiasingMulti         = 0.25;
 %Model for adaptation of reward
 Params.RewardModel.xo          = 75;
 Params.RewardModel.w            = 1.5e3;
+Params.TrialsSinceAdapt     = 0;
 
 %% Effort
 Params.LoadCellMax                  = 50;
