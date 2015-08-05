@@ -1,7 +1,7 @@
 function [Params, b5] = TaskParams(Params)
 
 global DEBUG;
-DEBUG = true;
+DEBUG = false;
 
 % FOR DRAWING OBJECTS
 DRAW_NONE     = 0;
