@@ -1,7 +1,7 @@
 function [Params, b5] = TaskParams(Params)
 
 global DEBUG;
-DEBUG = false;
+DEBUG = true;
 
 % FOR DRAWING OBJECTS
 DRAW_NONE     = 0;
@@ -22,7 +22,7 @@ bmi5_cmd('clear_all');
 bmi5_cmd('delete_all');
 
 % Common objects to both tasks
-bmi5_cmd('make circle StartTarget');
+bmi5_cmd('make square StartTarget');
 
 bmi5_cmd('make open_square Frame 0.01');
 bmi5_cmd('make open_square BarOutline 0.03');
@@ -179,7 +179,7 @@ Params.TimeoutReachTarget       = 1.5; % max time to reach reaching target
 
 % Other
 Params.TrialLength              = 2;   % Fixed trial length [s]
-Params.InterTrialDelay 			= 2;  % delay between each trial [sec]
+Params.InterTrialDelay 			= 4;  % delay between each trial [sec]
 Params.WrongChoiceDelay         = 5; % Delay when wrong target is chosen [sec]
 
 %% Callibrate Load Cell
@@ -193,19 +193,19 @@ Params.WsCenter 				= mean(Params.WsBounds,1) + [0, 0];
 b5.Frame_color  = [1 1 1 1];
 b5.Frame_scale  = range(Params.WsBounds);
 b5.Frame_pos    = Params.WsCenter;
-if DEBUG
-    b5.Frame_draw   = DRAW_BOTH;
-else
-    b5.Frame_draw   = DRAW_NONE;
-end
+% if DEBUG
+%     b5.Frame_draw   = DRAW_BOTH;
+% else
+%     b5.Frame_draw   = DRAW_NONE;
+% end
 
 %% Cursor
-b5.Cursor_color 				= [1 1 1 0.75]; % RGBA 
-b5.Cursor_scale 				= [0 0];        % [mm] % note: diameter!
+b5.Cursor_color 				= [1 1 0 0.5]; % RGBA 
+b5.Cursor_scale 				= [60 30];        % [mm] % note: diameter!
 
 %% Start Target
-b5.StartTarget_color			= [1 0 0 1];
-b5.StartTarget_scale 			= [20 20];
+b5.StartTarget_color			= [0 1 0 0.5];
+b5.StartTarget_scale 			= [240 80];
 Params.StartTarget.Win  		= [200 40]; % radius
 Params.StartTarget.Locations 	= {Params.WsCenter + [-40 -40]}; % cell array of locations
 
@@ -216,7 +216,7 @@ b5.SolenoidOpen_pos 			= Params.WsBounds(2,:);
 
 %% Rewards
 Params.RewardsVector        = 200; %[ms]
-Params.BiasingMulti         = 0.25;
+Params.BiasingMulti         = 1;
 
 %Model for adaptation of reward
 Params.RewardModel.xo          = 75;
@@ -257,11 +257,11 @@ b5.xSensitivity_pos       = Params.WsCenter - [0, 0] + ...
                     [b5.xSensitivity_scale(1)/2,0];                
 
 % Go/NoGo
-b5.ProbeTarget_color = [0.4 1 0 1];
-b5.ProbeTarget_scale = [600, 140];
+b5.ProbeTarget_color = [0.3 1 0 1];
+b5.ProbeTarget_scale = [500, 110];
 b5.ProbeTarget_pos = Params.WsCenter ;
 
-b5.ProbeTargetTop_color = [0.4 1 0 1];
+b5.ProbeTargetTop_color = [0.3 1 0 1];
 b5.ProbeTargetTop_scale = b5.ProbeTarget_scale;
 b5.ProbeTargetTop_pos = Params.WsCenter ;
 
@@ -310,6 +310,28 @@ Params.OpeningSound.Next            = 0;
 Params.OpeningSound.Counter         = 0;
 Params.OpeningSound.Repeats         = 5;
 Params.OpeningSound.Intervals         = [10 20]; %(1) wait between repeats [s], (2) wait between groups of repeats [min]
+
+%% Load old force traces to debug task
+if DEBUG
+    global forceTraces
+    tmp = load('/home/motorlab/Data/SUBNETS/inCage/MP/2015/08/20150804/0810/EffortVSReward_MP_data_20150804_1.mat');
+    tmp = tmp.DATA;
+    tmp = tmp(([tmp.OutcomeID] == 0));
+    tmpFields = fieldnames(tmp);
+    for iField = tmpFields'
+        if ~strcmp('ForceTrace',iField{1})
+            tmp = rmfield(tmp,iField{1});
+        end
+    end
+    forceTraces = tmp;
+    for ii = 1:numel(forceTraces)
+        forceTraces(ii).ForceTrace(:,1) = forceTraces(ii).ForceTrace(:,1) - ...
+            forceTraces(ii).ForceTrace(1,1);
+    end
+    
+%     forceTraces = circshift(forceTraces, DrawFromVec(1:numel(forceTraces)),2);
+    clearvars tmp tmpFields
+end
 
 
 %% SYNC

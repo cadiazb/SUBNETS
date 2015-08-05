@@ -1,14 +1,18 @@
 function TaskLoop(Params, b5)
 % Switch workspace to bmi5 subject view
 % system('wmctrl -a "subject view"');
-%global DEBUG;
+global DEBUG;
 global PAUSE_FLAG KEYBOARD_FLAG QUIT_FLAG;
 
 PAUSE_FLAG      = false;
 KEYBOARD_FLAG   = false;
 QUIT_FLAG       = false;
 
-NoFigsFlag = true;
+if DEBUG
+    global forceTraces
+end
+
+NoFigsFlag = false;
 
 %% Define the fields of the Data structure
 
@@ -260,12 +264,17 @@ for itrial = startTrial : Params.NumTrials
     
     %% Clean remaining of force trace
     Data(trial).ForceTrace(isnan(Data(trial).ForceTrace(:,1)),:) = [];
+    %% Circle around force traces in DEBUG mode
+    if DEBUG
+        forceTraces = circshift(forceTraces, -1, 2);
+    end
 	%% TRIAL SUMMARY INFO DISPLAY
 	fprintf('Outcome\t\t\t\t%d (%s)\n',Data(trial).OutcomeID,Data(trial).OutcomeStr);
     fprintf('Reaction time\t\t%d \n', Data(trial).ReactionTime);
     fprintf('Movement time\t\t%d \n', Data(trial).MovementTime);
-    fprintf('BiasingMulti\t\t%d \n', Params.BiasingMulti);
-    fprintf('TrialsSinceAdapt\t\t%d \n', Params.TrialsSinceAdapt);
+    %fprintf('BiasingMulti\t\t%d \n', Params.BiasingMulti);     % no need
+    %to print if graphing
+    %fprintf('TrialsSinceAdapt\t\t%d \n', Params.TrialsSinceAdapt);
     
     %Update earned rewards on GUI
     controlWindow.SetEarnedRewards(sum([Data(1:trial).OutcomeID] == 0));
@@ -292,12 +301,12 @@ for itrial = startTrial : Params.NumTrials
 
 	%% SUMMARY FIGURES
 	if ~NoFigsFlag
-		PlotSummaryFigs(Params, b5, Data(1:trial));
+		PlotSummaryFigs(Params, Data(1:trial));
     end
 
     %% calculate the reward based on the short-term performance
     
-    if (sum([Data.OutcomeID] == 0) > 9 ) % if we've done enough trials
+    if (sum([Data.OutcomeID] == 0) > 9 ) % if we've done enough trialsPlotSummaryFigs.m
         % find 10 most recent & compute local average
         tmpIdx = find([Data.OutcomeID]==0,10,'last');
         Data(trial).RecentAvgChoice=sum([Data(tmpIdx).TrialChoiceID]==1)/10;

@@ -58,11 +58,13 @@ if Params.OpeningSound.Enable && (Params.OpeningSound.Next < b5.time_o)
     end
 end
 %% 1. ACQUIRE START TARGET
-b5.StartTarget_draw = DRAW_NONE;
+b5.StartTarget_draw = DRAW_BOTH;
+b5.Cursor_draw      = DRAW_BOTH;
 b5 = bmi5_mmap(b5);
 
 done   = false;
-gotPos = false;b5.BarOutline_draw              = DRAW_NONE;
+gotPos = false;
+b5.BarOutline_draw              = DRAW_NONE;
 b5.FillingEffort_draw           = DRAW_NONE;
 
 t_start = b5.time_o;
@@ -95,6 +97,7 @@ while ~done
         end
         
         %Show features on screen when MP lets go
+        b5.StartTarget_draw             = DRAW_BOTH;
         b5.BarOutline_draw              = DRAW_BOTH;
         b5.FillingEffort_draw           = DRAW_BOTH;
         b5.FillingEffortHor_draw        = DRAW_BOTH;
@@ -131,10 +134,12 @@ end
 %% 2. CHECK FOR Y-AXIS MOVEMENT ON LOAD CELL
 if ~dat.OutcomeID
     b5.BarOutline_draw          = DRAW_BOTH;
-    b5.FillingEffort_draw       = DRAW_BOTH;
-    b5.FillingEffortHor_draw   = DRAW_BOTH;
-    b5.xSensitivity_draw       = DRAW_BOTH;
-    b5.ySensitivity_draw       = DRAW_BOTH;
+    b5.Cursor_draw              = DRAW_BOTH;
+    b5.StartTarget_draw             = DRAW_NONE;
+%     b5.FillingEffort_draw       = DRAW_BOTH;
+%     b5.FillingEffortHor_draw   = DRAW_BOTH;
+%     b5.xSensitivity_draw       = DRAW_BOTH;
+%     b5.ySensitivity_draw       = DRAW_BOTH;
 %     b5.SolenoidOpen_draw       = DRAW_NONE;
 %     b5.Pass_draw                = DRAW_BOTH;
     b5.ProbeTargetTop_draw         = DRAW_BOTH;
@@ -332,6 +337,10 @@ if dat.OutcomeID == 0
     Params.OpeningSound.Next = b5.time_o + 60*Params.OpeningSound.Intervals(2);
     Params.OpeningSound.Counter = 0;
     
+    % Fade out current filling bars
+    b5.FillingEffort_color(4) = b5.FillingEffort_color(4) - 0.001;
+    b5.FillingEffortHor_color(4) = b5.FillingEffortHor_color(4) - 0.001;
+    
     % Make next trial a bit harder
 %     if strcmp(dat.TrialChoice, 'Pass')
 %         Params.EffortVector = ...
@@ -344,6 +353,7 @@ if dat.OutcomeID == 0
 %         b5.xSensitivity_scale(1) = max(160,b5.xSensitivity_scale(1) - 10);
 %         controlWindow.SetSensitivity(b5.xSensitivity_scale(1)/2,b5.ySensitivity_scale(2)/2);
 %     end
+
 else
     %Clean screen
     % Turn objects on screen off
@@ -364,7 +374,7 @@ else
         end
     end
     
-    if (dat.OutcomeID == 1) || (dat.OutcomeID == 1) %Cancel @ start || Cancel @ start hold
+    if (dat.OutcomeID == 1) || (dat.OutcomeID == 2) %Cancel @ start || Cancel @ start hold
         startPause = b5.time_o;
         while (b5.time_o - startPause) < (Params.InterTrialDelay)
             [Params, dat, b5] = UpdateCursorOnLine(Params, dat, b5); %b5 = bmi5_mmap(b5);
@@ -388,7 +398,7 @@ b5 = bmi5_mmap(b5);
 % b5.BarOutline_draw              = DRAW_NONE;
 % b5.FillingEffort_draw           = DRAW_NONE;
 % b5.Pass_draw                    = DRAW_NONE;
-% b5.Cursor_draw                  = DRAW_NONE;
+b5.Cursor_draw                  = DRAW_NONE;
 b5.ProbeTarget_draw             = DRAW_NONE;
 b5.ProbeTargetTop_draw             = DRAW_NONE;
 
