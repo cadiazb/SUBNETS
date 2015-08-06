@@ -200,7 +200,7 @@ b5.Frame_pos    = Params.WsCenter;
 % end
 
 %% Cursor
-b5.Cursor_color 				= [1 1 0 0.5]; % RGBA 
+b5.Cursor_color 				= [1 1 0 0.7]; % RGBA 
 b5.Cursor_scale 				= [60 30];        % [mm] % note: diameter!
 
 %% Start Target
@@ -233,13 +233,13 @@ b5.BarOutline_scale     = b5.Frame_scale.* [0.25, 1];
 b5.BarOutline_pos       = Params.WsCenter;
 
 % Vertical filling
-b5.FillingEffort_color     = [1 1 0 1];
+b5.FillingEffort_color     = [1 1 0 0.3];
 b5.FillingEffort_scale     = b5.Frame_scale .* [0.25, 1];
 b5.FillingEffort_pos       = Params.WsCenter - [0, 0] + ...
                     [0, b5.FillingEffort_scale(2)/2];
                 
 % Horizontal filling
-b5.FillingEffortHor_color     = [1 1 0 1];
+b5.FillingEffortHor_color     = [1 1 0 0.3];
 b5.FillingEffortHor_scale     = b5.Frame_scale .* [1, 0.1];
 b5.FillingEffortHor_pos       = Params.WsCenter - [0, 0] + ...
                     [b5.FillingEffortHor_scale(1)/2,0];
