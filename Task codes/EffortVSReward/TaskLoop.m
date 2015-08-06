@@ -277,8 +277,7 @@ for itrial = startTrial : Params.NumTrials
 	fprintf('Outcome\t\t\t\t%d (%s)\n',Data(trial).OutcomeID,Data(trial).OutcomeStr);
     fprintf('Reaction time\t\t%d \n', Data(trial).ReactionTime);
     fprintf('Movement time\t\t%d \n', Data(trial).MovementTime);
-    %fprintf('BiasingMulti\t\t%d \n', Params.BiasingMulti);     % no need
-    %to print if graphing
+    fprintf('BiasingMulti\t\t%d \n', Params.BiasingMulti);
     %fprintf('TrialsSinceAdapt\t\t%d \n', Params.TrialsSinceAdapt);
     
     %Update earned rewards on GUI
@@ -322,9 +321,9 @@ for itrial = startTrial : Params.NumTrials
             % adapted, then change BiasingMulti
             if ( std([Data(tmpIdx).RecentAvgChoice]) < 0.1 ) && (Params.TrialsSinceAdapt > 29)
                 if Data(trial).RecentAvgChoice > 0.5 % if choosing up more than 50%
-                    Params.BiasingMulti = 0.9*Params.BiasingMulti; % make top reward smaller
+                    Params.BiasingMulti = max(0.1, 0.9*Params.BiasingMulti); % make top reward smaller
                 elseif Data(trial).RecentAvgChoice < 0.5
-                    Params.BiasingMulti = 1.1*Params.BiasingMulti;
+                    Params.BiasingMulti = min(0.9,1.1*Params.BiasingMulti);
                 end
                 Params.TrialsSinceAdapt = 0;
                 

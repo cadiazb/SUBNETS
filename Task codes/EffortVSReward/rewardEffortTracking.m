@@ -28,7 +28,7 @@ b5.ProbeTargetTop_pos 		= b5.StartTarget_pos + ...
                                 + [0,b5.ProbeTargetTop_scale(2)/2];                            
 %% Generate the amounts of reward
 % dat.ProbeReward = DrawFromVec(Params.RewardsVector);
-dat.ProbeReward = 1000 * controlWindow.GetEarnedReward(); %[ms]
+dat.ProbeReward = 2000 * controlWindow.GetEarnedReward(); %[ms]
 %% Misc stuff
 dat.OutcomeID 	= 0;
 dat.OutcomeStr 	= 'Success';
@@ -300,7 +300,7 @@ if dat.OutcomeID == 0
     if strcmp(dat.TrialChoice, 'Probe Effort')
         dat.ActualReward = dat.ProbeReward*Params.BiasingMulti;
     else
-        dat.ActualReward = dat.ProbeReward;
+        dat.ActualReward = dat.ProbeReward*(1.0-Params.BiasingMulti);
     end
     
     fprintf('Choice\t\t%s \n',dat.TrialChoice);
