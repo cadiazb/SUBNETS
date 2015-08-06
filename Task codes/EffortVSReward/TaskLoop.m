@@ -30,6 +30,7 @@ dfields = {
 	'ReachDelay'
     'ProbeReward'
     'ProbeEffort'
+    'TopTargetOn'
     'TrialChoice'
     'TrialChoiceID'
     'RecentAvgChoice'
@@ -255,6 +256,10 @@ for itrial = startTrial : Params.NumTrials
         Params.UseRewardAdaptation          = false;
 		[Params, Data(trial), b5] = ...
         joystickTraining( Params, Data(trial), b5, controlWindow);
+    case 5
+        Params.UseRewardAdaptation          = false;
+		[Params, Data(trial), b5] = ...
+        rewardEffortTracking( Params, Data(trial), b5, controlWindow);
 	otherwise
 		error('Unknown Trial Type');
 	end

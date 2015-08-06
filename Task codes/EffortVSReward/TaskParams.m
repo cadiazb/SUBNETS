@@ -115,17 +115,20 @@ Params.SessionCount = ct;
 % 2. Go/NoGo with reward adaptaion. file = ProbeOnlyAdaptation.m
 % 3. Continous reward. file = VerticalFillingBar.m
 % 4. Joystick Traning. file = joystickTraining.m
+% 5. Reward Effort Tracking. file = rewardEffortTracking.m
 
-tmpTrialType = 4;
+tmpTrialType = 5;
 switch tmpTrialType
     case 1
-        Params.TrialTypeProbs 			= [1 0 0 0];
+        Params.TrialTypeProbs 			= [1 0 0 0 0];
     case 2
-        Params.TrialTypeProbs 			= [0 1 0 0];
+        Params.TrialTypeProbs 			= [0 1 0 0 0];
     case 3
-        Params.TrialTypeProbs 			= [0 0 1 0];
+        Params.TrialTypeProbs 			= [0 0 1 0 0];
     case 4
-        Params.TrialTypeProbs 			= [0 0 0 1];
+        Params.TrialTypeProbs 			= [0 0 0 1 0];
+    case 5
+        Params.TrialTypeProbs 			= [0 0 0 0 1];
 end
 Params.TrialTypeProbs           = Params.TrialTypeProbs/sum(Params.TrialTypeProbs);
 
