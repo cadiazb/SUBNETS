@@ -207,7 +207,7 @@ b5.Cursor_color 				= [1 1 0 0.7]; % RGBA
 b5.Cursor_scale 				= [60 30];        % [mm] % note: diameter!
 
 %% Start Target
-b5.StartTarget_color			= [0 1 0 0.5];
+b5.StartTarget_color			= [0 1 0 0.8];
 b5.StartTarget_scale 			= [240 80];
 Params.StartTarget.Win  		= [200 40]; % radius
 Params.StartTarget.Locations 	= {Params.WsCenter + [-40 -40]}; % cell array of locations
@@ -260,11 +260,11 @@ b5.xSensitivity_pos       = Params.WsCenter - [0, 0] + ...
                     [b5.xSensitivity_scale(1)/2,0];                
 
 % Go/NoGo
-b5.ProbeTarget_color = [0.3 1 0 1];
-b5.ProbeTarget_scale = [500, 110];
+b5.ProbeTarget_color = [0.1 1 0 1];
+b5.ProbeTarget_scale = [300, 80];
 b5.ProbeTarget_pos = Params.WsCenter ;
 
-b5.ProbeTargetTop_color = [0.3 1 0 1];
+b5.ProbeTargetTop_color = [0.1 1 0 1];
 b5.ProbeTargetTop_scale = b5.ProbeTarget_scale;
 b5.ProbeTargetTop_pos = Params.WsCenter ;
 
