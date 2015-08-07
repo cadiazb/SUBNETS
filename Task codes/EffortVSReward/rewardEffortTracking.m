@@ -296,7 +296,7 @@ end
 
 %% Trial outcome and variable adaptation
 
-if dat.OutcomeID == 0
+if dat.OutcomeID == 0 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
     if strcmp(dat.TrialChoice, 'Probe Effort')
         dat.ActualReward = dat.ProbeReward*Params.BiasingMulti;
     else

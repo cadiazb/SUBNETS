@@ -260,11 +260,11 @@ b5.xSensitivity_pos       = Params.WsCenter - [0, 0] + ...
                     [b5.xSensitivity_scale(1)/2,0];                
 
 % Go/NoGo
-b5.ProbeTarget_color = [0.1 1 0 1];
-b5.ProbeTarget_scale = [300, 80];
+b5.ProbeTarget_color = [0 1 0 1];
+b5.ProbeTarget_scale = [240, 80];
 b5.ProbeTarget_pos = Params.WsCenter ;
 
-b5.ProbeTargetTop_color = [0.1 1 0 1];
+b5.ProbeTargetTop_color = [0 1 0 1];
 b5.ProbeTargetTop_scale = b5.ProbeTarget_scale;
 b5.ProbeTargetTop_pos = Params.WsCenter ;
 

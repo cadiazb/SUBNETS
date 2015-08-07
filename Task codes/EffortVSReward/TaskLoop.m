@@ -403,7 +403,7 @@ function SetupGUI()
 end
 
 function PauseCallback(hObject, ~, ~)
-  global PAUSE_FLAG
+  global PAUSE_FLAGNaN
   PAUSE_FLAG = false;
   if get(hObject,'Value') == get(hObject,'Max')
     PAUSE_FLAG = true;
