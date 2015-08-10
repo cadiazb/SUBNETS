@@ -203,13 +203,13 @@ b5.Frame_pos    = Params.WsCenter;
 % end
 
 %% Cursor
-b5.Cursor_color 				= [1 1 0 0.7]; % RGBA 
+b5.Cursor_color 				= [1 1 0 1]; % RGBA 
 b5.Cursor_scale 				= [60 30];        % [mm] % note: diameter!
 
 %% Start Target
-b5.StartTarget_color			= [0 1 0 0.8];
+b5.StartTarget_color			= [0 1 0 1];
 b5.StartTarget_scale 			= [240 80];
-Params.StartTarget.Win  		= [200 40]; % radius
+Params.StartTarget.Win  		= [120 40]; % radius
 Params.StartTarget.Locations 	= {Params.WsCenter + [-40 -40]}; % cell array of locations
 
 %% Solenoid Open
@@ -236,13 +236,13 @@ b5.BarOutline_scale     = b5.Frame_scale.* [0.25, 1];
 b5.BarOutline_pos       = Params.WsCenter;
 
 % Vertical filling
-b5.FillingEffort_color     = [1 1 0 0.3];
+b5.FillingEffort_color     = [1 1 0 0];
 b5.FillingEffort_scale     = b5.Frame_scale .* [0.25, 1];
 b5.FillingEffort_pos       = Params.WsCenter - [0, 0] + ...
                     [0, b5.FillingEffort_scale(2)/2];
                 
 % Horizontal filling
-b5.FillingEffortHor_color     = [1 1 0 0.3];
+b5.FillingEffortHor_color     = [1 1 0 0];
 b5.FillingEffortHor_scale     = b5.Frame_scale .* [1, 0.1];
 b5.FillingEffortHor_pos       = Params.WsCenter - [0, 0] + ...
                     [b5.FillingEffortHor_scale(1)/2,0];

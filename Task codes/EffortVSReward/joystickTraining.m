@@ -192,7 +192,7 @@ if ~dat.OutcomeID
         % Observe X-axis force
         if (pos(1)-b5.StartTarget_pos(1)) >= 0
             b5.FillingEffortHor_scale = [pos(1)-b5.StartTarget_pos(1),... 
-                b5.FillingEffortHor_scale(2)];
+                b5.FillxSensitivity_scaleingEffortHor_scale(2)];
             b5.FillingEffortHor_pos(1) = Params.WsCenter(1) + ...
                     b5.FillingEffortHor_scale(1)/2;
         else
@@ -349,37 +349,10 @@ if dat.OutcomeID == 0
 %     % Turn objects on screen off
     b5 = b5ObjectsOff(b5);
     b5 = bmi5_mmap(b5);
-%     % Pause after reward
-%     startPause = b5.time_o;
-%     %if dat.FinalCursorPos(2) < b5.ProbeTargetTop_pos(2)
-%         while (b5.time_o - startPause) < (Params.InterTrialDelay)
-%             [Params, dat, b5] = UpdateCursorOnLine(Params, dat, b5); %b5 = bmi5_mmap(b5);
-%         end
-%     %end
     
     % Reset Opening sound effect
     Params.OpeningSound.Next = b5.time_o + 60*Params.OpeningSound.Intervals(2);
     Params.OpeningSound.Counter = 0;
-    
-    % Fade out current filling bars
-    b5.FillingEffort_color(4) = max(0,b5.FillingEffort_color(4) - 0.001);
-    b5.FillingEffortHor_color(4) = max(0,b5.FillingEffortHor_color(4) - 0.001);
-    
-    % Fade in cursor
-    b5.Cursor_color(4) = min(1,b5.Cursor_color(4) + 0.001);
-    
-    % Make next trial a bit harder
-%     if strcmp(dat.TrialChoice, 'Pass')
-%         Params.EffortVector = ...
-%             max(-0.2,(b5.ProbeTarget_pos(2)-b5.StartTarget_pos(2)-1)/b5.Frame_scale(2));
-%     end
-%     if strcmp(dat.TrialChoice, 'Probe Effort')
-%         Params.EffortVectorTop = ...
-%             min(0.2,(b5.ProbeTargetTop_pos(2)-b5.StartTarget_pos(2)+1)/b5.Frame_scale(2));
-%         
-%         b5.xSensitivity_scale(1) = max(160,b5.xSensitivity_scale(1) - 10);
-%         controlWindow.SetSensitivity(b5.xSensitivity_scale(1)/2,b5.ySensitivity_scale(2)/2);
-%     end
 
 else
     %Clean screen
@@ -413,8 +386,8 @@ else
 %     Params.EffortVectorTop = ...
 %         max(0.2,(b5.ProbeTargetTop_pos(2)-b5.StartTarget_pos(2)-2)/b5.Frame_scale(2));
     
-    b5.xSensitivity_scale(1) = min(160,b5.xSensitivity_scale(1) + 5);
-    controlWindow.SetSensitivity(b5.xSensitivity_scale(1)/2,b5.ySensitivity_scale(2)/2);
+%     b5.xSensitivity_scale(1) = 240;
+%     controlWindow.SetSensitivity(b5.xSensitivity_scale(1)/2,b5.ySensitivity_scale(2)/2);
 end
 
 b5 = bmi5_mmap(b5);

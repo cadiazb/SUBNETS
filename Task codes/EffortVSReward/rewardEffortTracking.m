@@ -389,7 +389,7 @@ else
 %     Params.EffortVectorTop = ...
 %         max(0.2,(b5.ProbeTargetTop_pos(2)-b5.StartTarget_pos(2)-2)/b5.Frame_scale(2));
     
-    b5.xSensitivity_scale(1) = min(160,b5.xSensitivity_scale(1) + 5);
+%     b5.xSensitivity_scale(1) = min(160,b5.xSensitivity_scale(1) + 5);
     controlWindow.SetSensitivity(b5.xSensitivity_scale(1)/2,b5.ySensitivity_scale(2)/2);
 end
 
