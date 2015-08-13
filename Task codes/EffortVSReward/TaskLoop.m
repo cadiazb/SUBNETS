@@ -225,7 +225,7 @@ for itrial = startTrial : Params.NumTrials
 %     fprintf('Block num\t\t(%i of %i)\n',Data(trial).BlockNum,Params.BlockSize);
 	fprintf('Total Blocks\t\t%i\n',Data(trial).BlockNum);
     %% Initialize force trace
-    Data(trial).ForceTrace = NaN(2 * Params.TrialLength / 0.01 , 5);
+    Data(trial).ForceTrace = NaN(200 * Params.TrialLength / 0.01 , 5);
     %% Get auto cue state
     Params.OpeningSound.Enable = controlWindow.GetAutoCue();
 
@@ -320,7 +320,7 @@ for itrial = startTrial : Params.NumTrials
             tmpIdx = find([Data.OutcomeID]==0,50,'last'); % check stability over a larger window
             % if recent average seems stable & it's been a while since we
             % adapted, then change BiasingMulti
-            if ( std([Data(tmpIdx).RecentAvgChoice]) < 0.1 ) && (Params.TrialsSinceAdapt > 199)
+            if ( std([Data(tmpIdx).RecentAvgChoice]) < 0.15 ) && (Params.TrialsSinceAdapt > 99)
                 if Data(trial).RecentAvgChoice > 0.5 % if choosing up more than 50%
                     Params.BiasingMulti = max(0.1, 0.8*Params.BiasingMulti); % make top reward smaller
                 elseif Data(trial).RecentAvgChoice < 0.5

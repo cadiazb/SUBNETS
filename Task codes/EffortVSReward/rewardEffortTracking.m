@@ -88,7 +88,12 @@ while ~done
         end
         
 	% Check for acquisition of start target
-  	posOk = TrialInBox(pos, b5.StartTarget_pos, Params.StartTarget.Win);
+    if gotPos % full target window if MP already gotPos and is just holding
+        posOk = TrialInBox(pos, b5.StartTarget_pos, 2.0*Params.StartTarget.Win);
+    else % smaller target window if MP hasn't gotPos yet
+        posOk = TrialInBox(pos, b5.StartTarget_pos, Params.StartTarget.Win); 
+    end
+
 
     if posOk
         if ~gotPos
@@ -131,7 +136,7 @@ while ~done
 
 end
 
-%% 2. CHECK FOR Y-AXIS MOVEMENT ON LOAD CELL
+%% 2. CHECK FOR Y-AACQUIRE START TARGETXIS MOVEMENT ON LOAD CELL
 if ~dat.OutcomeID
     b5.BarOutline_draw          = DRAW_BOTH;
     b5.Cursor_draw              = DRAW_BOTH;

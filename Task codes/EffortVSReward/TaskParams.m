@@ -172,7 +172,7 @@ Params.KeyboardAtBlockEnd 		= true;
 %% DELAYS, PENALTIES and TIMEOUTS [sec]
 % Start trial
 Params.TimeoutReachStartTarget  = 2; % max time to acquire start target
-Params.StartTarget.Hold       	= 0.5;
+Params.StartTarget.Hold       	= 0.5; %0.5
 
 % Reaching phase
 Params.ReactionTimeDelay      	= 2; % Max time to initiate movement
@@ -208,8 +208,8 @@ b5.Cursor_scale 				= [60 30];        % [mm] % note: diameter!
 
 %% Start Target
 b5.StartTarget_color			= [0 1 0 1];
-b5.StartTarget_scale 			= [240 80];
-Params.StartTarget.Win  		= [120 40]; % radius
+b5.StartTarget_scale 			= [150 60];
+Params.StartTarget.Win  		= [75 30]; % radius
 Params.StartTarget.Locations 	= {Params.WsCenter + [-40 -40]}; % cell array of locations
 
 %% Solenoid Open
@@ -268,8 +268,8 @@ b5.ProbeTargetTop_color = [0 1 0 1];
 b5.ProbeTargetTop_scale = b5.ProbeTarget_scale;
 b5.ProbeTargetTop_pos = Params.WsCenter ;
 
-Params.EffortVector     = [-0.2];
-Params.EffortVectorTop  = [0.2];
+Params.EffortVector     = [-0.3];
+Params.EffortVectorTop  = [0.3];
 
 Params.TopTargetProbability = 0.50;
 
