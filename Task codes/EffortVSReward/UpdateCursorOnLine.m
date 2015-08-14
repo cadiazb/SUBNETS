@@ -62,7 +62,9 @@ function [Params, dat, b5] = UpdateCursorOnLine(Params, dat, b5)
         ZeroBalance = Vin*2e-3*0.6;
         
         tmpIndex = find(forceTraces(1).ForceTrace(:,1) <= (b5.time_o - dat.TimeStart), 1, 'last');
-        newForce = forceTraces(1).ForceTrace(tmpIndex, 4:5);
+        tmpSmoothTrace = loadCellFilter(forceTraces(1).ForceTrace(1:tmpIndex, :));
+        newForce(1) =  sign(tmpSmoothTrace(tmpIndex,2))*(log(1+abs(tmpSmoothTrace(tmpIndex,2))/tao)*1/log(1+1/tao));
+        newForce(2) =  sign(tmpSmoothTrace(tmpIndex,3))*(log(1+abs(tmpSmoothTrace(tmpIndex,3))/tao)*1/log(1+1/tao));
         
         newPosX = min((b5.Frame_scale(1))*newForce(1)*(Params.LoadCellMax/Params.MaxForce) + b5.StartTarget_pos(1), ...
             b5.Frame_scale(1) + b5.StartTarget_pos(1));
