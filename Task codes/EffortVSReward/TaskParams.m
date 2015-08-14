@@ -17,7 +17,7 @@ PathAdder('Lib/Quest');
 PathAdder('Lib/ThresholdFinder');
 
 %% First, we connect to BMI5 and create the necessary objects
-%% We'll populate their values below
+% We'll populate their values below
 bmi5_cmd('clear_all');
 bmi5_cmd('delete_all');
 
@@ -222,8 +222,8 @@ Params.RewardsVector        = 200; %[ms]
 Params.BiasingMulti         = 0.3;
 
 %Model for adaptation of reward
-Params.RewardModel.xo          = 75;
-Params.RewardModel.w            = 1.5e3;
+% Params.RewardModel.xo          = 75;
+% Params.RewardModel.w            = 1.5e3;
 Params.TrialsSinceAdapt     = 0;
 
 %% Effort
@@ -315,26 +315,26 @@ Params.OpeningSound.Repeats         = 5;
 Params.OpeningSound.Intervals         = [10 20]; %(1) wait between repeats [s], (2) wait between groups of repeats [min]
 
 %% Load old force traces to debug task
-if DEBUG
-    global forceTraces
-    tmp = load('/home/motorlab/Data/SUBNETS/inCage/MP/2015/08/20150804/0810/EffortVSReward_MP_data_20150804_1.mat');
-    tmp = tmp.DATA;
-    tmp = tmp(([tmp.OutcomeID] == 0));
-    tmpFields = fieldnames(tmp);
-    for iField = tmpFields'
-        if ~strcmp('ForceTrace',iField{1})
-            tmp = rmfield(tmp,iField{1});
-        end
-    end
-    forceTraces = tmp;
-    for ii = 1:numel(forceTraces)
-        forceTraces(ii).ForceTrace(:,1) = forceTraces(ii).ForceTrace(:,1) - ...
-            forceTraces(ii).ForceTrace(1,1);
-    end
-    
-%     forceTraces = circshift(forceTraces, DrawFromVec(1:numel(forceTraces)),2);
-    clearvars tmp tmpFields
-end
+% if DEBUG
+%     global forceTraces
+%     tmp = load('/home/motorlab/Data/SUBNETS/inCage/MP/2015/08/20150804/0810/EffortVSReward_MP_data_20150804_1.mat');
+%     tmp = tmp.DATA;
+%     tmp = tmp(([tmp.OutcomeID] == 0));
+%     tmpFields = fieldnames(tmp);
+%     for iField = tmpFields'
+%         if ~strcmp('ForceTrace',iField{1})
+%             tmp = rmfield(tmp,iField{1});
+%         end
+%     end
+%     forceTraces = tmp;
+%     for ii = 1:numel(forceTraces)
+%         forceTraces(ii).ForceTrace(:,1) = forceTraces(ii).ForceTrace(:,1) - ...
+%             forceTraces(ii).ForceTrace(1,1);
+%     end
+%     
+% %     forceTraces = circshift(forceTraces, DrawFromVec(1:numel(forceTraces)),2);
+%     clearvars tmp tmpFields
+% end
 
 
 %% SYNC

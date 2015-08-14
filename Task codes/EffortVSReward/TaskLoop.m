@@ -8,9 +8,9 @@ PAUSE_FLAG      = false;
 KEYBOARD_FLAG   = false;
 QUIT_FLAG       = false;
 
-if DEBUG
-    global forceTraces
-end
+% if DEBUG
+%     global forceTraces
+% end
 
 NoFigsFlag = false;
 
@@ -269,10 +269,12 @@ for itrial = startTrial : Params.NumTrials
     
     %% Clean remaining of force trace
     Data(trial).ForceTrace(isnan(Data(trial).ForceTrace(:,1)),:) = [];
-    %% Circle around force traces in DEBUG mode
-    if DEBUG
-        forceTraces = circshift(forceTraces, -1, 2);
-    end
+    
+    
+     %% Circle around force traces in DEBUG mode
+%     if DEBUG
+%         forceTraces = circshift(forceTraces, -1, 2);
+%     end
 	%% TRIAL SUMMARY INFO DISPLAY
 	fprintf('Outcome\t\t\t\t%d (%s)\n',Data(trial).OutcomeID,Data(trial).OutcomeStr);
     fprintf('Reaction time\t\t%d \n', Data(trial).ReactionTime);
