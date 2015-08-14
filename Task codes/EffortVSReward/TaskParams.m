@@ -1,7 +1,7 @@
 function [Params, b5] = TaskParams(Params)
 
 global DEBUG;
-DEBUG = true;
+DEBUG = false;
 
 % FOR DRAWING OBJECTS
 DRAW_NONE     = 0;
@@ -268,8 +268,8 @@ b5.ProbeTargetTop_color = [0 1 0 1];
 b5.ProbeTargetTop_scale = b5.ProbeTarget_scale;
 b5.ProbeTargetTop_pos = Params.WsCenter ;
 
-Params.EffortVector     = [-0.3];
-Params.EffortVectorTop  = [0.3];
+Params.EffortVector     = [-0.2];
+Params.EffortVectorTop  = [0.2];
 
 Params.TopTargetProbability = 0.50;
 

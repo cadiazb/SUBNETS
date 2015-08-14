@@ -88,7 +88,7 @@ while ~done
         end
         
 	% Check for acquisition of start target
-    if gotPos % full target window if MP already gotPos and is just holding
+    if gotPos % big target window if MP already gotPos and is just holding
         posOk = TrialInBox(pos, b5.StartTarget_pos, 2.0*Params.StartTarget.Win);
     else % smaller target window if MP hasn't gotPos yet
         posOk = TrialInBox(pos, b5.StartTarget_pos, Params.StartTarget.Win); 
