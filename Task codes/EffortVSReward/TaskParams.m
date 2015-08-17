@@ -137,7 +137,22 @@ clear tmpTrialType
 %% Set total number of trials and expected correct trials
 Params.NumTrials 				= 100000; % Choose a big number so task doesn't finish before hand
 if Params.TrialTypeProbs(1)
-    Params.NumCorrectTrials         = 20;
+    Params.NumCorrectTrials         = 20;choseTop=[];
+choseBottom=[];
+x=[];
+topReward=[];
+bottomReward=[];
+
+for i=1:numel(anyChoice)-9
+    choseTop(i)=sum([anyChoice(i:i+9).TrialChoiceID]==1)/10;
+    choseBottom(i)=sum([anyChoice(i:i+9).TrialChoiceID]==0)/10;
+    
+    x(i)=i;
+    
+    topReward(i)=anyChoice(i).Params.BiasingMulti;
+    bottomReward(i)= 1 - anyChoice(i).Params.BiasingMulti;
+    
+end
 elseif Params.TrialTypeProbs(2)
     Params.NumCorrectTrials         = 1000; % Go/NoGo correct trials after initial sampling
 elseif Params.TrialTypeProbs(3)
@@ -219,12 +234,12 @@ b5.SolenoidOpen_pos 			= Params.WsBounds(2,:);
 
 %% Rewards
 Params.RewardsVector        = 200; %[ms]
-Params.BiasingMulti         = 0.3;
+Params.BiasingMulti         = 0.5;
 
 %Model for adaptation of reward
 % Params.RewardModel.xo          = 75;
 % Params.RewardModel.w            = 1.5e3;
-Params.TrialsSinceAdapt     = 0;
+Params.TrialsSinceAdapt     = 50;
 
 %% Effort
 Params.LoadCellMax                  = 50;
