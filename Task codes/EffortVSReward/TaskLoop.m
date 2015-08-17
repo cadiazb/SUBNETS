@@ -323,9 +323,9 @@ for itrial = startTrial : Params.NumTrials
             % if recent average seems stable & it's been a while since we
             % adapted, then change BiasingMulti
             if ( std([Data(tmpIdx).RecentAvgChoice]) < 0.2 ) && (Params.TrialsSinceAdapt > 59)
-                if sum([Data(tmpIdx).RecentAvgChoice]) > 0.5 % if choosing up more than 50%
+                if sum([Data(tmpIdx).RecentAvgChoice])/50 > 0.5 % if choosing up more than 50%
                     Params.BiasingMulti = max(0.1, 0.8*Params.BiasingMulti); % make top reward smaller
-                elseif sum([Data(tmpIdx).RecentAvgChoice]) < 0.5
+                elseif sum([Data(tmpIdx).RecentAvgChoice])/50 < 0.5
                     Params.BiasingMulti = min(0.9,1.2*Params.BiasingMulti);
                 end
                 Params.TrialsSinceAdapt = 0;
