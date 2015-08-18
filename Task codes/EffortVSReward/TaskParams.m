@@ -234,7 +234,7 @@ b5.SolenoidOpen_pos 			= Params.WsBounds(2,:);
 
 %% Rewards
 Params.RewardsVector        = 200; %[ms]
-Params.BiasingMulti         = 0.5;
+Params.BiasingMulti         = 0.1;
 
 %Model for adaptation of reward
 % Params.RewardModel.xo          = 75;
