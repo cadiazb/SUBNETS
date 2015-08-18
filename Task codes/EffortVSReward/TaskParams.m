@@ -21,6 +21,10 @@ PathAdder('Lib/ThresholdFinder');
 bmi5_cmd('clear_all');
 bmi5_cmd('delete_all');
 
+% Go/NoGo
+bmi5_cmd('make square ProbeTarget');
+bmi5_cmd('make square ProbeTargetTop');
+
 % Common objects to both tasks
 bmi5_cmd('make square StartTarget');
 
@@ -39,9 +43,9 @@ bmi5_cmd('make tone GoTone');
 bmi5_cmd('make tone RewardTone');
 bmi5_cmd('make store int 1 Trial');
 
-% Go/NoGo
-bmi5_cmd('make square ProbeTarget');
-bmi5_cmd('make square ProbeTargetTop');
+% % Go/NoGo
+% bmi5_cmd('make square ProbeTarget');
+% bmi5_cmd('make square ProbeTargetTop');
 
 eval(bmi5_cmd('mmap structure'));
 
@@ -187,7 +191,7 @@ Params.KeyboardAtBlockEnd 		= true;
 %% DELAYS, PENALTIES and TIMEOUTS [sec]
 % Start trial
 Params.TimeoutReachStartTarget  = 2; % max time to acquire start target
-Params.StartTarget.Hold       	= 0.5; %0.5
+Params.StartTarget.Hold       	= 0.6; %0.5
 
 % Reaching phase
 Params.ReactionTimeDelay      	= 2; % Max time to initiate movement
@@ -219,12 +223,12 @@ b5.Frame_pos    = Params.WsCenter;
 
 %% Cursor
 b5.Cursor_color 				= [1 1 0 1]; % RGBA 
-b5.Cursor_scale 				= [60 30];        % [mm] % note: diameter!
+b5.Cursor_scale 				= [50 25];        % [mm] % note: diameter!
 
 %% Start Target
 b5.StartTarget_color			= [0 1 0 1];
-b5.StartTarget_scale 			= [150 60];
-Params.StartTarget.Win  		= [75 30]; % radius
+b5.StartTarget_scale 			= [140 55];
+Params.StartTarget.Win  		= 0.5*b5.StartTarget_scale; % [75 30]; % radius
 Params.StartTarget.Locations 	= {Params.WsCenter + [-40 -40]}; % cell array of locations
 
 %% Solenoid Open
@@ -250,17 +254,17 @@ b5.BarOutline_color     = [0 0 1 1];
 b5.BarOutline_scale     = b5.Frame_scale.* [0.25, 1];
 b5.BarOutline_pos       = Params.WsCenter;
 
-% Vertical filling
-b5.FillingEffort_color     = [1 1 0 0];
-b5.FillingEffort_scale     = b5.Frame_scale .* [0.25, 1];
-b5.FillingEffort_pos       = Params.WsCenter - [0, 0] + ...
-                    [0, b5.FillingEffort_scale(2)/2];
-                
-% Horizontal filling
-b5.FillingEffortHor_color     = [1 1 0 0];
-b5.FillingEffortHor_scale     = b5.Frame_scale .* [1, 0.1];
-b5.FillingEffortHor_pos       = Params.WsCenter - [0, 0] + ...
-                    [b5.FillingEffortHor_scale(1)/2,0];
+% % Vertical filling
+% b5.FillingEffort_color     = [1 1 0 0];
+% b5.FillingEffort_scale     = b5.Frame_scale .* [0.25, 1];
+% b5.FillingEffort_pos       = Params.WsCenter - [0, 0] + ...
+%                     [0, b5.FillingEffort_scale(2)/2];
+%                 
+% % Horizontal filling
+% b5.FillingEffortHor_color     = [1 1 0 0];
+% b5.FillingEffortHor_scale     = b5.Frame_scale .* [1, 0.1];
+% b5.FillingEffortHor_pos       = Params.WsCenter - [0, 0] + ...
+%                     [b5.FillingEffortHor_scale(1)/2,0];
                 
 % ySensitivity
 b5.ySensitivity_color     = [1 1 0 0.05];
@@ -276,7 +280,7 @@ b5.xSensitivity_pos       = Params.WsCenter - [0, 0] + ...
 
 % Go/NoGo
 b5.ProbeTarget_color = [0 1 0 1];
-b5.ProbeTarget_scale = [240, 80];
+b5.ProbeTarget_scale = [220, 70];
 b5.ProbeTarget_pos = Params.WsCenter ;
 
 b5.ProbeTargetTop_color = [0 1 0 1];

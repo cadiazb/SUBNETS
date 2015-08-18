@@ -74,25 +74,25 @@ while ~done
     [Params, dat, b5] = UpdateCursorOnLine(Params, dat, b5); % syncs b5 twice
         pos = b5.Cursor_pos;
         dat.FinalCursorPos = [0,pos(2)];
-        if (dat.FinalCursorPos(2)-b5.StartTarget_pos(2)) >= 0
-            b5.FillingEffort_scale = [b5.BarOutline_scale(1),...
-                dat.FinalCursorPos(2)-b5.StartTarget_pos(2)];
-            b5.FillingEffort_pos       = Params.WsCenter - [0, 0] + ...
-                    [0, b5.FillingEffort_scale(2)/2];
-        else
-            b5.FillingEffort_scale = [b5.BarOutline_scale(1),...
-                -max((dat.FinalCursorPos(2)-b5.StartTarget_pos(2)), ...
-                (b5.Pass_pos(2) - b5.StartTarget_pos(2)))];
-            b5.FillingEffort_pos       = Params.WsCenter - [0, 0] - ...
-                    [0, b5.FillingEffort_scale(2)/2];
-        end
+%         if (dat.FinalCursorPos(2)-b5.StartTarget_pos(2)) >= 0
+%             b5.FillingEffort_scale = [b5.BarOutline_scale(1),...
+%                 dat.FinalCursorPos(2)-b5.StartTarget_pos(2)];
+%             b5.FillingEffort_pos       = Params.WsCenter - [0, 0] + ...
+%                     [0, b5.FillingEffort_scale(2)/2];
+%         else
+%             b5.FillingEffort_scale = [b5.BarOutline_scale(1),...
+%                 -max((dat.FinalCursorPos(2)-b5.StartTarget_pos(2)), ...
+%                 (b5.Pass_pos(2) - b5.StartTarget_pos(2)))];
+%             b5.FillingEffort_pos       = Params.WsCenter - [0, 0] - ...
+%                     [0, b5.FillingEffort_scale(2)/2];
+%         end
         
-	% Check for acquisition of start target
-    if gotPos % big target window if MP already gotPos and is just holding
-        posOk = TrialInBox(pos, b5.StartTarget_pos, 2.0*Params.StartTarget.Win);
-    else % smaller target window if MP hasn't gotPos yet
-        posOk = TrialInBox(pos, b5.StartTarget_pos, Params.StartTarget.Win); 
-    end
+% 	% Check for acquisition of start target
+%     if gotPos % big target window if MP already gotPos and is just holding
+%         posOk = TrialInBox(pos, b5.StartTarget_pos, 1.0*Params.StartTarget.Win);
+%     else % smaller target window if MP hasn't gotPos yet
+        posOk = TrialInBox(pos, b5.Cursor_scale, b5.StartTarget_pos, Params.StartTarget.Win); 
+%     end
 
 
     if posOk
@@ -104,8 +104,8 @@ while ~done
         %Show features on screen when MP lets go
         b5.StartTarget_draw             = DRAW_BOTH;
         b5.BarOutline_draw              = DRAW_BOTH;
-        b5.FillingEffort_draw           = DRAW_BOTH;
-        b5.FillingEffortHor_draw        = DRAW_BOTH;
+%         b5.FillingEffort_draw           = DRAW_BOTH;
+%         b5.FillingEffortHor_draw        = DRAW_BOTH;
         b5.xSensitivity_draw            = DRAW_BOTH;
         b5.ySensitivity_draw            = DRAW_BOTH;
         
@@ -174,32 +174,32 @@ if ~dat.OutcomeID
         [Params, dat, b5] = UpdateCursorOnLine(Params, dat, b5); % syncs b5 twice
         pos = b5.Cursor_pos;
         dat.FinalCursorPos = [0,pos(2)];
-        % Observe Y-axis force
-        if (dat.FinalCursorPos(2)-b5.StartTarget_pos(2)) >= 0
-            b5.FillingEffort_scale = [b5.BarOutline_scale(1),...
-                dat.FinalCursorPos(2)-b5.StartTarget_pos(2)];
-            b5.FillingEffort_pos       = Params.WsCenter - [0, 0] + ...
-                    [0, b5.FillingEffort_scale(2)/2];
-        else
-            b5.FillingEffort_scale = [b5.BarOutline_scale(1),...
-                -max((dat.FinalCursorPos(2)-b5.StartTarget_pos(2)), ...
-                (b5.Pass_pos(2) - b5.StartTarget_pos(2)))];
-            b5.FillingEffort_pos       = Params.WsCenter - [0, 0] - ...
-                    [0, b5.FillingEffort_scale(2)/2];
-        end
-        
-        % Observe X-axis force
-        if (pos(1)-b5.StartTarget_pos(1)) >= 0
-            b5.FillingEffortHor_scale = [pos(1)-b5.StartTarget_pos(1),... 
-                b5.FillingEffortHor_scale(2)];
-            b5.FillingEffortHor_pos(1) = Params.WsCenter(1) + ...
-                    b5.FillingEffortHor_scale(1)/2;
-        else
-            b5.FillingEffortHor_scale = [-(pos(1)-b5.StartTarget_pos(1)),...
-                b5.FillingEffortHor_scale(2)];
-            b5.FillingEffortHor_pos(1)       = Params.WsCenter(1) - ...
-                    b5.FillingEffortHor_scale(1)/2;
-        end
+%         % Observe Y-axis force
+%         if (dat.FinalCursorPos(2)-b5.StartTarget_pos(2)) >= 0
+%             b5.FillingEffort_scale = [b5.BarOutline_scale(1),...
+%                 dat.FinalCursorPos(2)-b5.StartTarget_pos(2)];
+%             b5.FillingEffort_pos       = Params.WsCenter - [0, 0] + ...
+%                     [0, b5.FillingEffort_scale(2)/2];
+%         else
+%             b5.FillingEffort_scale = [b5.BarOutline_scale(1),...
+%                 -max((dat.FinalCursorPos(2)-b5.StartTarget_pos(2)), ...
+%                 (b5.Pass_pos(2) - b5.StartTarget_pos(2)))];
+%             b5.FillingEffort_pos       = Params.WsCenter - [0, 0] - ...
+%                     [0, b5.FillingEffort_scale(2)/2];
+%         end
+%         
+%         % Observe X-axis force
+%         if (pos(1)-b5.StartTarget_pos(1)) >= 0
+%             b5.FillingEffortHor_scale = [pos(1)-b5.StartTarget_pos(1),... 
+%                 b5.FillingEffortHor_scale(2)];
+%             b5.FillingEffortHor_pos(1) = Params.WsCenter(1) + ...
+%                     b5.FillingEffortHor_scale(1)/2;
+%         else
+%             b5.FillingEffortHor_scale = [-(pos(1)-b5.StartTarget_pos(1)),...
+%                 b5.FillingEffortHor_scale(2)];
+%             b5.FillingEffortHor_pos(1)       = Params.WsCenter(1) - ...
+%                     b5.FillingEffortHor_scale(1)/2;
+%         end
 %         if b5.FillingEffort_scale(2) < 25
 %             b5.FillingEffort_scale(2) = 0;
 %             b5.FillingEffort_pos       = Params.WsCenter - [0, b5.Frame_scale(2)/2] + ...
@@ -219,9 +219,11 @@ if ~dat.OutcomeID
         b5 = bmi5_mmap(b5);
         
 		% Check for acquisition of a reach target
-        posOk = TrialInBox(pos,b5.StartTarget_pos,Params.StartTarget.Win);
-        posProbeOk 	= pos(2) >= (b5.ProbeTargetTop_pos(2) - b5.ProbeTargetTop_scale(2)/2);
-        posPassOk 	= pos(2) <= (b5.ProbeTarget_pos(2) + b5.ProbeTarget_scale(2)/2);
+        posOk = TrialInBox(pos,b5.Cursor_scale,b5.StartTarget_pos,Params.StartTarget.Win);
+        posProbeOk = TrialInBox(pos,b5.Cursor_scale,b5.ProbeTargetTop_pos,b5.ProbeTargetTop_scale);
+        posPassOk = TrialInBox(pos,b5.Cursor_scale,b5.ProbeTarget_pos,b5.ProbeTarget_scale);
+%         posProbeOk 	= pos(2) >= (b5.ProbeTargetTop_pos(2) - b5.ProbeTargetTop_scale(2)/2);
+%         posPassOk 	= pos(2) <= (b5.ProbeTarget_pos(2) + b5.ProbeTarget_scale(2)/2);
         
         if ~posOk
             if (abs(pos(1) - b5.StartTarget_pos(1)) > Params.StartTarget.Win(1)) %|| ((pos(2) - b5.StartTarget_pos(2)) < 0)
@@ -342,12 +344,12 @@ if dat.OutcomeID == 0 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
     Params.OpeningSound.Next = b5.time_o + 60*Params.OpeningSound.Intervals(2);
     Params.OpeningSound.Counter = 0;
     
-    % Fade out current filling bars
-    b5.FillingEffort_color(4) = max(0,b5.FillingEffort_color(4) - 0.001);
-    b5.FillingEffortHor_color(4) = max(0,b5.FillingEffortHor_color(4) - 0.001);
-    
-    % Fade in cursor
-    b5.Cursor_color(4) = min(1,b5.Cursor_color(4) + 0.001);
+%     % Fade out current filling bars
+%     b5.FillingEffort_color(4) = max(0,b5.FillingEffort_color(4) - 0.001);
+%     b5.FillingEffortHor_color(4) = max(0,b5.FillingEffortHor_color(4) - 0.001);
+%     
+%     % Fade in cursor
+%     b5.Cursor_color(4) = min(1,b5.Cursor_color(4) + 0.001);
     
     % Make next trial a bit harder
 %     if strcmp(dat.TrialChoice, 'Pass')
