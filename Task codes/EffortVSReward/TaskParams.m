@@ -287,8 +287,8 @@ b5.ProbeTargetTop_color = [0 1 0 1];
 b5.ProbeTargetTop_scale = b5.ProbeTarget_scale;
 b5.ProbeTargetTop_pos = Params.WsCenter ;
 
-Params.EffortVector     = [-0.2];
-Params.EffortVectorTop  = [0.2];
+Params.EffortVector     = [-0.1];
+Params.EffortVectorTop  = [0.1];
 
 Params.TopTargetProbability = 0.50;
 
