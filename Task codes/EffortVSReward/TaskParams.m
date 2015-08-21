@@ -121,7 +121,7 @@ Params.SessionCount = ct;
 % 4. Joystick Traning. file = joystickTraining.m
 % 5. Reward Effort Tracking. file = rewardEffortTracking.m
 
-tmpTrialType = 5;
+tmpTrialType = 4;
 switch tmpTrialType
     case 1
         Params.TrialTypeProbs 			= [1 0 0 0 0];
@@ -141,22 +141,7 @@ clear tmpTrialType
 %% Set total number of trials and expected correct trials
 Params.NumTrials 				= 100000; % Choose a big number so task doesn't finish before hand
 if Params.TrialTypeProbs(1)
-    Params.NumCorrectTrials         = 20;choseTop=[];
-choseBottom=[];
-x=[];
-topReward=[];
-bottomReward=[];
-
-for i=1:numel(anyChoice)-9
-    choseTop(i)=sum([anyChoice(i:i+9).TrialChoiceID]==1)/10;
-    choseBottom(i)=sum([anyChoice(i:i+9).TrialChoiceID]==0)/10;
-    
-    x(i)=i;
-    
-    topReward(i)=anyChoice(i).Params.BiasingMulti;
-    bottomReward(i)= 1 - anyChoice(i).Params.BiasingMulti;
-    
-end
+    Params.NumCorrectTrials         = 20;
 elseif Params.TrialTypeProbs(2)
     Params.NumCorrectTrials         = 1000; % Go/NoGo correct trials after initial sampling
 elseif Params.TrialTypeProbs(3)
@@ -238,7 +223,7 @@ b5.SolenoidOpen_pos 			= Params.WsBounds(2,:);
 
 %% Rewards
 Params.RewardsVector        = 200; %[ms]
-Params.BiasingMulti         = 0.3;
+Params.BiasingMulti         = 0.4;
 
 %Model for adaptation of reward
 % Params.RewardModel.xo          = 75;

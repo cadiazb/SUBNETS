@@ -312,32 +312,34 @@ for itrial = startTrial : Params.NumTrials
 
     %% calculate the reward based on the short-term performance
     
-    if (sum([Data.OutcomeID] == 0) > 9 ) % if we've done enough trialsPlotSummaryFigs.m
-        % find 10 most recent & compute local average
-        tmpIdx = find([Data.OutcomeID]==0,10,'last');
-        Data(trial).RecentAvgChoice=sum([Data(tmpIdx).TrialChoiceID]==1)/10;
+    if Params.TrialTypeProbs(5) % if we're in the 2 choice reward tracking mode
         
-        % don't change anything unless he's working now
-        if (Data(trial).OutcomeID==0) && (sum([Data.OutcomeID]==0) > 49)
-            tmpIdx = find([Data.OutcomeID]==0,50,'last'); % check stability over a larger window
-            % if recent average seems stable & it's been a while since we
-            % adapted, then change BiasingMulti
-            if ( std([Data(tmpIdx).RecentAvgChoice]) < 0.2 ) && (Params.TrialsSinceAdapt > 59)
-                if sum([Data(tmpIdx).RecentAvgChoice])/50 > 0.5 % if choosing up more than 50%
-                    Params.BiasingMulti = max(0.1, 0.8*Params.BiasingMulti); % make top reward smaller
-                elseif sum([Data(tmpIdx).RecentAvgChoice])/50 < 0.5
-                    Params.BiasingMulti = min(0.9,1.2*Params.BiasingMulti);
+        if (sum([Data.OutcomeID] == 0) > 9 ) % if we've done enough trialsPlotSummaryFigs.m
+            % find 10 most recent & compute local average
+            tmpIdx = find([Data.OutcomeID]==0,10,'last');
+            Data(trial).RecentAvgChoice=sum([Data(tmpIdx).TrialChoiceID]==1)/10;
+            
+            % don't change anything unless he's working now
+            if (Data(trial).OutcomeID==0) && (sum([Data.OutcomeID]==0) > 49)
+                tmpIdx = find([Data.OutcomeID]==0,50,'last'); % check stability over a larger window
+                % if recent average seems stable & it's been a while since we
+                % adapted, then change BiasingMulti
+                if ( std([Data(tmpIdx).RecentAvgChoice]) < 0.2 ) && (Params.TrialsSinceAdapt > 59)
+                    if sum([Data(tmpIdx).RecentAvgChoice])/50 > 0.5 % if choosing up more than 50%
+                        Params.BiasingMulti = max(0.1, 0.8*Params.BiasingMulti); % make top reward smaller
+                    elseif sum([Data(tmpIdx).RecentAvgChoice])/50 < 0.5
+                        Params.BiasingMulti = min(0.9,1.2*Params.BiasingMulti);
+                    end
+                    Params.TrialsSinceAdapt = 0;
+                    
+                else
+                    Params.TrialsSinceAdapt = Params.TrialsSinceAdapt + 1;
                 end
-                Params.TrialsSinceAdapt = 0;
-                
-            else
-                Params.TrialsSinceAdapt = Params.TrialsSinceAdapt + 1;
             end
+        else
+            Data(trial).RecentAvgChoice=NaN;
         end
-    else
-        Data(trial).RecentAvgChoice=NaN;
     end
-  
     %% Save Data
     if QUIT_FLAG
         done = true;

@@ -18,6 +18,9 @@ b5.StartTarget_pos = Params.WsCenter - [0, 0];
 % dat.ProbeEffort         = controlWindow.GetProbeTarget_pos() / b5.Frame_scale(2);
 dat.ProbeEffort         = DrawFromVec(Params.EffortVector);
 
+
+
+
 %% Generate ProbeTarget position
 b5.ProbeTarget_pos 		= b5.StartTarget_pos + ...
                                 [0,dat.ProbeEffort * b5.Frame_scale(2)] ...
@@ -143,12 +146,15 @@ if ~dat.OutcomeID
     b5.StartTarget_draw             = DRAW_NONE;
 %     b5.FillingEffort_draw       = DRAW_BOTH;
 %     b5.FillingEffortHor_draw   = DRAW_BOTH;
-%     b5.xSensitivity_draw       = DRAW_BOTH;
-%     b5.ySensitivity_draw       = DRAW_BOTH;
+    b5.xSensitivity_draw       = DRAW_BOTH;
+    b5.ySensitivity_draw       = DRAW_BOTH;
 %     b5.SolenoidOpen_draw       = DRAW_NONE;
 %     b5.Pass_draw                = DRAW_BOTH;
     b5.ProbeTargetTop_draw         = DRAW_BOTH;
     b5.ProbeTarget_draw      = DRAW_BOTH;
+    
+    
+    
     
     b5.GoTone_play_io = 1;
     b5.FillingEffort_scale(2) = 0;
