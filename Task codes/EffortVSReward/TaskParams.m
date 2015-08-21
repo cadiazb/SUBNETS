@@ -27,25 +27,15 @@ bmi5_cmd('make square ProbeTargetTop');
 
 % Common objects to both tasks
 bmi5_cmd('make square StartTarget');
-
 bmi5_cmd('make open_square Frame 0.01');
 bmi5_cmd('make open_square BarOutline 0.03');
-bmi5_cmd('make square FillingEffort');
-bmi5_cmd('make square FillingEffortHor');
 bmi5_cmd('make square xSensitivity');
 bmi5_cmd('make square ySensitivity');
-bmi5_cmd('make square Pass');
 bmi5_cmd('make circle Cursor');
 bmi5_cmd('make circle SolenoidOpen');
 
 bmi5_cmd('make labjack isometric 4 2 2');
-bmi5_cmd('make tone GoTone');
-bmi5_cmd('make tone RewardTone');
 bmi5_cmd('make store int 1 Trial');
-
-% % Go/NoGo
-% bmi5_cmd('make square ProbeTarget');
-% bmi5_cmd('make square ProbeTargetTop');
 
 eval(bmi5_cmd('mmap structure'));
 
@@ -151,17 +141,7 @@ else
 end
 
 %% BLOCKS OF TRIALS
-% 1. "regular"/training trials  (2afc)
-% 2. psychometric-current-basic (2afc)
-% 3. psychometric-current-quest (2afc)
-% 4. psychometric-current-quest (yes/no)
-
-% Params.BlockTypes = {
-% 'regular/training (2afc)'
-% 'basic psychometric-current (2afc)'
-% 'quest psychometric-current (2afc)'
-% 'quest psychometric-current (yes/no)'
-% };
+% Params.BlockTypes = {'string names' };
 % Params.DoSequentialBlocks       = true; % 0 - Probabalistic; 1 - Sequential
 % Params.BlockSequence            = [1 ]; % overflows to start
 % Params.BlockProbs 				= [0 0 1 0]; % make sure these add to 1 exactly
@@ -171,7 +151,7 @@ end
 
 % This triggers a keyboard at the end of a block so that paramters can
 % be adjusted (will also play an alarm to notify the operator)
-Params.KeyboardAtBlockEnd 		= true;
+% Params.KeyboardAtBlockEnd 		= true;
 
 %% DELAYS, PENALTIES and TIMEOUTS [sec]
 % Start trial
@@ -200,11 +180,6 @@ Params.WsCenter 				= mean(Params.WsBounds,1) + [0, 0];
 b5.Frame_color  = [1 1 1 1];
 b5.Frame_scale  = range(Params.WsBounds);
 b5.Frame_pos    = Params.WsCenter;
-% if DEBUG
-%     b5.Frame_draw   = DRAW_BOTH;
-% else
-%     b5.Frame_draw   = DRAW_NONE;
-% end
 
 %% Cursor
 b5.Cursor_color 				= [1 1 0 1]; % RGBA 
@@ -224,10 +199,6 @@ b5.SolenoidOpen_pos 			= Params.WsBounds(2,:);
 %% Rewards
 Params.RewardsVector        = 200; %[ms]
 Params.BiasingMulti         = 0.4;
-
-%Model for adaptation of reward
-% Params.RewardModel.xo          = 75;
-% Params.RewardModel.w            = 1.5e3;
 Params.TrialsSinceAdapt     = 50;
 
 %% Effort
@@ -238,18 +209,6 @@ Params.MaxForce = 10; % Measured max force per subject [N]
 b5.BarOutline_color     = [0 0 1 1];
 b5.BarOutline_scale     = b5.Frame_scale.* [0.25, 1];
 b5.BarOutline_pos       = Params.WsCenter;
-
-% % Vertical filling
-% b5.FillingEffort_color     = [1 1 0 0];
-% b5.FillingEffort_scale     = b5.Frame_scale .* [0.25, 1];
-% b5.FillingEffort_pos       = Params.WsCenter - [0, 0] + ...
-%                     [0, b5.FillingEffort_scale(2)/2];
-%                 
-% % Horizontal filling
-% b5.FillingEffortHor_color     = [1 1 0 0];
-% b5.FillingEffortHor_scale     = b5.Frame_scale .* [1, 0.1];
-% b5.FillingEffortHor_pos       = Params.WsCenter - [0, 0] + ...
-%                     [b5.FillingEffortHor_scale(1)/2,0];
                 
 % ySensitivity
 b5.ySensitivity_color     = [1 1 0 0.05];
@@ -277,23 +236,14 @@ Params.EffortVectorTop  = [0.08];
 
 Params.TopTargetProbability = 0.5;
 
-%% Pass
-Params.PassSensitivity  = 5;
-Params.NoGoTap    = 0.025 * b5.Frame_scale(2);
-
-b5.Pass_color     = b5.ProbeTarget_color;
-b5.Pass_scale     = b5.ProbeTarget_scale;
-b5.Pass_pos       = Params.WsCenter - [0,0 + b5.Pass_scale(2)/2] - ...
-                       [0, 150];
-
-%% TONES
-b5.GoTone_freq 				= 1000;  % (Hz)
-b5.GoTone_duration          = 0.3;  % (sec)
-b5.GoTone_scale             = 1;    % (units?)
-
-b5.RewardTone_freq 			= 1500; % (Hz)
-b5.RewardTone_duration      = 0.3;  % (sec)
-b5.RewardTone_scale         = 1;    % (units?)
+ %% Pass
+% Params.PassSensitivity  = 5;
+% Params.NoGoTap    = 0.025 * b5.Frame_scale(2);
+% 
+% b5.Pass_color     = b5.ProbeTarget_color;
+% b5.Pass_scale     = b5.ProbeTarget_scale;
+% b5.Pass_pos       = Params.WsCenter - [0,0 + b5.Pass_scale(2)/2] - ...
+%                        [0, 150];
 
 %% FOR CONVENIENCE DEFINE BLOCKSIZE HERE
 % Params.BlockSize 				= 35;
@@ -317,29 +267,6 @@ Params.OpeningSound.Next            = 0;
 Params.OpeningSound.Counter         = 0;
 Params.OpeningSound.Repeats         = 5;
 Params.OpeningSound.Intervals         = [10 20]; %(1) wait between repeats [s], (2) wait between groups of repeats [min]
-
-%% Load old force traces to debug task
-% if DEBUG
-%     global forceTraces
-%     tmp = load('/home/motorlab/Data/SUBNETS/inCage/MP/2015/08/20150804/0810/EffortVSReward_MP_data_20150804_1.mat');
-%     tmp = tmp.DATA;
-%     tmp = tmp(([tmp.OutcomeID] == 0));
-%     tmpFields = fieldnames(tmp);
-%     for iField = tmpFields'
-%         if ~strcmp('ForceTrace',iField{1})
-%             tmp = rmfield(tmp,iField{1});
-%         end
-%     end
-%     forceTraces = tmp;
-%     for ii = 1:numel(forceTraces)
-%         forceTraces(ii).ForceTrace(:,1) = forceTraces(ii).ForceTrace(:,1) - ...
-%             forceTraces(ii).ForceTrace(1,1);
-%     end
-%     
-% %     forceTraces = circshift(forceTraces, DrawFromVec(1:numel(forceTraces)),2);
-%     clearvars tmp tmpFields
-% end
-
 
 %% SYNC
 b5 = bmi5_mmap(b5);
