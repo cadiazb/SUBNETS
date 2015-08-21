@@ -121,7 +121,7 @@ Params.SessionCount = ct;
 % 4. Joystick Traning. file = joystickTraining.m
 % 5. Reward Effort Tracking. file = rewardEffortTracking.m
 
-tmpTrialType = 4;
+tmpTrialType = 5;
 switch tmpTrialType
     case 1
         Params.TrialTypeProbs 			= [1 0 0 0 0];
@@ -223,7 +223,7 @@ b5.SolenoidOpen_pos 			= Params.WsBounds(2,:);
 
 %% Rewards
 Params.RewardsVector        = 200; %[ms]
-Params.BiasingMulti         = 0.4;
+Params.BiasingMulti         = 0.25;
 
 %Model for adaptation of reward
 % Params.RewardModel.xo          = 75;
@@ -272,10 +272,10 @@ b5.ProbeTargetTop_color = [0 1 0 1];
 b5.ProbeTargetTop_scale = b5.ProbeTarget_scale;
 b5.ProbeTargetTop_pos = Params.WsCenter ;
 
-Params.EffortVector     = [-0.08];
+Params.EffortVector     = [-0.3];
 Params.EffortVectorTop  = [0.08];
 
-Params.TopTargetProbability = 0.50;
+Params.TopTargetProbability = 0.25;
 
 %% Pass
 Params.PassSensitivity  = 5;

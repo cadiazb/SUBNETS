@@ -1,4 +1,4 @@
-function [Params, dat, b5] = joystickTraining(Params, dat, b5, controlWindow)
+function [Params, dat, b5] = rewardEffortTracking(Params, dat, b5, controlWindow)
 
 global DEBUG
 global SolenoidEnable QUIT_FLAG Solenoid_open;
@@ -30,8 +30,8 @@ b5.ProbeTargetTop_pos 		= b5.StartTarget_pos + ...
                                 [0,Params.EffortVectorTop * b5.Frame_scale(2)] ...
                                 + [0,b5.ProbeTargetTop_scale(2)/2];                            
 %% Generate the amounts of reward
-% dat.ProbeReward = DrawFromVec(Params.RewardsVector);
-dat.ProbeReward = 2000 * controlWindow.GetEarnedReward(); %[ms]
+dat.ProbeReward = DrawFromVec(Params.RewardsVector);
+% dat.ProbeReward = 2000 * controlWindow.GetEarnedReward(); %[ms]
 %% Misc stuff
 dat.OutcomeID 	= 0;
 dat.OutcomeStr 	= 'Success';
@@ -47,19 +47,20 @@ b5.ProbeTarget_draw             = DRAW_NONE;
 b5.ProbeTargetTop_draw          = DRAW_NONE;
 
 b5 = bmi5_mmap(b5);
-%% 0. Temp play 'Opening' sound effect
-if Params.OpeningSound.Enable && (Params.OpeningSound.Next < b5.time_o)
-    [~, b5] = controlWindow.PlayCueandReward(Params, b5);
-    b5 = LJJuicer(Params, b5, 'off');
-    Params.OpeningSound.Counter = Params.OpeningSound.Counter + 1;
-    
-    if Params.OpeningSound.Counter < Params.OpeningSound.Repeats
-        Params.OpeningSound.Next = b5.time_o + Params.OpeningSound.Intervals(1);
-    else
-        Params.OpeningSound.Next = b5.time_o + 60*Params.OpeningSound.Intervals(2);
-        Params.OpeningSound.Counter = 0;
-    end
-end
+
+% %% 0. Temp play 'Opening' sound effect
+% if Params.OpeningSound.Enable && (Params.OpeningSound.Next < b5.time_o)
+%     [~, b5] = controlWindow.PlayCueandReward(Params, b5);
+%     b5 = LJJuicer(Params, b5, 'off');
+%     Params.OpeningSound.Counter = Params.OpeningSound.Counter + 1;
+%     
+%     if Params.OpeningSound.Counter < Params.OpeningSound.Repeats
+%         Params.OpeningSound.Next = b5.time_o + Params.OpeningSound.Intervals(1);
+%     else
+%         Params.OpeningSound.Next = b5.time_o + 60*Params.OpeningSound.Intervals(2);
+%         Params.OpeningSound.Counter = 0;
+%     end
+% end
 %% 1. ACQUIRE START TARGET
 b5.StartTarget_draw = DRAW_BOTH;
 b5.Cursor_draw      = DRAW_BOTH;
@@ -173,10 +174,10 @@ if ~dat.OutcomeID
 
     
 	t_start = b5.time_o;
-    [Params.StartTarget.Win(1), Params.StartTarget.Win(2)] = controlWindow.GetSensitivity();
+%     [Params.StartTarget.Win(1), Params.StartTarget.Win(2)] = controlWindow.GetSensitivity();
 	while ~done
         drawnow;
-        [Params.StartTarget.Win(1), Params.StartTarget.Win(2)] = controlWindow.GetSensitivity();
+%         [Params.StartTarget.Win(1), Params.StartTarget.Win(2)] = controlWindow.GetSensitivity();
         [Params, dat, b5] = UpdateCursorOnLine(Params, dat, b5); % syncs b5 twice
         pos = b5.Cursor_pos;
         dat.FinalCursorPos = [0,pos(2)];
@@ -253,8 +254,8 @@ if ~dat.OutcomeID
             dat.ReactionTime = b5.time_o - t_start;
         end
         
-        if ~isempty(dat.ReactionTime) && (posPassOk) && ...
-                (abs(pos(1) - b5.StartTarget_pos(1)) < Params.StartTarget.Win(1))
+        if ~isempty(dat.ReactionTime) && (posPassOk)   && ...
+                 (abs(pos(1) - b5.StartTarget_pos(1)) < Params.StartTarget.Win(1))
             dat.TrialChoice = 'Pass';
             dat.TrialChoiceID = 0; %0 means reached down
             done = true;
@@ -333,7 +334,7 @@ if dat.OutcomeID == 0 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
     end
     dat.JuiceON = juiceStart;
     dat.JuiceOFF = b5.time_o;
-    controlWindow.message(['Last reward ' datestr(now)]);
+     controlWindow.message(['Last reward ' datestr(now)]);
     
 %     % Turn objects on screen off
     b5 = b5ObjectsOff(b5);
@@ -403,7 +404,7 @@ else
 %         max(0.2,(b5.ProbeTargetTop_pos(2)-b5.StartTarget_pos(2)-2)/b5.Frame_scale(2));
     
 %     b5.xSensitivity_scale(1) = min(160,b5.xSensitivity_scale(1) + 5);
-    controlWindow.SetSensitivity(b5.xSensitivity_scale(1)/2,b5.ySensitivity_scale(2)/2);
+%     controlWindow.SetSensitivity(b5.xSensitivity_scale(1)/2,b5.ySensitivity_scale(2)/2);
 end
 
 b5 = bmi5_mmap(b5);

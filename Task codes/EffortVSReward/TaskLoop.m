@@ -53,7 +53,7 @@ Data(Params.NumTrials) = dtmp;
 
 SetupGUI();
 [b5, controlWindow] = StandbyControl(Params,b5,0);
-drawnow;
+% drawnow;
 
 % system('wmctrl -a "subject view"');
 %Close Solenoid at beginning of experiment
@@ -226,8 +226,8 @@ for itrial = startTrial : Params.NumTrials
 	fprintf('Total Blocks\t\t%i\n',Data(trial).BlockNum);
     %% Initialize force trace
     Data(trial).ForceTrace = NaN(200 * Params.TrialLength / 0.01 , 5);
-    %% Get auto cue state
-    Params.OpeningSound.Enable = controlWindow.GetAutoCue();
+%     %% Get auto cue state
+%     Params.OpeningSound.Enable = controlWindow.GetAutoCue();
 
 	%% - - - - - - RUN TRIAL - - - - - -
 	b5.Trial_v = trial;
@@ -283,7 +283,7 @@ for itrial = startTrial : Params.NumTrials
     %fprintf('TrialsSinceAdapt\t\t%d \n', Params.TrialsSinceAdapt);
     
     %Update earned rewards on GUI
-    controlWindow.SetEarnedRewards(sum([Data(1:trial).OutcomeID] == 0));
+%     controlWindow.SetEarnedRewards(sum([Data(1:trial).OutcomeID] == 0));
   
 	%% Update Threshold Quest
 % 	if (Data(trial).OutcomeID == 0 || Data(trial).OutcomeID == 3) && ...
@@ -392,9 +392,10 @@ end
 %% - - - - - - -   Subroutines   - - - - - - - -
 
 function SetupGUI()
-  global PAUSE_FLAG KEYBOARD_FLAG;
+  global PAUSE_FLAG KEYBOARD_FLAG QUIT_FLAG;
   PAUSE_FLAG = false;
   KEYBOARD_FLAG = false;
+  QUIT_FLAG = false;
   figure(1);
   clf
   %screen_sz = get(0,'ScreenSize');
@@ -408,7 +409,7 @@ function SetupGUI()
 end
 
 function PauseCallback(hObject, ~, ~)
-  global PAUSE_FLAGNaN
+  global PAUSE_FLAG
   PAUSE_FLAG = false;
   if get(hObject,'Value') == get(hObject,'Max')
     PAUSE_FLAG = true;
