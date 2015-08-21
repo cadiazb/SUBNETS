@@ -53,7 +53,7 @@ Data(Params.NumTrials) = dtmp;
 
 SetupGUI();
 [b5, controlWindow] = StandbyControl(Params,b5,0);
-% drawnow;
+drawnow;
 
 % system('wmctrl -a "subject view"');
 %Close Solenoid at beginning of experiment
@@ -283,7 +283,7 @@ for itrial = startTrial : Params.NumTrials
     %fprintf('TrialsSinceAdapt\t\t%d \n', Params.TrialsSinceAdapt);
     
     %Update earned rewards on GUI
-%     controlWindow.SetEarnedRewards(sum([Data(1:trial).OutcomeID] == 0));
+    controlWindow.SetEarnedRewards(sum([Data(1:trial).OutcomeID] == 0));
   
 	%% Update Threshold Quest
 % 	if (Data(trial).OutcomeID == 0 || Data(trial).OutcomeID == 3) && ...

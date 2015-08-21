@@ -223,7 +223,7 @@ b5.SolenoidOpen_pos 			= Params.WsBounds(2,:);
 
 %% Rewards
 Params.RewardsVector        = 200; %[ms]
-Params.BiasingMulti         = 0.25;
+Params.BiasingMulti         = 0.4;
 
 %Model for adaptation of reward
 % Params.RewardModel.xo          = 75;
@@ -275,7 +275,7 @@ b5.ProbeTargetTop_pos = Params.WsCenter ;
 Params.EffortVector     = [-0.3];
 Params.EffortVectorTop  = [0.08];
 
-Params.TopTargetProbability = 0.25;
+Params.TopTargetProbability = 0.5;
 
 %% Pass
 Params.PassSensitivity  = 5;
