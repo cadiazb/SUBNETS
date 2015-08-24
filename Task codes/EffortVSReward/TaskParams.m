@@ -183,7 +183,7 @@ Params.StartTarget.Locations 	= {Params.WsCenter + [-40 -40]}; % cell array of l
 
 %% Targets
 b5.UpTarget_color = [0 1 0 1];
-b5.UpTarget_scale = [220, 70];
+b5.UpTarget_scale = [400, 70];
 b5.UpTarget_pos = Params.WsCenter;
 
 b5.DownTarget_color = b5.UpTarget_color;
@@ -193,8 +193,8 @@ b5.DownTarget_pos = Params.WsCenter;
 Params.UpTargetProbability = 0.5; % for joystickTraining mode
 
 % Rewards
-Params.RewardsVector        = 200; %[ms]
-Params.BiasingMulti         = 0.45;
+Params.RewardsVector        = 300; %[ms]
+Params.BiasingMulti         = 0.5;
 Params.TrialsSinceAdapt     = 50;
 
 % Effort

@@ -139,7 +139,7 @@ for itrial = startTrial : Params.NumTrials
     
     
 	%% TRIAL SUMMARY INFO DISPLAY
-	fprintf('Outcome\t\t\t\t%d (%s)\n',Data(trial).OutcomeID,Data(trial).OutcomeStr);
+	fprintf('Outcome\t\t\t%d (%s)\n',Data(trial).OutcomeID,Data(trial).OutcomeStr);
     fprintf('Reaction time\t\t%d \n', Data(trial).ReactionTime);
     fprintf('Movement time\t\t%d \n', Data(trial).MovementTime);
     fprintf('BiasingMulti\t\t%d \n', Params.BiasingMulti);
@@ -149,9 +149,9 @@ for itrial = startTrial : Params.NumTrials
     controlWindow.SetEarnedRewards(sum([Data(1:trial).OutcomeID] == 0));
   
 
-	%% SUMMARY FIGURES
-	if ~NoFigsFlag
-		PlotSummaryFigs(Params, Data(1:trial));
+    %% SUMMARY FIGURES
+    if ~NoFigsFlag
+        PlotSummaryFigs(Params, Data(1:trial));
     end
 
     %% calculate the reward based on the short-term performance

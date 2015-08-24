@@ -52,7 +52,7 @@ b5.BarOutline_draw              = DRAW_NONE;
 b5.Cursor_draw                  = DRAW_NONE;
 b5.DownTarget_draw              = DRAW_NONE;
 b5.UpTarget_draw                = DRAW_NONE;
-%b5.WrongWay_draw                = DRAW_NONE;
+b5.WrongWay_draw                = DRAW_NONE;
 
 
 b5 = bmi5_mmap(b5);
@@ -214,45 +214,6 @@ if ~dat.OutcomeID
             end
         end
         
-       
-
-%         if ~isempty(dat.ReactionTime) && (posDownOk) && ...
-%                 (abs(pos(1) - b5.StartTarget_pos(1)) < Params.StartTarget.Win(1))
-%             if ~dat.UpTargetOn
-%                 dat.TrialChoice = 'Down';
-%                 dat.TrialChoiceID = 0; %0 means reached down
-%                 done = true;
-%                 dat.MovementTime = b5.time_o - t_start - dat.ReactionTime;
-%                 dat.OutcomeID 	= 0;
-%                 dat.OutcomeStr 	= 'Success';
-%             else
-%                 dat.TrialChoice = 'Down';
-%                 dat.TrialChoiceID = 0; %0 means reached down
-%                 done = true;
-%                 dat.MovementTime = b5.time_o - t_start - dat.ReactionTime;
-%                 dat.OutcomeID 	= 5;
-%                 dat.OutcomeStr 	= 'Cancel @ choice';
-%             end
-%         end
-%         
-%         if ~isempty(dat.ReactionTime) && (posUpOk) && ...
-%                 (abs(pos(1) - b5.StartTarget_pos(1)) < Params.StartTarget.Win(1))
-%             if dat.UpTargetOn
-%                 done = true;
-%                 dat.MovementTime = b5.time_o - t_start - dat.ReactionTime;
-%                 dat.TrialChoice = 'Up';
-%                 dat.TrialChoiceID = 1; %1 means reached up
-%                 dat.OutcomeID 	= 0;
-%                 dat.OutcomeStr 	= 'Succes';
-%             else
-%                 dat.TrialChoice = 'Up';
-%                 dat.TrialChoiceID = 1; %1 means reached up
-%                 done = true;
-%                 dat.MovementTime = b5.time_o - t_start - dat.ReactionTime;
-%                 dat.OutcomeID 	= 5;
-%                 dat.OutcomeStr 	= 'Cancel @ choice';
-%             end
-%         end
 
 		% check for TIMEOUT
         if ~isempty(dat.ReactionTime) && ~done
@@ -297,7 +258,7 @@ if dat.OutcomeID == 0
         dat.ActualReward = dat.ProbeReward*(1.0-Params.BiasingMulti);
     end
     
-    fprintf('Choice\t\t%s \n',dat.TrialChoice);
+    fprintf('Choice\t\t\t%s \n',dat.TrialChoice);
     fprintf('Trial reward\t\t%.0f [ms]\n',dat.ActualReward);
     
     % Give juice reward
@@ -327,6 +288,7 @@ else
     b5 = bmi5_mmap(b5);
     % Pause after fail reach
     if dat.OutcomeID == 5 %Wrong choice
+        fprintf('Choice\t\t\t%s \n',dat.TrialChoice);
         startPause = b5.time_o;
         while (b5.time_o - startPause) < (Params.WrongChoiceDelay)
             [Params, dat, b5] = UpdateCursorOnLine(Params, dat, b5); %b5 = bmi5_mmap(b5);
@@ -358,7 +320,7 @@ b5 = bmi5_mmap(b5);
 b5.Cursor_draw                  = DRAW_NONE;
 b5.DownTarget_draw              = DRAW_NONE;
 b5.UpTarget_draw                = DRAW_NONE;
-% b5.WrongWay_draw                = DRAW_NONE;
+b5.WrongWay_draw                = DRAW_NONE;
 
 
 %%% XXX TODO: NEED WAY TO LOG (MORE) INTERESTING TRIAL EVENTS
