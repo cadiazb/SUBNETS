@@ -15,20 +15,20 @@ b5.StartTarget_pos = Params.WsCenter - [0, 0];
 
 %% Draw Probe effort from vector
 % Draw reward from 'Training vector' or from Adaptive Vector
-% dat.ProbeEffort         = controlWindow.GetProbeTarget_pos() / b5.Frame_scale(2);
-dat.ProbeEffort         = DrawFromVec(Params.EffortVector);
+% dat.ProbeEffort         = controlWindow.GetDownTarget_pos() / b5.Frame_scale(2);
+dat.ProbeEffort         = DrawFromVec(Params.DownEffort);
 
 
 
 
-%% Generate ProbeTarget position
-b5.ProbeTarget_pos 		= b5.StartTarget_pos + ...
-                                [0,dat.ProbeEffort * b5.Frame_scale(2)] ...
-                                + [0,-b5.ProbeTarget_scale(2)/2];
+%% Generate DownTarget position
+b5.DownTarget_pos 		= b5.StartTarget_pos + ...
+                                [0,Params.DownEffort * b5.Frame_scale(2)] ...
+                                + [0,-b5.DownTarget_scale(2)/2];
                             
-b5.ProbeTargetTop_pos 		= b5.StartTarget_pos + ...
-                                [0,Params.EffortVectorTop * b5.Frame_scale(2)] ...
-                                + [0,b5.ProbeTargetTop_scale(2)/2];                            
+b5.UpTarget_pos 		= b5.StartTarget_pos + ...
+                                [0,Params.UpEffort * b5.Frame_scale(2)] ...
+                                + [0,b5.UpTarget_scale(2)/2];                            
 %% Generate the amounts of reward
 dat.ProbeReward = DrawFromVec(Params.RewardsVector);
 % dat.ProbeReward = 2000 * controlWindow.GetEarnedReward(); %[ms]
@@ -41,8 +41,9 @@ b5.StartTarget_draw             = DRAW_NONE;
 b5.Frame_draw                   = DRAW_NONE;
 b5.BarOutline_draw              = DRAW_NONE;
 b5.Cursor_draw                  = DRAW_NONE;
-b5.ProbeTarget_draw             = DRAW_NONE;
-b5.ProbeTargetTop_draw          = DRAW_NONE;
+b5.DownTarget_draw              = DRAW_NONE;
+b5.UpTarget_draw                = DRAW_NONE;
+
 
 b5 = bmi5_mmap(b5);
 
@@ -57,16 +58,16 @@ b5.BarOutline_draw              = DRAW_NONE;
 
 t_start = b5.time_o;
 while ~done
-
-%     pos = b5.Cursor_pos;
+    
+    %pos = b5.Cursor_pos;
     [Params, dat, b5] = UpdateCursorOnLine(Params, dat, b5); % syncs b5 twice
-        pos = b5.Cursor_pos;
-        dat.FinalCursorPos = [0,pos(2)];
-        
-% 	% Check for acquisition of start target
-        posOk = TrialInBox(pos, b5.Cursor_scale, b5.StartTarget_pos, Params.StartTarget.Win); 
-
-
+    pos = b5.Cursor_pos;
+    dat.FinalCursorPos = [0,pos(2)];
+    
+    % Check for acquisition of start target
+    posOk = TrialInBox(pos, b5.Cursor_scale, b5.StartTarget_pos, Params.StartTarget.Win);
+    
+    
     if posOk
         if ~gotPos
             gotPos = true;
@@ -80,7 +81,7 @@ while ~done
         b5.ySensitivity_draw            = DRAW_BOTH;
         
         if (b5.time_o - starthold) > Params.StartTarget.Hold
-			done = true;   % Reach to start target OK
+            done = true;   % Reach to start target OK
         end
     end
 
@@ -106,7 +107,7 @@ while ~done
 
 end
 
-%% 2. CHECK FOR Y-AACQUIRE START TARGETXIS MOVEMENT ON LOAD CELL
+%% 2. CHECK FOR Y-AXIS MOVEMENT ON LOAD CELL
 if ~dat.OutcomeID
     b5.BarOutline_draw          = DRAW_BOTH;
     b5.Cursor_draw              = DRAW_BOTH;
@@ -114,8 +115,8 @@ if ~dat.OutcomeID
     b5.xSensitivity_draw       = DRAW_BOTH;
     b5.ySensitivity_draw       = DRAW_BOTH;
 %     b5.SolenoidOpen_draw       = DRAW_NONE;
-    b5.ProbeTargetTop_draw         = DRAW_BOTH;
-    b5.ProbeTarget_draw      = DRAW_BOTH;
+    b5.UpTarget_draw         = DRAW_BOTH;
+    b5.DownTarget_draw      = DRAW_BOTH;
     
 
 	done            = false;
@@ -146,37 +147,34 @@ if ~dat.OutcomeID
         
 		% Check for acquisition of a reach target
         posOk = TrialInBox(pos,b5.Cursor_scale,b5.StartTarget_pos,Params.StartTarget.Win);
-        posProbeOk = TrialInBox(pos,b5.Cursor_scale,b5.ProbeTargetTop_pos,b5.ProbeTargetTop_scale);
-        posPassOk = TrialInBox(pos,b5.Cursor_scale,b5.ProbeTarget_pos,b5.ProbeTarget_scale);
-%         posProbeOk 	= pos(2) >= (b5.ProbeTargetTop_pos(2) - b5.ProbeTargetTop_scale(2)/2);
-%         posPassOk 	= pos(2) <= (b5.ProbeTarget_pos(2) + b5.ProbeTarget_scale(2)/2);
-        
-        if ~posOk
-            if (abs(pos(1) - b5.StartTarget_pos(1)) > Params.StartTarget.Win(1)) %|| ((pos(2) - b5.StartTarget_pos(2)) < 0)
-                posOk = ~posOk;
-            end     
-        end
-        
-        
+        posUpOk = TrialInBox(pos,b5.Cursor_scale,b5.UpTarget_pos,b5.UpTarget_scale/2);
+        posDownOk = TrialInBox(pos,b5.Cursor_scale,b5.DownTarget_pos,b5.DownTarget_scale/2);
+
+%         if ~posOk
+%             if (abs(pos(1) - b5.StartTarget_pos(1)) > Params.StartTarget.Win(1)) %|| ((pos(2) - b5.StartTarget_pos(2)) < 0)
+%                 posOk = ~posOk;
+%             end     
+%         end
+          
         if ~posOk && isempty(dat.ReactionTime)
             dat.ReactionTime = b5.time_o - t_start;
         end
         
-        if ~isempty(dat.ReactionTime) && (posPassOk)   && ...
+        if ~isempty(dat.ReactionTime) && (posDownOk)   && ...
                  (abs(pos(1) - b5.StartTarget_pos(1)) < Params.StartTarget.Win(1))
-            dat.TrialChoice = 'Pass';
+            dat.TrialChoice = 'Down';
             dat.TrialChoiceID = 0; %0 means reached down
             done = true;
             dat.MovementTime = b5.time_o - t_start - dat.ReactionTime;
             dat.OutcomeID 	= 0;
-            dat.OutcomeStr 	= 'success';
+            dat.OutcomeStr 	= 'Success';
         end
         
-        if ~isempty(dat.ReactionTime) && (posProbeOk) && ...
+        if ~isempty(dat.ReactionTime) && (posUpOk) && ...
                 (abs(pos(1) - b5.StartTarget_pos(1)) < Params.StartTarget.Win(1))
             done = true;
             dat.MovementTime = b5.time_o - t_start - dat.ReactionTime;
-            dat.TrialChoice = 'Probe Effort';
+            dat.TrialChoice = 'Up';
             dat.TrialChoiceID = 1; %1 means reached up
             dat.OutcomeID 	= 0;
             dat.OutcomeStr 	= 'Succes';
@@ -200,7 +198,7 @@ if ~dat.OutcomeID
                 dat.MovementTime = NaN;
                 done            = true;
                 dat.OutcomeID 	= 4;
-                dat.OutcomeStr 	= 'cancel @ reaction';
+                dat.OutcomeStr 	= 'Cancel @ reaction';
             end
 
         if ~SolenoidEnable
@@ -219,7 +217,7 @@ end
 %% Trial outcome and variable adaptation
 
 if dat.OutcomeID == 0 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-    if strcmp(dat.TrialChoice, 'Probe Effort')
+    if strcmp(dat.TrialChoice, 'Up')
         dat.ActualReward = dat.ProbeReward*Params.BiasingMulti;
     else
         dat.ActualReward = dat.ProbeReward*(1.0-Params.BiasingMulti);
@@ -229,7 +227,7 @@ if dat.OutcomeID == 0 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
     fprintf('Trial reward\t\t%.0f [ms]\n',dat.ActualReward);
     
     % Give juice reward
-%     [Params, b5] = blinkShape(Params, b5, {'FillingEffort', 'ProbeTarget', 'ProbeTargetTop'}, [12 12 12], [0.75 0.75 0.75]);
+%     [Params, b5] = blinkShape(Params, b5, {'FillingEffort', 'DownTarget', 'UpTarget'}, [12 12 12], [0.75 0.75 0.75]);
     b5 = LJJuicer(Params, b5, 'on');
     [Params, dat, b5] = UpdateCursorOnLine(Params, dat, b5); %b5 = bmi5_mmap(b5);
     juiceStart = b5.time_o;
@@ -241,14 +239,14 @@ if dat.OutcomeID == 0 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
     end
     dat.JuiceON = juiceStart;
     dat.JuiceOFF = b5.time_o;
-     controlWindow.message(['Last reward ' datestr(now)]);
+    controlWindow.message(['Last reward ' datestr(now)]);
     
 %     % Turn objects on screen off
     b5 = b5ObjectsOff(b5);
     b5 = bmi5_mmap(b5);
 %     % Pause after reward
 %     startPause = b5.time_o;
-%     %if dat.FinalCursorPos(2) < b5.ProbeTargetTop_pos(2)
+%     %if dat.FinalCursorPos(2) < b5.UpTarget_pos(2)
 %         while (b5.time_o - startPause) < (Params.InterTrialDelay)
 %             [Params, dat, b5] = UpdateCursorOnLine(Params, dat, b5); %b5 = bmi5_mmap(b5);
 %         end
@@ -292,11 +290,9 @@ b5 = bmi5_mmap(b5);
 % b5.StartTarget_draw             = DRAW_NONE;
 % b5.Frame_draw                   = DRAW_NONE;
 % b5.BarOutline_draw              = DRAW_NONE;
-% b5.FillingEffort_draw           = DRAW_NONE;
-% b5.Pass_draw                    = DRAW_NONE;
 b5.Cursor_draw                  = DRAW_NONE;
-b5.ProbeTarget_draw             = DRAW_NONE;
-b5.ProbeTargetTop_draw             = DRAW_NONE;
+b5.DownTarget_draw             = DRAW_NONE;
+b5.UpTarget_draw             = DRAW_NONE;
 
 %%% XXX TODO: NEED WAY TO LOG (MORE) INTERESTING TRIAL EVENTS
 

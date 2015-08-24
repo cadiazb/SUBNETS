@@ -21,11 +21,9 @@ PathAdder('Lib/ThresholdFinder');
 bmi5_cmd('clear_all');
 bmi5_cmd('delete_all');
 
-% Go/NoGo
-bmi5_cmd('make square ProbeTarget');
-bmi5_cmd('make square ProbeTargetTop');
-
 % Common objects to both tasks
+bmi5_cmd('make square DownTarget');
+bmi5_cmd('make square UpTarget');
 bmi5_cmd('make square StartTarget');
 bmi5_cmd('make open_square Frame 0.01');
 bmi5_cmd('make open_square BarOutline 0.03');
@@ -36,6 +34,10 @@ bmi5_cmd('make circle SolenoidOpen');
 
 bmi5_cmd('make labjack isometric 4 2 2');
 bmi5_cmd('make store int 1 Trial');
+
+% For joystickTraining mode
+bmi5_cmd('make square WrongWay');
+
 
 eval(bmi5_cmd('mmap structure'));
 
@@ -111,7 +113,7 @@ Params.SessionCount = ct;
 % 4. Joystick Traning. file = joystickTraining.m
 % 5. Reward Effort Tracking. file = rewardEffortTracking.m
 
-tmpTrialType = 5;
+tmpTrialType = 4;
 switch tmpTrialType
     case 1
         Params.TrialTypeProbs 			= [1 0 0 0 0];
@@ -140,18 +142,6 @@ else
     Params.NumCorrectTrials         = 100000; % Joystick training
 end
 
-%% BLOCKS OF TRIALS
-% Params.BlockTypes = {'string names' };
-% Params.DoSequentialBlocks       = true; % 0 - Probabalistic; 1 - Sequential
-% Params.BlockSequence            = [1 ]; % overflows to start
-% Params.BlockProbs 				= [0 0 1 0]; % make sure these add to 1 exactly
-% 
-% % this option forces the first block to be type-1 (irrespective of prob)
-% Params.FirstBlockIsType1 		= false;
-
-% This triggers a keyboard at the end of a block so that paramters can
-% be adjusted (will also play an alarm to notify the operator)
-% Params.KeyboardAtBlockEnd 		= true;
 
 %% DELAYS, PENALTIES and TIMEOUTS [sec]
 % Start trial
@@ -167,10 +157,10 @@ Params.TimeoutReachTarget       = 1.5; % max time to reach reaching target
 % Other
 Params.TrialLength              = 2;   % Fixed trial length [s]
 Params.InterTrialDelay 			= 4;  % delay between each trial [sec]
-Params.WrongChoiceDelay         = 5; % Delay when wrong target is chosen [sec]
+Params.WrongChoiceDelay         = 5.5; % Delay when wrong target is chosen [sec]
 
 %% Callibrate Load Cell
-[Params, b5] = CallibrateLoadCell(Params, b5);
+ [Params, b5] = CallibrateLoadCell(Params, b5);
 
 %%  WORKSPACE, in mm
 Params.WsBounds             	= [-150 -150 ; 150 150]; % [Xmin Ymin; Xmax Ymax]
@@ -191,20 +181,29 @@ b5.StartTarget_scale 			= [140 55];
 Params.StartTarget.Win  		= 0.5*b5.StartTarget_scale; % [75 30]; % radius
 Params.StartTarget.Locations 	= {Params.WsCenter + [-40 -40]}; % cell array of locations
 
-%% Solenoid Open
-b5.SolenoidOpen_color			= [0 0 1 0.2];
-b5.SolenoidOpen_scale 			= [20 20];
-b5.SolenoidOpen_pos 			= Params.WsBounds(2,:);
+%% Targets
+b5.UpTarget_color = [0 1 0 1];
+b5.UpTarget_scale = [220, 70];
+b5.UpTarget_pos = Params.WsCenter;
 
-%% Rewards
+b5.DownTarget_color = b5.UpTarget_color;
+b5.DownTarget_scale = b5.UpTarget_scale;
+b5.DownTarget_pos = Params.WsCenter;
+
+Params.UpTargetProbability = 0.5; % for joystickTraining mode
+
+% Rewards
 Params.RewardsVector        = 200; %[ms]
-Params.BiasingMulti         = 0.4;
+Params.BiasingMulti         = 0.45;
 Params.TrialsSinceAdapt     = 50;
 
-%% Effort
+% Effort
 Params.LoadCellMax                  = 50;
 Params.MaxForce = 10; % Measured max force per subject [N]
+Params.UpEffort  = [0.1];
+Params.DownEffort     = [-0.1];
 
+%% Other visuals
 % Vertical bar outline
 b5.BarOutline_color     = [0 0 1 1];
 b5.BarOutline_scale     = b5.Frame_scale.* [0.25, 1];
@@ -222,28 +221,16 @@ b5.xSensitivity_scale     = b5.Frame_scale .* [1, 0.1];
 b5.xSensitivity_pos       = Params.WsCenter - [0, 0] + ...
                     [b5.xSensitivity_scale(1)/2,0];                
 
-% Go/NoGo
-b5.ProbeTarget_color = [0 1 0 1];
-b5.ProbeTarget_scale = [220, 70];
-b5.ProbeTarget_pos = Params.WsCenter ;
+% Solenoid Open
+b5.SolenoidOpen_color			= [0 0 1 0.2];
+b5.SolenoidOpen_scale 			= [20 20];
+b5.SolenoidOpen_pos 			= Params.WsBounds(2,:);
 
-b5.ProbeTargetTop_color = [0 1 0 1];
-b5.ProbeTargetTop_scale = b5.ProbeTarget_scale;
-b5.ProbeTargetTop_pos = Params.WsCenter ;
-
-Params.EffortVector     = [-0.3];
-Params.EffortVectorTop  = [0.08];
-
-Params.TopTargetProbability = 0.5;
-
- %% Pass
-% Params.PassSensitivity  = 5;
-% Params.NoGoTap    = 0.025 * b5.Frame_scale(2);
-% 
-% b5.Pass_color     = b5.ProbeTarget_color;
-% b5.Pass_scale     = b5.ProbeTarget_scale;
-% b5.Pass_pos       = Params.WsCenter - [0,0 + b5.Pass_scale(2)/2] - ...
-%                        [0, 150];
+% % Wrong way
+b5.WrongWay_color           = [1 0 0 0.5];
+b5.WrongWay_scale           = [1000 100];
+b5.WrongWay_pos             = Params.WsCenter; % in joysticTraining.m we will move it on each trial
+b5.WrongWay_draw            = DRAW_NONE; % default is don't draw
 
 %% FOR CONVENIENCE DEFINE BLOCKSIZE HERE
 % Params.BlockSize 				= 35;
@@ -256,17 +243,31 @@ Params.LJJuicerDOUT = 1; % Which digital output connected to solenoid [1-2]
 b5 = LJJuicer(Params, b5, 'off');
 
 %% OTHER
-Params.UseCorrectionTrials          = false; % { both of these
-Params.UseAdaptiveProbability       = false; % { cannot be true
-Params.AdaptiveLookbackLength       = 10;    % num trials to look back
-Params.FixedTrialLength             = false;
-Params.AllowEarlyReach              = true; % { allow subject to start
-                                           % { reach before end of delay
-Params.OpeningSound.Enable          = true;
-Params.OpeningSound.Next            = 0;
-Params.OpeningSound.Counter         = 0;
-Params.OpeningSound.Repeats         = 5;
-Params.OpeningSound.Intervals         = [10 20]; %(1) wait between repeats [s], (2) wait between groups of repeats [min]
+% Params.UseCorrectionTrials          = false; % { both of these
+% Params.UseAdaptiveProbability       = false; % { cannot be true
+% Params.AdaptiveLookbackLength       = 10;    % num trials to look back
+% Params.FixedTrialLength             = false;
+% Params.AllowEarlyReach              = true; % { allow subject to start
+%                                            % { reach before end of delay
+% Params.OpeningSound.Enable          = true;
+% Params.OpeningSound.Next            = 0;
+% Params.OpeningSound.Counter         = 0;
+% Params.OpeningSound.Repeats         = 5;
+% Params.OpeningSound.Intervals         = [10 20]; %(1) wait between repeats [s], (2) wait between groups of repeats [min]
+% 
+
+%% BLOCKS OF TRIALS
+% Params.BlockTypes = {'string names' };
+% Params.DoSequentialBlocks       = true; % 0 - Probabalistic; 1 - Sequential
+% Params.BlockSequence            = [1 ]; % overflows to start
+% Params.BlockProbs 				= [0 0 1 0]; % make sure these add to 1 exactly
+% 
+% % this option forces the first block to be type-1 (irrespective of prob)
+% Params.FirstBlockIsType1 		= false;
+
+% This triggers a keyboard at the end of a block so that paramters can
+% be adjusted (will also play an alarm to notify the operator)
+% Params.KeyboardAtBlockEnd 		= true;
 
 %% SYNC
 b5 = bmi5_mmap(b5);

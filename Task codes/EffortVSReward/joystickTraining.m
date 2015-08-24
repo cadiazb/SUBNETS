@@ -15,23 +15,32 @@ b5.StartTarget_pos = Params.WsCenter - [0, 0];
 
 %% Draw Probe effort from vector
 % Draw reward from 'Training vector' or from Adaptive Vector
-% dat.ProbeEffort         = controlWindow.GetProbeTarget_pos() / b5.Frame_scale(2);
-dat.ProbeEffort         = DrawFromVec(Params.EffortVector);
+% dat.ProbeEffort         = controlWindow.GetDownTarget_pos() / b5.Frame_scale(2);
+dat.ProbeEffort         = DrawFromVec(Params.DownEffort);
 
 %Choose target to show
-dat.TopTargetOn = DrawFromProbVec([1-Params.TopTargetProbability, Params.TopTargetProbability]) - 1;
+dat.UpTargetOn = DrawFromProbVec([1-Params.UpTargetProbability, Params.UpTargetProbability]) - 1;
 
-%% Generate ProbeTarget position
-b5.ProbeTarget_pos 		= b5.StartTarget_pos + ...
-                                [0,dat.ProbeEffort * b5.Frame_scale(2)] ...
-                                + [0,-b5.ProbeTarget_scale(2)/2];
+%% Generate Target positions
+b5.DownTarget_pos 		= b5.StartTarget_pos + ...
+                                [0,Params.DownEffort * b5.Frame_scale(2)] ...
+                                + [0,-b5.DownTarget_scale(2)/2];
                             
-b5.ProbeTargetTop_pos 		= b5.StartTarget_pos + ...
-                                [0,Params.EffortVectorTop * b5.Frame_scale(2)] ...
-                                + [0,b5.ProbeTargetTop_scale(2)/2];                            
+b5.UpTarget_pos 		= b5.StartTarget_pos + ...
+                                [0,Params.UpEffort * b5.Frame_scale(2)] ...
+                                + [0,b5.UpTarget_scale(2)/2];
+                            
+if dat.UpTargetOn
+    b5.WrongWay_pos     = b5.StartTarget_pos + ...
+                                [0 -1*((b5.StartTarget_scale(2)+b5.WrongWay_scale(2))/2)];
+else
+     b5.WrongWay_pos     = b5.StartTarget_pos + ...
+                                [0 (b5.StartTarget_scale(2)+b5.WrongWay_scale(2))/2];
+end
+
 %% Generate the amounts of reward
-% dat.ProbeReward = DrawFromVec(Params.RewardsVector);
-dat.ProbeReward = 1000 * controlWindow.GetEarnedReward(); %[ms]
+dat.ProbeReward = DrawFromVec(Params.RewardsVector);
+% dat.ProbeReward = 1000 * controlWindow.GetEarnedReward(); %[ms]
 %% Misc stuff
 dat.OutcomeID 	= 0;
 dat.OutcomeStr 	= 'Success';
@@ -40,26 +49,14 @@ dat.OutcomeStr 	= 'Success';
 b5.StartTarget_draw             = DRAW_NONE;
 b5.Frame_draw                   = DRAW_NONE;
 b5.BarOutline_draw              = DRAW_NONE;
-b5.FillingEffort_draw           = DRAW_NONE;
-b5.Pass_draw                    = DRAW_NONE;
 b5.Cursor_draw                  = DRAW_NONE;
-b5.ProbeTarget_draw             = DRAW_NONE;
-b5.ProbeTargetTop_draw          = DRAW_NONE;
+b5.DownTarget_draw              = DRAW_NONE;
+b5.UpTarget_draw                = DRAW_NONE;
+%b5.WrongWay_draw                = DRAW_NONE;
+
 
 b5 = bmi5_mmap(b5);
-%% 0. Temp play 'Opening' sound effect
-if Params.OpeningSound.Enable && (Params.OpeningSound.Next < b5.time_o)
-    [~, b5] = controlWindow.PlayCueandReward(Params, b5);
-    b5 = LJJuicer(Params, b5, 'off');
-    Params.OpeningSound.Counter = Params.OpeningSound.Counter + 1;
-    
-    if Params.OpeningSound.Counter < Params.OpeningSound.Repeats
-        Params.OpeningSound.Next = b5.time_o + Params.OpeningSound.Intervals(1);
-    else
-        Params.OpeningSound.Next = b5.time_o + 60*Params.OpeningSound.Intervals(2);
-        Params.OpeningSound.Counter = 0;
-    end
-end
+
 %% 1. ACQUIRE START TARGET
 b5.StartTarget_draw = DRAW_BOTH;
 b5.Cursor_draw      = DRAW_BOTH;
@@ -68,36 +65,19 @@ b5 = bmi5_mmap(b5);
 done   = false;
 gotPos = false;
 b5.BarOutline_draw              = DRAW_NONE;
-b5.FillingEffort_draw           = DRAW_NONE;
 
 t_start = b5.time_o;
 while ~done
-
-%     pos = b5.Cursor_pos;
+    
+    %pos = b5.Cursor_pos;
     [Params, dat, b5] = UpdateCursorOnLine(Params, dat, b5); % syncs b5 twice
-        pos = b5.Cursor_pos;
-        dat.FinalCursorPos = [0,pos(2)];
-%         if (dat.FinalCursorPos(2)-b5.StartTarget_pos(2)) >= 0
-%             b5.FillingEffort_scale = [b5.BarOutline_scale(1),...
-%                 dat.FinalCursorPos(2)-b5.StartTarget_pos(2)];
-%             b5.FillingEffort_pos       = Params.WsCenter - [0, 0] + ...
-%                     [0, b5.FillingEffort_scale(2)/2];
-%         else
-%             b5.FillingEffort_scale = [b5.BarOutline_scale(1),...
-%                 -max((dat.FinalCursorPos(2)-b5.StartTarget_pos(2)), ...
-%                 (b5.Pass_pos(2) - b5.StartTarget_pos(2)))];
-%             b5.FillingEffort_pos       = Params.WsCenter - [0, 0] - ...
-%                     [0, b5.FillingEffort_scale(2)/2];
-%         end
-        
-% 	% Check for acquisition of start target
-%     if gotPos % big target window if MP already gotPos and is just holding
-%         posOk = TrialInBox(pos, b5.StartTarget_pos, 1.0*Params.StartTarget.Win);
-%     else % smaller target window if MP hasn't gotPos yet
-        posOk = TrialInBox(pos, b5.Cursor_scale, b5.StartTarget_pos, Params.StartTarget.Win); 
-%     end
-
-
+    pos = b5.Cursor_pos;
+    dat.FinalCursorPos = [0,pos(2)];
+    
+    % Check for acquisition of start target
+    posOk = TrialInBox(pos, b5.Cursor_scale, b5.StartTarget_pos, Params.StartTarget.Win);
+    
+    
     if posOk
         if ~gotPos
             gotPos = true;
@@ -107,16 +87,14 @@ while ~done
         %Show features on screen when MP lets go
         b5.StartTarget_draw             = DRAW_BOTH;
         b5.BarOutline_draw              = DRAW_BOTH;
-%         b5.FillingEffort_draw           = DRAW_BOTH;
-%         b5.FillingEffortHor_draw        = DRAW_BOTH;
         b5.xSensitivity_draw            = DRAW_BOTH;
         b5.ySensitivity_draw            = DRAW_BOTH;
         
         if (b5.time_o - starthold) > Params.StartTarget.Hold
-			done = true;   % Reach to start target OK
+            done = true;   % Reach to start target OK
         end
     end
-
+    
 	% Once start target is acquired, it must remain acquired
     if ~posOk
         if gotPos
@@ -144,73 +122,32 @@ if ~dat.OutcomeID
     b5.BarOutline_draw          = DRAW_BOTH;
     b5.Cursor_draw              = DRAW_BOTH;
     b5.StartTarget_draw             = DRAW_NONE;
-%     b5.FillingEffort_draw       = DRAW_BOTH;
-%     b5.FillingEffortHor_draw   = DRAW_BOTH;
     b5.xSensitivity_draw       = DRAW_BOTH;
     b5.ySensitivity_draw       = DRAW_BOTH;
 %     b5.SolenoidOpen_draw       = DRAW_NONE;
-%     b5.Pass_draw                = DRAW_BOTH;
-    if dat.TopTargetOn
-        b5.ProbeTargetTop_draw         = DRAW_BOTH;
+    %b5.WrongWay_draw            = DRAW_BOTH;
+    if dat.UpTargetOn
+        b5.UpTarget_draw         = DRAW_BOTH;
     else
-        b5.ProbeTarget_draw      = DRAW_BOTH;
+        b5.DownTarget_draw      = DRAW_BOTH;
     end
-    
-    b5.GoTone_play_io = 1;
-    b5.FillingEffort_scale(2) = 0;
-    b5.FillingEffort_pos       = Params.WsCenter - [0, 0];
+  
     b5 = bmi5_mmap(b5);
     
-    b5.FillingEffortHor_scale(1) = 0;
-    b5.FillingEffortHor_pos       = Params.WsCenter - [0, 0];
-    b5 = bmi5_mmap(b5);
-    
-    dat.GoCue_time_o = b5.GoTone_time_o;
-
+ 
 	done            = false;
     dat.FinalCursorPos = b5.StartTarget_pos;
     tmpJuiceState = 'off';
 
     
 	t_start = b5.time_o;
-    [Params.StartTarget.Win(1), Params.StartTarget.Win(2)] = controlWindow.GetSensitivity();
+%     [Params.StartTarget.Win(1), Params.StartTarget.Win(2)] = controlWindow.GetSensitivity();
 	while ~done
         drawnow;
-        [Params.StartTarget.Win(1), Params.StartTarget.Win(2)] = controlWindow.GetSensitivity();
+%         [Params.StartTarget.Win(1), Params.StartTarget.Win(2)] = controlWindow.GetSensitivity();
         [Params, dat, b5] = UpdateCursorOnLine(Params, dat, b5); % syncs b5 twice
         pos = b5.Cursor_pos;
         dat.FinalCursorPos = [0,pos(2)];
-%         % Observe Y-axis force
-%         if (dat.FinalCursorPos(2)-b5.StartTarget_pos(2)) >= 0
-%             b5.FillingEffort_scale = [b5.BarOutline_scale(1),...
-%                 dat.FinalCursorPos(2)-b5.StartTarget_pos(2)];
-%             b5.FillingEffort_pos       = Params.WsCenter - [0, 0] + ...
-%                     [0, b5.FillingEffort_scale(2)/2];
-%         else
-%             b5.FillingEffort_scale = [b5.BarOutline_scale(1),...
-%                 -max((dat.FinalCursorPos(2)-b5.StartTarget_pos(2)), ...
-%                 (b5.Pass_pos(2) - b5.StartTarget_pos(2)))];
-%             b5.FillingEffort_pos       = Params.WsCenter - [0, 0] - ...
-%                     [0, b5.FillingEffort_scale(2)/2];
-%         end
-%         
-%         % Observe X-axis force
-%         if (pos(1)-b5.StartTarget_pos(1)) >= 0
-%             b5.FillingEffortHor_scale = [pos(1)-b5.StartTarget_pos(1),... 
-%                 b5.FillxSensitivity_scaleingEffortHor_scale(2)];
-%             b5.FillingEffortHor_pos(1) = Params.WsCenter(1) + ...
-%                     b5.FillingEffortHor_scale(1)/2;
-%         else
-%             b5.FillingEffortHor_scale = [-(pos(1)-b5.StartTarget_pos(1)),...
-%                 b5.FillingEffortHor_scale(2)];
-%             b5.FillingEffortHor_pos(1)       = Params.WsCenter(1) - ...
-%                     b5.FillingEffortHor_scale(1)/2;
-%         end
-%         if b5.FillingEffort_scale(2) < 25
-%             b5.FillingEffort_scale(2) = 0;
-%             b5.FillingEffort_pos       = Params.WsCenter - [0, b5.Frame_scale(2)/2] + ...
-%                     [0, b5.FillingEffort_scale(2)/2];
-%         end
         
         % Update sensitivites rectangle
         b5.ySensitivity_scale = [b5.BarOutline_scale(1),...
@@ -226,70 +163,96 @@ if ~dat.OutcomeID
         
 		% Check for acquisition of a reach target
         posOk = TrialInBox(pos,b5.Cursor_scale,b5.StartTarget_pos,Params.StartTarget.Win);
-        posProbeOk = TrialInBox(pos,b5.Cursor_scale,b5.ProbeTargetTop_pos,b5.ProbeTargetTop_scale);
-        posPassOk = TrialInBox(pos,b5.Cursor_scale,b5.ProbeTarget_pos,b5.ProbeTarget_scale);
-%         posProbeOk 	= pos(2) >= (b5.ProbeTargetTop_pos(2) - b5.ProbeTargetTop_scale(2)/2);
-%         posPassOk 	= pos(2) <= (b5.ProbeTarget_pos(2) + b5.ProbeTarget_scale(2)/2);
-        
-        if ~posOk
-            if (abs(pos(1) - b5.StartTarget_pos(1)) > Params.StartTarget.Win(1)) %|| ((pos(2) - b5.StartTarget_pos(2)) < 0)
-                posOk = ~posOk;
-            end     
-        end
+        posUpOk = TrialInBox(pos,b5.Cursor_scale,b5.UpTarget_pos,b5.UpTarget_scale/2);
+        posDownOk = TrialInBox(pos,b5.Cursor_scale,b5.DownTarget_pos,b5.DownTarget_scale/2);
+        posWrongWay = TrialInBox(pos,b5.Cursor_scale,b5.WrongWay_pos,b5.WrongWay_scale/2);
         
 %         if ~posOk
-%             if (b5.ProbeTarget_pos(2) > b5.StartTarget_pos(2)) && (b5.ProbeTarget_pos(2) > pos(2))
+%             if (abs(pos(1) - b5.StartTarget_pos(1)) > Params.StartTarget.Win(1)) %|| ((pos(2) - b5.StartTarget_pos(2)) < 0)
 %                 posOk = ~posOk;
 %             end     
 %         end
-%         
-%         if ~posOk
-%             if (b5.ProbeTarget_pos(2) < b5.StartTarget_pos(2)) && (b5.ProbeTarget_pos(2) < pos(2))
-%                 posOk = ~posOk;
-%             end     
-%         end
-        
+                
         if ~posOk && isempty(dat.ReactionTime)
             dat.ReactionTime = b5.time_o - t_start;
         end
-        
-        if ~isempty(dat.ReactionTime) && (posPassOk) && ...
+
+        if ~isempty(dat.ReactionTime) && ...
                 (abs(pos(1) - b5.StartTarget_pos(1)) < Params.StartTarget.Win(1))
-            if ~dat.TopTargetOn
-                dat.TrialChoice = 'Pass';
-                dat.TrialChoiceID = 0; %0 means reached down
-                done = true;
-                dat.MovementTime = b5.time_o - t_start - dat.ReactionTime;
-                dat.OutcomeID 	= 0;
-                dat.OutcomeStr 	= 'success';
-            else
-                dat.TrialChoice = 'Pass';
-                dat.TrialChoiceID = 0; %0 means reached down
-                done = true;
-                dat.MovementTime = b5.time_o - t_start - dat.ReactionTime;
-                dat.OutcomeID 	= 5;
-                dat.OutcomeStr 	= 'Cancel @ choice';
+            if dat.UpTargetOn % correct choice was Up
+                if posWrongWay % went down
+                    dat.TrialChoiceID = 0; %0 means reached down
+                    dat.TrialChoice = 'Down';
+                    dat.OutcomeID 	= 5;
+                    dat.OutcomeStr 	= 'Cancel @ choice';
+                    dat.MovementTime = b5.time_o - t_start - dat.ReactionTime;
+                    done = true;
+                elseif posUpOk % achieved Up target
+                    dat.TrialChoiceID = 1; %1 means reached up
+                    dat.TrialChoice = 'Up';
+                    dat.OutcomeID 	= 0;
+                    dat.OutcomeStr 	= 'Succes';
+                    dat.MovementTime = b5.time_o - t_start - dat.ReactionTime;
+                    done = true;
+                end
+            else % correct choice was Down
+                if posWrongWay % went up
+                    dat.TrialChoiceID = 1; %1 means reached up
+                    dat.TrialChoice = 'Up';
+                    dat.OutcomeID 	= 5;
+                    dat.OutcomeStr 	= 'Cancel @ choice';
+                    dat.MovementTime = b5.time_o - t_start - dat.ReactionTime;
+                    done = true;
+                elseif posDownOk % achieved Down target
+                    dat.TrialChoiceID = 0; %0 means reached down
+                    dat.TrialChoice = 'Down';
+                    dat.OutcomeID 	= 0;
+                    dat.OutcomeStr 	= 'Success';
+                    dat.MovementTime = b5.time_o - t_start - dat.ReactionTime;
+                    done = true;
+                end
             end
         end
         
-        if ~isempty(dat.ReactionTime) && (posProbeOk) && ...
-                (abs(pos(1) - b5.StartTarget_pos(1)) < Params.StartTarget.Win(1))
-            if dat.TopTargetOn
-                done = true;
-                dat.MovementTime = b5.time_o - t_start - dat.ReactionTime;
-                dat.TrialChoice = 'Probe Effort';
-                dat.TrialChoiceID = 1; %1 means reached up
-                dat.OutcomeID 	= 0;
-                dat.OutcomeStr 	= 'Succes';
-            else
-                dat.TrialChoice = 'Probe Effort';
-                dat.TrialChoiceID = 1; %1 means reached up
-                done = true;
-                dat.MovementTime = b5.time_o - t_start - dat.ReactionTime;
-                dat.OutcomeID 	= 5;
-                dat.OutcomeStr 	= 'Cancel @ choice';
-            end
-        end
+       
+
+%         if ~isempty(dat.ReactionTime) && (posDownOk) && ...
+%                 (abs(pos(1) - b5.StartTarget_pos(1)) < Params.StartTarget.Win(1))
+%             if ~dat.UpTargetOn
+%                 dat.TrialChoice = 'Down';
+%                 dat.TrialChoiceID = 0; %0 means reached down
+%                 done = true;
+%                 dat.MovementTime = b5.time_o - t_start - dat.ReactionTime;
+%                 dat.OutcomeID 	= 0;
+%                 dat.OutcomeStr 	= 'Success';
+%             else
+%                 dat.TrialChoice = 'Down';
+%                 dat.TrialChoiceID = 0; %0 means reached down
+%                 done = true;
+%                 dat.MovementTime = b5.time_o - t_start - dat.ReactionTime;
+%                 dat.OutcomeID 	= 5;
+%                 dat.OutcomeStr 	= 'Cancel @ choice';
+%             end
+%         end
+%         
+%         if ~isempty(dat.ReactionTime) && (posUpOk) && ...
+%                 (abs(pos(1) - b5.StartTarget_pos(1)) < Params.StartTarget.Win(1))
+%             if dat.UpTargetOn
+%                 done = true;
+%                 dat.MovementTime = b5.time_o - t_start - dat.ReactionTime;
+%                 dat.TrialChoice = 'Up';
+%                 dat.TrialChoiceID = 1; %1 means reached up
+%                 dat.OutcomeID 	= 0;
+%                 dat.OutcomeStr 	= 'Succes';
+%             else
+%                 dat.TrialChoice = 'Up';
+%                 dat.TrialChoiceID = 1; %1 means reached up
+%                 done = true;
+%                 dat.MovementTime = b5.time_o - t_start - dat.ReactionTime;
+%                 dat.OutcomeID 	= 5;
+%                 dat.OutcomeStr 	= 'Cancel @ choice';
+%             end
+%         end
 
 		% check for TIMEOUT
         if ~isempty(dat.ReactionTime) && ~done
@@ -309,7 +272,7 @@ if ~dat.OutcomeID
                 dat.MovementTime = NaN;
                 done            = true;
                 dat.OutcomeID 	= 4;
-                dat.OutcomeStr 	= 'cancel @ reaction';
+                dat.OutcomeStr 	= 'Cancel @ reaction';
             end
 
         if ~SolenoidEnable
@@ -328,18 +291,17 @@ end
 %% Trial outcome and variable adaptation
 
 if dat.OutcomeID == 0
-    if strcmp(dat.TrialChoice, 'Probe Effort')
+    if strcmp(dat.TrialChoice, 'Up')
         dat.ActualReward = dat.ProbeReward*Params.BiasingMulti;
     else
-        dat.ActualReward = dat.ProbeReward;
+        dat.ActualReward = dat.ProbeReward*(1.0-Params.BiasingMulti);
     end
     
     fprintf('Choice\t\t%s \n',dat.TrialChoice);
     fprintf('Trial reward\t\t%.0f [ms]\n',dat.ActualReward);
     
     % Give juice reward
-%     [Params, b5] = blinkShape(Params, b5, {'FillingEffort', 'ProbeTarget', 'ProbeTargetTop'}, [12 12 12], [0.75 0.75 0.75]);
-    b5.RewardTone_play_io = 1;
+%     [Params, b5] = blinkShape(Params, b5, {'FillingEffort', 'DownTarget', 'UpTarget'}, [12 12 12], [0.75 0.75 0.75]);
     b5 = LJJuicer(Params, b5, 'on');
     [Params, dat, b5] = UpdateCursorOnLine(Params, dat, b5); %b5 = bmi5_mmap(b5);
     juiceStart = b5.time_o;
@@ -357,9 +319,6 @@ if dat.OutcomeID == 0
     b5 = b5ObjectsOff(b5);
     b5 = bmi5_mmap(b5);
     
-    % Reset Opening sound effect
-    Params.OpeningSound.Next = b5.time_o + 60*Params.OpeningSound.Intervals(2);
-    Params.OpeningSound.Counter = 0;
 
 else
     %Clean screen
@@ -388,13 +347,6 @@ else
         end
     end
 
-%     Params.EffortVector = ...
-%         min(-0.2,(b5.ProbeTarget_pos(2)-b5.StartTarget_pos(2)+2)/b5.Frame_scale(2));
-%     Params.EffortVectorTop = ...
-%         max(0.2,(b5.ProbeTargetTop_pos(2)-b5.StartTarget_pos(2)-2)/b5.Frame_scale(2));
-    
-%     b5.xSensitivity_scale(1) = 240;
-%     controlWindow.SetSensitivity(b5.xSensitivity_scale(1)/2,b5.ySensitivity_scale(2)/2);
 end
 
 b5 = bmi5_mmap(b5);
@@ -403,11 +355,11 @@ b5 = bmi5_mmap(b5);
 % b5.StartTarget_draw             = DRAW_NONE;
 % b5.Frame_draw                   = DRAW_NONE;
 % b5.BarOutline_draw              = DRAW_NONE;
-% b5.FillingEffort_draw           = DRAW_NONE;
-% b5.Pass_draw                    = DRAW_NONE;
 b5.Cursor_draw                  = DRAW_NONE;
-b5.ProbeTarget_draw             = DRAW_NONE;
-b5.ProbeTargetTop_draw             = DRAW_NONE;
+b5.DownTarget_draw              = DRAW_NONE;
+b5.UpTarget_draw                = DRAW_NONE;
+% b5.WrongWay_draw                = DRAW_NONE;
+
 
 %%% XXX TODO: NEED WAY TO LOG (MORE) INTERESTING TRIAL EVENTS
 

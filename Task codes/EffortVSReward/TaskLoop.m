@@ -26,7 +26,7 @@ dfields = {
 	'ReachDelay'
     'ProbeReward'
     'ProbeEffort'
-    'TopTargetOn'
+    'UpTargetOn'
     'TrialChoice'
     'TrialChoiceID'
     'RecentAvgChoice'
@@ -75,7 +75,7 @@ for itrial = startTrial : Params.NumTrials
     	Data(trial).BlockNum 	= 1;
     	Data(trial).TotalBlocks = 1;
         Data(trial).TotalPoints = 0;
-        Data(trial).ProbesAdaptationState = Params.EffortVector';
+        Data(trial).ProbesAdaptationState = Params.DownEffort';
         Data(trial).ProbesAdaptationState(:,2) = false;
     else
         Data(trial).BlockNum = Data(trial-1).BlockNum;
@@ -105,9 +105,9 @@ for itrial = startTrial : Params.NumTrials
 	case 1
         Params.UseRewardAdaptation          = false;
         if trial > 1 && ~isempty(max([Data(~[Data().OutcomeID]).ActualEffort]))
-            b5.ProbeTarget_pos 		= [0,max([Data(~[Data().OutcomeID]).ActualEffort]) * b5.Frame_scale(2)];
+            b5.DownTarget_pos 		= [0,max([Data(~[Data().OutcomeID]).ActualEffort]) * b5.Frame_scale(2)];
         else
-            b5.ProbeTarget_pos 		= [0,0];
+            b5.DownTarget_pos 		= [0,0];
         end
 		[Params, Data(trial), b5] = ...
         SubjectCallibration( Params, Data(trial), b5 );
