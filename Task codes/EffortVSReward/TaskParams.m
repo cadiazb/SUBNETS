@@ -190,7 +190,7 @@ b5.DownTarget_color = b5.UpTarget_color;
 b5.DownTarget_scale = b5.UpTarget_scale;
 b5.DownTarget_pos = Params.WsCenter;
 
-Params.UpTargetProbability = 0.0; % for joystickTraining mode
+Params.UpTargetProbability = 0.1; % for joystickTraining mode
 
 % Rewards
 Params.RewardsVector        = 300; %[ms]
