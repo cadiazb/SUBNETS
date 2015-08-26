@@ -205,8 +205,8 @@ Params.TrialsSinceAdapt         = 40;
 % Effort
 Params.LoadCellMax              = 50;
 Params.MaxForce                 = 9; % Measured max force per subject [N]
-Params.UpEffort                 = [0.1];
-Params.DownEffort               = [-0.1];
+Params.UpEffort                 = [0.2];
+Params.DownEffort               = [-0.2];
 
 %% Other visuals
 % Vertical bar outline

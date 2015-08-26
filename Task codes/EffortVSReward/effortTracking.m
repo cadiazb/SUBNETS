@@ -16,8 +16,8 @@ b5.StartTarget_pos = Params.StartTarget_pos;
 %% Draw Probe effort from vector
 % Draw reward from 'Training vector' or from Adaptive Vector
 % dat.ProbeEffort         = controlWindow.GetDownTarget_pos() / b5.Frame_scale(2);
-dat.UpEffort            = ((b5.Frame_scale(2)/2) - b5.StartTarget_scale(2)/2)*(1.0-Params.BiasingMulti);
-dat.DownEffort          = ((b5.Frame_scale(2)/2) - b5.StartTarget_scale(2)/2)*(Params.BiasingMulti);
+dat.UpEffort            = ((b5.Frame_scale(2)/2) - abs(Params.UpTarget_pos(2)/2))*(1.0-Params.BiasingMulti);
+dat.DownEffort          = ((b5.Frame_scale(2)/2) - abs(Params.DownTarget_pos(2)/2))*(Params.BiasingMulti);
 
 %% Generate DownTarget position
 b5.UpTarget_pos 		= Params.UpTarget_pos + [0 dat.UpEffort];
