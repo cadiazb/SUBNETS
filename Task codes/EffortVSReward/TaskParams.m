@@ -204,7 +204,7 @@ Params.TrialsSinceAdapt         = 40;
 
 % Effort
 Params.LoadCellMax              = 50;
-Params.MaxForce                 = 10; % Measured max force per subject [N]
+Params.MaxForce                 = 9; % Measured max force per subject [N]
 Params.UpEffort                 = [0.1];
 Params.DownEffort               = [-0.1];
 
