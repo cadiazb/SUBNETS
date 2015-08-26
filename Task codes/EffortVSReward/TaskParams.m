@@ -114,7 +114,7 @@ Params.SessionCount = ct;
 % 5. Reward Tracking. file = rewardTracking.m
 % 6. Effort Tracking. file = effortTracking.m
 
-tmpTrialType = 6;
+tmpTrialType = 5;
 switch tmpTrialType
     case 1
         Params.TrialTypeProbs   = [1 0 0 0 0 0];
@@ -204,9 +204,9 @@ Params.TrialsSinceAdapt         = 40;
 
 % Effort
 Params.LoadCellMax              = 50;
-Params.MaxForce                 = 9; % Measured max force per subject [N]
-Params.UpEffort                 = [0.2];
-Params.DownEffort               = [-0.2];
+Params.MaxForce                 = 10; % Measured max force per subject [N]
+Params.UpEffort                 = [0.1];
+Params.DownEffort               = [-0.1];
 
 %% Other visuals
 % Vertical bar outline
