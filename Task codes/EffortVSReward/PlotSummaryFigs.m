@@ -1,11 +1,11 @@
 function PlotSummaryFigs(Params, Data)
 
-% Make 'TrialChoiceID' = -1 for No choice
-for ii = 1:numel(Data)
-    if isempty(Data(ii).TrialChoiceID)
-        Data(ii).TrialChoiceID = -1;
-    end
-end
+% % Make 'TrialChoiceID' = -1 for No choice
+% for ii = 1:numel(Data)
+%     if isempty(Data(ii).TrialChoiceID)
+%         Data(ii).TrialChoiceID = -1;
+%     end
+% end
 
 % get just the sucesses
 anyChoice=Data([Data.OutcomeID]==0);
@@ -16,33 +16,43 @@ if numel(anyChoice)>9
     choseTop=[];
     choseBottom=[];
     x=[];
-    topReward=[];
-    bottomReward=[];
+    UpMulti=[];
+    DownMulti=[];
     
-    for i=1:numel(anyChoice)-9
-        choseTop(i)=sum([anyChoice(i:i+9).TrialChoiceID]==1)/10;
-        choseBottom(i)=sum([anyChoice(i:i+9).TrialChoiceID]==0)/10;
+    for i=10:numel(anyChoice)
+        choseTop(i-9)=sum([anyChoice(i-9:i).TrialChoiceID]==1)/10;
+        choseBottom(i-9)=1.0-choseTop(i-9);
         
-        x(i)=i;
+        x(i-9)=i;
         
-        topReward(i)=anyChoice(i).Params.BiasingMulti;
-        bottomReward(i)= 1 - anyChoice(i).Params.BiasingMulti;
+        UpMulti(i-9)=anyChoice(i).Params.BiasingMulti;
+        DownMulti(i-9)= 1 - anyChoice(i).Params.BiasingMulti;
         
     end
     
     
     % plot % choice and multipliers
     figure(20)
-    clf
-    plot(x,choseTop,'b',x,choseBottom,'r',x,topReward,'c',x,bottomReward,'m')
+    clf  
+    if Data(1).TrialType==5
+        plot(x,choseTop,'b',x,choseBottom,'r',x,UpMulti,'c',x,DownMulti,'m')
+        title(['Reward tracking'])
+        legend({'Chose top target','Chose bottom target', 'Top reward multiplier','Bottom reward multiplier'})
+        ylabel('Proportion of target choices || Reward multiplier value')
+    elseif Data(1).TrialType==6
+        plot(x,choseTop,'b',x,choseBottom,'r',x,UpMulti,'c',x,DownMulti,'m')
+        title(['Effort tracking'])
+        legend({'Chose top target','Chose bottom target', 'Top effort multiplier','Bottom effort multiplier'})
+        ylabel('Proportion of target choices || Effort multiplier value')
+    else
+        plot(x,choseTop,'b',x,choseBottom,'r')
+        title(['Proportion of Up vs. Down Target Choices'])
+        legend({'Chose top target','Chose bottom target'})
+        ylabel('Proportion of target choices')
+        
+    end
     ylim([0 1]);
-    title(['Cost tracking'])
-    legend({'Chose top target','Chose bottom target', 'Top reward multiplier','Bottom reward multiplier'})
-    ylabel('Probability of choosing target || Reward multiplier value')
     xlabel('Trial #')
-else
-    figure(20)
-    clf
-    text(0.1,0.5,'Not enough successes yet for plotting. Please check later');
+    
 end
 end

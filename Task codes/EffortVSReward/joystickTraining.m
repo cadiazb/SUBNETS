@@ -16,18 +16,19 @@ b5.StartTarget_pos = Params.WsCenter - [0, 0];
 %% Draw Probe effort from vector
 % Draw reward from 'Training vector' or from Adaptive Vector
 % dat.ProbeEffort         = controlWindow.GetDownTarget_pos() / b5.Frame_scale(2);
-dat.ProbeEffort         = DrawFromVec(Params.DownEffort);
+dat.UpEffort            = DrawFromVec(Params.UpEffort);
+dat.DownEffort          = DrawFromVec(Params.DownEffort);
 
 %Choose target to show
 dat.UpTargetOn = DrawFromProbVec([1-Params.UpTargetProbability, Params.UpTargetProbability]) - 1;
 
 %% Generate Target positions
 b5.DownTarget_pos 		= b5.StartTarget_pos + ...
-                                [0,Params.DownEffort * b5.Frame_scale(2)] ...
+                                [0,dat.DownEffort * b5.Frame_scale(2)] ...
                                 + [0,-b5.DownTarget_scale(2)/2];
                             
 b5.UpTarget_pos 		= b5.StartTarget_pos + ...
-                                [0,Params.UpEffort * b5.Frame_scale(2)] ...
+                                [0,dat.UpEffort * b5.Frame_scale(2)] ...
                                 + [0,b5.UpTarget_scale(2)/2];
                             
 if dat.UpTargetOn
@@ -39,8 +40,9 @@ else
 end
 
 %% Generate the amounts of reward
-dat.ProbeReward = DrawFromVec(Params.RewardsVector);
-% dat.ProbeReward = 1000 * controlWindow.GetEarnedReward(); %[ms]
+dat.UpReward = DrawFromVec(Params.RewardsVector)*Params.BiasingMulti;
+dat.DownReward = DrawFromVec(Params.RewardsVector)*(1.0-Params.BiasingMulti);
+
 %% Misc stuff
 dat.OutcomeID 	= 0;
 dat.OutcomeStr 	= 'Success';
@@ -253,9 +255,9 @@ end
 
 if dat.OutcomeID == 0
     if strcmp(dat.TrialChoice, 'Up')
-        dat.ActualReward = dat.ProbeReward*Params.BiasingMulti;
+        dat.ActualReward = dat.UpReward;
     else
-        dat.ActualReward = dat.ProbeReward*(1.0-Params.BiasingMulti);
+        dat.ActualReward = dat.DownReward;
     end
     
     fprintf('Choice\t\t\t%s \n',dat.TrialChoice);

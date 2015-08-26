@@ -111,20 +111,23 @@ Params.SessionCount = ct;
 % 2. Go/NoGo with reward adaptaion. file = ProbeOnlyAdaptation.m
 % 3. Continous reward. file = VerticalFillingBar.m
 % 4. Joystick Traning. file = joystickTraining.m
-% 5. Reward Effort Tracking. file = rewardEffortTracking.m
+% 5. Reward Tracking. file = rewardTracking.m
+% 6. Effort Tracking. file = effortTracking.m
 
-tmpTrialType = 4;
+tmpTrialType = 6;
 switch tmpTrialType
     case 1
-        Params.TrialTypeProbs 			= [1 0 0 0 0];
+        Params.TrialTypeProbs   = [1 0 0 0 0 0];
     case 2
-        Params.TrialTypeProbs 			= [0 1 0 0 0];
+        Params.TrialTypeProbs   = [0 1 0 0 0 0];
     case 3
-        Params.TrialTypeProbs 			= [0 0 1 0 0];
+        Params.TrialTypeProbs   = [0 0 1 0 0 0];
     case 4
-        Params.TrialTypeProbs 			= [0 0 0 1 0];
+        Params.TrialTypeProbs   = [0 0 0 1 0 0];
     case 5
-        Params.TrialTypeProbs 			= [0 0 0 0 1];
+        Params.TrialTypeProbs   = [0 0 0 0 1 0];
+    case 6
+        Params.TrialTypeProbs   = [0 0 0 0 0 1];
 end
 Params.TrialTypeProbs           = Params.TrialTypeProbs/sum(Params.TrialTypeProbs);
 
@@ -133,13 +136,13 @@ clear tmpTrialType
 %% Set total number of trials and expected correct trials
 Params.NumTrials 				= 100000; % Choose a big number so task doesn't finish before hand
 if Params.TrialTypeProbs(1)
-    Params.NumCorrectTrials         = 20;
+    Params.NumCorrectTrials     = 20;
 elseif Params.TrialTypeProbs(2)
-    Params.NumCorrectTrials         = 1000; % Go/NoGo correct trials after initial sampling
+    Params.NumCorrectTrials     = 1000; % Go/NoGo correct trials after initial sampling
 elseif Params.TrialTypeProbs(3)
-    Params.NumCorrectTrials         = 1000; % Continuous reward
+    Params.NumCorrectTrials     = 1000; % Continuous reward
 else
-    Params.NumCorrectTrials         = 100000; % Joystick training
+    Params.NumCorrectTrials     = 100000; % Joystick training
 end
 
 
@@ -160,16 +163,16 @@ Params.InterTrialDelay 			= 4;  % delay between each trial [sec]
 Params.WrongChoiceDelay         = 5.5; % Delay when wrong target is chosen [sec]
 
 %% Callibrate Load Cell
- [Params, b5] = CallibrateLoadCell(Params, b5);
+ [Params, b5]                   = CallibrateLoadCell(Params, b5);
 
 %%  WORKSPACE, in mm
 Params.WsBounds             	= [-150 -150 ; 150 150]; % [Xmin Ymin; Xmax Ymax]
 Params.WsCenter 				= mean(Params.WsBounds,1) + [0, 0];
 
 
-b5.Frame_color  = [1 1 1 1];
-b5.Frame_scale  = range(Params.WsBounds);
-b5.Frame_pos    = Params.WsCenter;
+b5.Frame_color                  = [1 1 1 1];
+b5.Frame_scale                  = range(Params.WsBounds);
+b5.Frame_pos                    = Params.WsCenter;
 
 %% Cursor
 b5.Cursor_color 				= [1 1 0 1]; % RGBA 
@@ -179,47 +182,49 @@ b5.Cursor_scale 				= [50 25];        % [mm] % note: diameter!
 b5.StartTarget_color			= [0 1 0 1];
 b5.StartTarget_scale 			= [140 55];
 Params.StartTarget.Win  		= 0.5*b5.StartTarget_scale; % [75 30]; % radius
-Params.StartTarget.Locations 	= {Params.WsCenter + [-40 -40]}; % cell array of locations
+Params.StartTarget_pos          = Params.WsCenter;
+% Params.StartTarget.Locations 	= {Params.WsCenter + [-40 -40]}; % cell array of locations
 
 %% Targets
-b5.UpTarget_color = [0 1 0 1];
-b5.UpTarget_scale = [400, 70];
-b5.UpTarget_pos = Params.WsCenter;
+b5.UpTarget_color               = [0 1 0 1];
+b5.UpTarget_scale               = [400 70];
+Params.UpTarget_pos             = Params.StartTarget_pos + [0 b5.StartTarget_scale(2)/2+b5.UpTarget_scale(2)/2];
 
-b5.DownTarget_color = b5.UpTarget_color;
-b5.DownTarget_scale = b5.UpTarget_scale;
-b5.DownTarget_pos = Params.WsCenter;
+b5.DownTarget_color             = b5.UpTarget_color;
+b5.DownTarget_scale             = b5.UpTarget_scale;
+Params.DownTarget_pos           = Params.StartTarget_pos - [0 b5.StartTarget_scale(2)/2+b5.DownTarget_scale(2)/2];
 
-Params.UpTargetProbability = 0.1; % for joystickTraining mode
+Params.UpTargetProbability      = 0.1; % for joystickTraining mode
+
+Params.BiasingMulti             = 0.5; % for shifting reward or effort
 
 % Rewards
-Params.RewardsVector        = 300; %[ms]
-Params.BiasingMulti         = 0.5;
-Params.TrialsSinceAdapt     = 50;
+Params.RewardsVector            = 300; %[ms]
+Params.TrialsSinceAdapt         = 40;
 
 % Effort
-Params.LoadCellMax                  = 50;
-Params.MaxForce = 10; % Measured max force per subject [N]
-Params.UpEffort  = [0.1];
-Params.DownEffort     = [-0.1];
+Params.LoadCellMax              = 50;
+Params.MaxForce                 = 20; % Measured max force per subject [N]
+Params.UpEffort                 = [0.1];
+Params.DownEffort               = [-0.1];
 
 %% Other visuals
 % Vertical bar outline
-b5.BarOutline_color     = [0 0 1 1];
-b5.BarOutline_scale     = b5.Frame_scale.* [0.25, 1];
-b5.BarOutline_pos       = Params.WsCenter;
+b5.BarOutline_color             = [0 0 1 1];
+b5.BarOutline_scale             = b5.Frame_scale.* [0.25, 1];
+b5.BarOutline_pos               = Params.WsCenter;
                 
 % ySensitivity
-b5.ySensitivity_color     = [1 1 0 0.05];
-b5.ySensitivity_scale     = b5.Frame_scale .* [0.25, 1];
-b5.ySensitivity_pos       = Params.WsCenter - [0, 0] + ...
-                    [0, b5.ySensitivity_scale(2)/2];     
+b5.ySensitivity_color           = [1 1 0 0.05];
+b5.ySensitivity_scale           = b5.Frame_scale .* [0.25, 1];
+b5.ySensitivity_pos             = Params.WsCenter - [0, 0] + ...
+                                    [0, b5.ySensitivity_scale(2)/2];     
                 
 % ySensitivity
-b5.xSensitivity_color     = [1 1 0 0.05];
-b5.xSensitivity_scale     = b5.Frame_scale .* [1, 0.1];
-b5.xSensitivity_pos       = Params.WsCenter - [0, 0] + ...
-                    [b5.xSensitivity_scale(1)/2,0];                
+b5.xSensitivity_color           = [1 1 0 0.05];
+b5.xSensitivity_scale           = b5.Frame_scale .* [1, 0.1];
+b5.xSensitivity_pos             = Params.WsCenter - [0, 0] + ...
+                                    [b5.xSensitivity_scale(1)/2,0];                
 
 % Solenoid Open
 b5.SolenoidOpen_color			= [0 0 1 0.2];
@@ -227,10 +232,10 @@ b5.SolenoidOpen_scale 			= [20 20];
 b5.SolenoidOpen_pos 			= Params.WsBounds(2,:);
 
 % % Wrong way
-b5.WrongWay_color           = [1 0 0 0.5];
-b5.WrongWay_scale           = [1000 100];
-b5.WrongWay_pos             = Params.WsCenter; % in joysticTraining.m we will move it on each trial
-b5.WrongWay_draw            = DRAW_NONE; % default is don't draw
+b5.WrongWay_color               = [1 0 0 0.5];
+b5.WrongWay_scale               = [1000 100];
+b5.WrongWay_pos                 = Params.WsCenter; % in joysticTraining.m we will move it on each trial
+b5.WrongWay_draw                = DRAW_NONE; % default is don't draw
 
 %% FOR CONVENIENCE DEFINE BLOCKSIZE HERE
 % Params.BlockSize 				= 35;

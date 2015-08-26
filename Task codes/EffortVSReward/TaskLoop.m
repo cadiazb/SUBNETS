@@ -24,8 +24,10 @@ dfields = {
 	'OutcomeID'
 	'OutcomeStr'
 	'ReachDelay'
-    'ProbeReward'
-    'ProbeEffort'
+    'UpReward'
+    'DownReward'
+    'UpEffort'
+    'DownEffort'
     'UpTargetOn'
     'TrialChoice'
     'TrialChoiceID'
@@ -126,7 +128,11 @@ for itrial = startTrial : Params.NumTrials
     case 5
         Params.UseRewardAdaptation          = false;
 		[Params, Data(trial), b5] = ...
-        rewardEffortTracking( Params, Data(trial), b5, controlWindow);
+        rewardTracking( Params, Data(trial), b5, controlWindow);
+    case 6
+        Params.UseRewardAdaptation          = false;
+		[Params, Data(trial), b5] = ...
+        effortTracking( Params, Data(trial), b5, controlWindow);
 	otherwise
 		error('Unknown Trial Type');
 	end
@@ -149,14 +155,10 @@ for itrial = startTrial : Params.NumTrials
     controlWindow.SetEarnedRewards(sum([Data(1:trial).OutcomeID] == 0));
   
 
-    %% SUMMARY FIGURES
-    if ~NoFigsFlag
-        PlotSummaryFigs(Params, Data(1:trial));
-    end
 
     %% calculate the reward based on the short-term performance
     
-    if Params.TrialTypeProbs(5) % if we're in the 2 choice reward tracking mode
+    if Params.TrialTypeProbs(5) || Params.TrialTypeProbs(6) % if we're in the 2 choice reward tracking mode
         
         if (sum([Data.OutcomeID] == 0) > 9 ) % if we've done enough trialsPlotSummaryFigs.m
             % find 10 most recent & compute local average
@@ -164,15 +166,15 @@ for itrial = startTrial : Params.NumTrials
             Data(trial).RecentAvgChoice=sum([Data(tmpIdx).TrialChoiceID]==1)/10;
             
             % don't change anything unless he's working now
-            if (Data(trial).OutcomeID==0) && (sum([Data.OutcomeID]==0) > 49)
-                tmpIdx = find([Data.OutcomeID]==0,50,'last'); % check stability over a larger window
+            if (Data(trial).OutcomeID==0) && (sum([Data.OutcomeID]==0) > 39)
+                tmpIdx = find([Data.OutcomeID]==0,40,'last'); % check stability over a larger window
                 % if recent average seems stable & it's been a while since we
                 % adapted, then change BiasingMulti
-                if ( std([Data(tmpIdx).RecentAvgChoice]) < 0.2 ) && (Params.TrialsSinceAdapt > 59)
+                if ( std([Data(tmpIdx).RecentAvgChoice]) < 0.2 ) && (Params.TrialsSinceAdapt > 39)
                     if sum([Data(tmpIdx).RecentAvgChoice])/50 > 0.5 % if choosing up more than 50%
-                        Params.BiasingMulti = max(0.1, 0.8*Params.BiasingMulti); % make top reward smaller
+                        Params.BiasingMulti = max(0, 0.8*Params.BiasingMulti); % make top reward smaller
                     elseif sum([Data(tmpIdx).RecentAvgChoice])/50 < 0.5
-                        Params.BiasingMulti = min(0.9,1.2*Params.BiasingMulti);
+                        Params.BiasingMulti = min(1,1.2*Params.BiasingMulti);
                     end
                     Params.TrialsSinceAdapt = 0;
                     
@@ -184,6 +186,12 @@ for itrial = startTrial : Params.NumTrials
             Data(trial).RecentAvgChoice=NaN;
         end
     end
+    
+        %% SUMMARY FIGURES
+    if ~NoFigsFlag
+        PlotSummaryFigs(Params, Data(1:trial));
+    end
+
     %% Save Data
     if QUIT_FLAG
         done = true;
