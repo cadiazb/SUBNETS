@@ -38,12 +38,12 @@ if numel(anyChoice)>9
         plot(x,choseTop,'b',x,choseBottom,'r',x,UpMulti,'c',x,DownMulti,'m')
         title(['Reward tracking'])
         legend({'Chose top target','Chose bottom target', 'Top reward multiplier','Bottom reward multiplier'})
-        ylabel('Proportion of target choices || Reward multiplier value')
+        ylabel('% of target choices || Reward multiplier value')
     elseif Data(1).TrialType==6
         plot(x,choseTop,'b',x,choseBottom,'r',x,UpMulti,'c',x,DownMulti,'m')
         title(['Effort tracking'])
         legend({'Chose top target','Chose bottom target', 'Top effort multiplier','Bottom effort multiplier'})
-        ylabel('Proportion of target choices || Effort multiplier value')
+        ylabel('% of target choices || Effort multiplier value')
     else
         plot(x,choseTop,'b',x,choseBottom,'r')
         title(['Proportion of Up vs. Down Target Choices'])
