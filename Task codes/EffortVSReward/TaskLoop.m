@@ -261,8 +261,9 @@ function [Params, b5] = DoKeyboard(Params, b5)
 end
 
 function [Params, Data] = SetSequence(Params,Data,trial)
+    numSuccess = sum([Data.OutcomeID] == 0);
     % record average choices
-    if (sum([Data.OutcomeID] == 0) > 9 )
+    if ( numSuccess > 9 )
         % find 10 most recent & compute local average
         tmpIdx = find([Data.OutcomeID]==0,10,'last');
         Data(trial).RecentAvgChoice=sum([Data(tmpIdx).TrialChoiceID]==1)/10;
@@ -271,7 +272,7 @@ function [Params, Data] = SetSequence(Params,Data,trial)
     end
 
     % get next BM value
-    Params.BiasingMulti = DrawSequentially(Params.BMSequence,ceil(trial/Params.BMBlock));
+    Params.BiasingMulti = DrawSequentially(Params.BMSequence,ceil((numSuccess+1)/Params.BMBlock));
 end
 
 function [Params,Data] = AdaptToCenter(Params, Data,trial)

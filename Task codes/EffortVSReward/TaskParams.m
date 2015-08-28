@@ -114,7 +114,7 @@ Params.SessionCount = ct;
 % 5. Reward Tracking. file = rewardTracking.m
 % 6. Effort Tracking. file = effortTracking.m
 
-tmpTrialType = 6;
+tmpTrialType = 5;
 switch tmpTrialType
     case 1
         Params.TrialTypeProbs   = [1 0 0 0 0 0];
@@ -208,9 +208,9 @@ Params.DownEffort               = [-0.1]; %       reward tracking mode
 
 % Changing rewards & effort
 Params.BiasingMulti             = 0.5; % for shifting reward or effort
-Params.AdaptToCenterFlag        = true; % true to find indifference point
+Params.AdaptToCenterFlag        = false; % true to find indifference point
 Params.TrialsSinceAdapt         = 30;
-Params.BMSequence               = [0.5 0.25 0.75]; % set sequence of BM values to try
+Params.BMSequence               = [0.5 0.25 0.75 0.3 0.15 0.65]; % set sequence of BM values to try
 Params.BMBlock                  = 50; % how many trials to try each BM value for
 
 %% Other visuals
