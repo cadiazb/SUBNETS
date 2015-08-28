@@ -281,15 +281,15 @@ function [Params,Data] = AdaptToCenter(Params, Data,trial)
         Data(trial).RecentAvgChoice=sum([Data(tmpIdx).TrialChoiceID]==1)/10;
 
         % don't change anything unless he's working now
-        if (Data(trial).OutcomeID==0) && (sum([Data.OutcomeID]==0) > 39)
-            tmpIdx = find([Data.OutcomeID]==0,40,'last'); % check stability over a larger window
+        if (Data(trial).OutcomeID==0) && (sum([Data.OutcomeID]==0) > 29)
+            tmpIdx = find([Data.OutcomeID]==0,30,'last'); % check stability over a larger window
             % if recent average seems stable & it's been a while since we
             % adapted, then change BiasingMulti
-            if ( std([Data(tmpIdx).RecentAvgChoice]) < 0.2 ) && (Params.TrialsSinceAdapt > 39)
+            if ( std([Data(tmpIdx).RecentAvgChoice]) < 0.2 ) && (Params.TrialsSinceAdapt > 29)
                 if sum([Data(tmpIdx).RecentAvgChoice])/50 > 0.5
-                    Params.BiasingMulti = max(0, 0.8*Params.BiasingMulti);
+                    Params.BiasingMulti = max(0, 0.85*Params.BiasingMulti);
                 elseif sum([Data(tmpIdx).RecentAvgChoice])/50 < 0.5
-                    Params.BiasingMulti = min(1,1.2*Params.BiasingMulti);
+                    Params.BiasingMulti = min(1,1.15*Params.BiasingMulti);
                 end
                 Params.TrialsSinceAdapt = 0;
 
