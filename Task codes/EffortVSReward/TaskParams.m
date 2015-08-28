@@ -176,18 +176,18 @@ b5.Frame_pos                    = Params.WsCenter;
 
 %% Cursor
 b5.Cursor_color 				= [1 1 0 1]; % RGBA 
-b5.Cursor_scale 				= [50 25];        % [mm] % note: diameter!
+b5.Cursor_scale 				= [45 22.5];        % [mm] % note: diameter!
 
 %% Start Target
 b5.StartTarget_color			= [0 1 0 1];
-b5.StartTarget_scale 			= [140 55];
+b5.StartTarget_scale 			= [120 50];
 Params.StartTarget.Win  		= 0.5*b5.StartTarget_scale; % [75 30]; % radius
 Params.StartTarget_pos          = Params.WsCenter;
 % Params.StartTarget.Locations 	= {Params.WsCenter + [-40 -40]}; % cell array of locations
 
 %% Targets
 b5.UpTarget_color               = [0 1 0 1];
-b5.UpTarget_scale               = [400 70];
+b5.UpTarget_scale               = [350 50];
 Params.UpTarget_pos             = Params.StartTarget_pos + [0 b5.StartTarget_scale(2)/2+b5.UpTarget_scale(2)/2];
 
 b5.DownTarget_color             = b5.UpTarget_color;
