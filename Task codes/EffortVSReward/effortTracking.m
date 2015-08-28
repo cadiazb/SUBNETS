@@ -24,8 +24,8 @@ b5.UpTarget_pos 		= Params.UpTarget_pos + [0 dat.UpEffort];
 b5.DownTarget_pos 		= Params.DownTarget_pos - [0 dat.DownEffort];
 
 %% Generate the amounts of reward
-dat.UpReward = DrawFromVec(Params.RewardsVector);
-dat.DownReward = DrawFromVec(Params.RewardsVector);
+dat.UpReward = 0.5*Params.RewardsVector;
+dat.DownReward = 0.5*Params.RewardsVector;
 
 %% Misc stuff
 dat.OutcomeID 	= 0;

@@ -154,37 +154,12 @@ for itrial = startTrial : Params.NumTrials
     %Update earned rewards on GUI
     controlWindow.SetEarnedRewards(sum([Data(1:trial).OutcomeID] == 0));
   
-
-
-    %% calculate the reward based on the short-term performance
+    %% adapt BiasingMulti to try to find indifference point in reward or effort tracking mode
     
-    if Params.TrialTypeProbs(5) || Params.TrialTypeProbs(6) % if we're in the 2 choice reward tracking mode
-        
-        if (sum([Data.OutcomeID] == 0) > 9 ) % if we've done enough trialsPlotSummaryFigs.m
-            % find 10 most recent & compute local average
-            tmpIdx = find([Data.OutcomeID]==0,10,'last');
-            Data(trial).RecentAvgChoice=sum([Data(tmpIdx).TrialChoiceID]==1)/10;
-            
-            % don't change anything unless he's working now
-            if (Data(trial).OutcomeID==0) && (sum([Data.OutcomeID]==0) > 39)
-                tmpIdx = find([Data.OutcomeID]==0,40,'last'); % check stability over a larger window
-                % if recent average seems stable & it's been a while since we
-                % adapted, then change BiasingMulti
-                if ( std([Data(tmpIdx).RecentAvgChoice]) < 0.2 ) && (Params.TrialsSinceAdapt > 39)
-                    if sum([Data(tmpIdx).RecentAvgChoice])/50 > 0.5 % if choosing up more than 50%
-                        Params.BiasingMulti = max(0, 0.8*Params.BiasingMulti); % make top reward smaller
-                    elseif sum([Data(tmpIdx).RecentAvgChoice])/50 < 0.5
-                        Params.BiasingMulti = min(1,1.2*Params.BiasingMulti);
-                    end
-                    Params.TrialsSinceAdapt = 0;
-                    
-                else
-                    Params.TrialsSinceAdapt = Params.TrialsSinceAdapt + 1;
-                end
-            end
-        else
-            Data(trial).RecentAvgChoice=NaN;
-        end
+    if Params.AdaptToCenterFlag 
+       [Params, Data] = AdaptToCenter(Params,Data,trial);  
+    elseif ~isempty(Params.BMSequence)
+        [Params, Data] = SetSequence(Params,Data,trial);
     end
     
         %% SUMMARY FIGURES
@@ -283,4 +258,46 @@ function [Params, b5] = DoKeyboard(Params, b5)
     beep; pause(0.1); beep; pause(0.1); beep;
     disp('Adjust Params or b5 and type ''return''');
     keyboard;
+end
+
+function [Params, Data] = SetSequence(Params,Data,trial)
+    % record average choices
+    if (sum([Data.OutcomeID] == 0) > 9 )
+        % find 10 most recent & compute local average
+        tmpIdx = find([Data.OutcomeID]==0,10,'last');
+        Data(trial).RecentAvgChoice=sum([Data(tmpIdx).TrialChoiceID]==1)/10;
+    else
+        Data(trial).RecentAvgChoice=NaN;
+    end
+
+    % get next BM value
+    Params.BiasingMulti = DrawSequentially(Params.BMSequence,ceil(trial/Params.BMBlock));
+end
+
+function [Params,Data] = AdaptToCenter(Params, Data,trial)
+    if (sum([Data.OutcomeID] == 0) > 9 )
+        % find 10 most recent & compute local average
+        tmpIdx = find([Data.OutcomeID]==0,10,'last');
+        Data(trial).RecentAvgChoice=sum([Data(tmpIdx).TrialChoiceID]==1)/10;
+
+        % don't change anything unless he's working now
+        if (Data(trial).OutcomeID==0) && (sum([Data.OutcomeID]==0) > 39)
+            tmpIdx = find([Data.OutcomeID]==0,40,'last'); % check stability over a larger window
+            % if recent average seems stable & it's been a while since we
+            % adapted, then change BiasingMulti
+            if ( std([Data(tmpIdx).RecentAvgChoice]) < 0.2 ) && (Params.TrialsSinceAdapt > 39)
+                if sum([Data(tmpIdx).RecentAvgChoice])/50 > 0.5
+                    Params.BiasingMulti = max(0, 0.8*Params.BiasingMulti);
+                elseif sum([Data(tmpIdx).RecentAvgChoice])/50 < 0.5
+                    Params.BiasingMulti = min(1,1.2*Params.BiasingMulti);
+                end
+                Params.TrialsSinceAdapt = 0;
+
+            else
+                Params.TrialsSinceAdapt = Params.TrialsSinceAdapt + 1;
+            end
+        end
+    else
+        Data(trial).RecentAvgChoice=NaN;
+    end
 end

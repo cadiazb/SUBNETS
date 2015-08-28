@@ -196,17 +196,22 @@ Params.DownTarget_pos           = Params.StartTarget_pos - [0 b5.StartTarget_sca
 
 Params.UpTargetProbability      = 0.1; % for joystickTraining mode
 
-Params.BiasingMulti             = 0.5; % for shifting reward or effort
-
 % Rewards
-Params.RewardsVector            = 300; %[ms]
-Params.TrialsSinceAdapt         = 40;
+Params.RewardsVector            = 300; %[ms] total reward split over the two targets 
+
 
 % Effort
 Params.LoadCellMax              = 50;
 Params.MaxForce                 = 10; % Measured max force per subject [N]
-Params.UpEffort                 = [0.1];
-Params.DownEffort               = [-0.1];
+Params.UpEffort                 = [0.1]; % set positions for targets in
+Params.DownEffort               = [-0.1]; %       reward tracking mode
+
+% Changing rewards & effort
+Params.BiasingMulti             = 0.5; % for shifting reward or effort
+Params.AdaptToCenterFlag        = false; % true to find indifference point
+Params.TrialsSinceAdapt         = 40;
+Params.BMSequence               = [0.5 0.25 0.75]; % set sequence of BM values to try
+Params.BMBlock                  = 50; % how many trials to try each BM value for
 
 %% Other visuals
 % Vertical bar outline
