@@ -197,7 +197,7 @@ Params.DownTarget_pos           = Params.StartTarget_pos - [0 b5.StartTarget_sca
 Params.UpTargetProbability      = 0.1; % for joystickTraining mode
 
 % Rewards
-Params.RewardsVector            = 300; %[ms] total reward split over the two targets 
+Params.RewardsVector            = 250; %[ms] total reward split over the two targets 
 
 
 % Effort
@@ -211,7 +211,7 @@ Params.BiasingMulti             = 0.5; % for shifting reward or effort
 Params.AdaptToCenterFlag        = false; % true to find indifference point
 Params.TrialsSinceAdapt         = 30;
 Params.BMSequence               = [0.5 0.25 0.75 0.3 0.15 0.65 0.4 0.9 0.15 0.35]; % set sequence of BM values to try
-Params.BMBlock                  = 40; % how many trials to try each BM value for
+Params.BMBlock                  = 10; % how many trials to try each BM value for
 
 %% Other visuals
 % Vertical bar outline
