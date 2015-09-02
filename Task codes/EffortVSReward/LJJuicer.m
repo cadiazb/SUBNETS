@@ -15,7 +15,7 @@ DRAW_BOTH     = 3;
     switch lower(juicerState)
         case 'on'
             b5.isometricDOUT_channels(Params.LJJuicerDOUT) = 1;
-            b5.SolenoidOpen_draw       = DRAW_BOTH;
+            b5.SolenoidOpen_draw       = DRAW_NONE;
         case 'off'
             b5.isometricDOUT_channels(Params.LJJuicerDOUT) = 0;
             b5.SolenoidOpen_draw       = DRAW_NONE;
