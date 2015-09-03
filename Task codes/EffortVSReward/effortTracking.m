@@ -19,19 +19,19 @@ b5.StartTarget_pos = Params.StartTarget_pos;
 % dat.UpEffort            = ((b5.Frame_scale(2)/2 - b5.UpTarget_scale(2)/2) - abs(Params.UpTarget_pos(2)))*(1.0-Params.BiasingMulti);
 % dat.DownEffort          = ((b5.Frame_scale(2)/2 - b5.DownTarget_scale(2)/2) - abs(Params.DownTarget_pos(2)))*(Params.BiasingMulti);
 
-dat.UpEffort            = DrawFromVec(Params.UpEffort);
-dat.DownEffort          = DrawFromVec(Params.DownEffort);
+dat.UpEffort            = min(2.0*Params.BiasingMulti,1);
+dat.DownEffort          = min(2.0*(1.0-Params.BiasingMulti),1);
 
 %% Generate DownTarget position
 % b5.UpTarget_pos 		= Params.UpTarget_pos; % + [0 dat.UpEffort];
 % b5.DownTarget_pos 		= Params.DownTarget_pos;% - [0 dat.DownEffort];
 
 b5.DownTarget_pos 		= b5.StartTarget_pos + ...
-                                [0,dat.DownEffort * b5.Frame_scale(2)] ...
+                                [0,-0.1 * b5.Frame_scale(2)] ...
                                 + [0,-b5.DownTarget_scale(2)/2];
                             
 b5.UpTarget_pos 		= b5.StartTarget_pos + ...
-                                [0,dat.UpEffort * b5.Frame_scale(2)] ...
+                                [0,0.1 * b5.Frame_scale(2)] ...
                                 + [0,b5.UpTarget_scale(2)/2];      
 
 %% Generate the amounts of reward
@@ -309,10 +309,10 @@ function [Params, dat, b5] = CursorScaler(Params, dat, b5)
     [Params, dat, b5] = UpdateCursorOnLine(Params, dat, b5); % syncs b5 twice
     pos=b5.Cursor_pos;
     % scale cursor pos based on effort multipliers
-    if pos(2) > 0
-        b5.Cursor_pos(2) = 2*pos(2)*(Params.BiasingMulti);
-    else
-        b5.Cursor_pos(2) = 2*pos(2)*(1.0-Params.BiasingMulti);
+    if (pos(2) > 0) && (Params.BiasingMulti<0.5) % if cursor up top and want to make up harder
+        b5.Cursor_pos(2) = pos(2)*dat.UpEffort;
+    elseif (pos(2)<0) && (Params.BiasingMulti>0.5) % if cursor on bottom and want to make down harder
+        b5.Cursor_pos(2) = pos(2)*dat.DownEffort;
     end
 
     % resync and save

@@ -114,7 +114,7 @@ Params.SessionCount = ct;
 % 5. Reward Tracking. file = rewardTracking.m
 % 6. Effort Tracking. file = effortTracking.m
 
-tmpTrialType = 5;
+tmpTrialType = 6;
 switch tmpTrialType
     case 1
         Params.TrialTypeProbs   = [1 0 0 0 0 0];
@@ -203,15 +203,15 @@ Params.RewardsVector            = 200; %[ms] total reward split over the two tar
 % Effort
 Params.LoadCellMax              = 50;
 Params.MaxForce                 = 10; % Measured max force per subject [N]
-Params.UpEffort                 = [0.1]; % set positions for targets ingit 
+Params.UpEffort                 = [0.1]; % set positions for targets in 
 Params.DownEffort               = [-0.1]; %       reward tracking mode
 
 % Changing rewards & effort
 Params.BiasingMulti             = 0.5; % for shifting reward or effort
 Params.AdaptToCenterFlag        = false; % true to find indifference point
 Params.TrialsSinceAdapt         = 30;
-Params.BMSequence               = [0.801388873605101,0.616897821550207,0.921872979825941,0.610353109579398,0.110908943744906,0.479469623742012,0.567402902668193,0.810611817119073,0.841210778744172,0.370758782517969,0.412859296219162,0.202936708800675,0.416985750758990,0.400435624106226,0.563289101823365,0.602121177402629,0.283372697478111,0.688821626884610,0.957108217626229,0.437305247352041]; % set sequence of BM values to try
-Params.BMBlock                  = 45; % how many trials to try each BM value for
+Params.BMSequence               = [0.5 0.45 0.5 0.55]; % set sequence of BM values to try
+Params.BMBlock                  = 40; % how many trials to try each BM value for
 
 %% Other visuals
 % Vertical bar outline

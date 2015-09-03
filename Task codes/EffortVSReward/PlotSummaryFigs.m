@@ -18,6 +18,8 @@ if numel(anyChoice)>9
     x=[];
     BMulti=[];
     OppMulti=[];
+    UpEffort=[];
+    DownEffort=[];
     
     for i=10:numel(anyChoice)
         choseTop(i-9)=sum([anyChoice(i-9:i).TrialChoiceID]==1)/10;
@@ -27,6 +29,9 @@ if numel(anyChoice)>9
         
         BMulti(i-9)=anyChoice(i).Params.BiasingMulti;
         OppMulti(i-9)= 1 - anyChoice(i).Params.BiasingMulti;
+        
+        UpEffort(i-9)=anyChoice(i).UpEffort;
+        DownEffort(i-9)=anyChoice(i).DownEffort;
         
     end
     
@@ -40,7 +45,7 @@ if numel(anyChoice)>9
         legend({'Chose top target','Chose bottom target', 'Top reward multiplier','Bottom reward multiplier'})
         ylabel('% of target choices || Reward multiplier value')
     elseif Data(1).TrialType==6
-        plot(x,choseTop,'b',x,choseBottom,'r',x,OppMulti,'c',x,BMulti,'m')
+        plot(x,choseTop,'b',x,choseBottom,'r',x,UpEffort,'c',x,DownEffort,'m')
         title(['Effort tracking'])
         legend({'Chose top target','Chose bottom target', 'Top effort multiplier','Bottom effort multiplier'})
         ylabel('% of target choices || Effort multiplier value')
