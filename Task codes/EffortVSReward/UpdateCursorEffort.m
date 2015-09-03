@@ -37,6 +37,13 @@ function [Params, dat, b5] = UpdateCursorEffort(Params, dat, b5)
     newPosY = min((b5.Frame_scale(2))*newForce(2)*(Params.LoadCellMax/Params.MaxForce) + b5.StartTarget_pos(2), ...
         b5.Frame_scale(2) + b5.StartTarget_pos(2));
     
+    %% Scale vertical position
+    if (newPosY > 0) && (Params.BiasingMulti<0.5) % if cursor up top and want to make up harder
+        newPosY = newPosY*dat.UpEffort;
+    elseif (newPosY<0) && (Params.BiasingMulti>0.5) % if cursor on bottom and want to make down harder
+        newPosY = newPosY*dat.DownEffort;
+    end
+    
     
     %% Update cursor position
     if abs(newPosX - b5.Cursor_pos(1)) > ZeroBalance

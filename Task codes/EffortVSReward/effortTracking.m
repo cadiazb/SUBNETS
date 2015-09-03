@@ -109,7 +109,7 @@ while ~done
     end
     
     % update hand
-    [Params, dat, b5] = CursorScaler(Params, dat, b5); % syncs b5 twice
+    [Params, dat, b5] = UpdateCursorEffort(Params, dat, b5); % syncs b5 twice
 
 end
 
@@ -135,7 +135,7 @@ if ~dat.OutcomeID
 	while ~done
         drawnow;
 %         [Params.StartTarget.Win(1), Params.StartTarget.Win(2)] = controlWindow.GetSensitivity();
-        [Params, dat, b5] = CursorScaler(Params, dat, b5); % syncs b5 twice
+        [Params, dat, b5] = UpdateCursorEffort(Params, dat, b5); % syncs b5 twice
         pos = b5.Cursor_pos;
         dat.FinalCursorPos = [0,pos(2)];
         
@@ -235,10 +235,10 @@ if dat.OutcomeID == 0 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
     % Give juice reward
 %     [Params, b5] = blinkShape(Params, b5, {'FillingEffort', 'DownTarget', 'UpTarget'}, [12 12 12], [0.75 0.75 0.75]);
     b5 = LJJuicer(Params, b5, 'on');
-    [Params, dat, b5] = CursorScaler(Params, dat, b5); %b5 = bmi5_mmap(b5);
+    [Params, dat, b5] = UpdateCursorEffort(Params, dat, b5); %b5 = bmi5_mmap(b5);
     juiceStart = b5.time_o;
     while (b5.time_o - juiceStart) < (dat.ActualReward / 1000)
-        [Params, dat, b5] = CursorScaler(Params, dat, b5); %b5 = bmi5_mmap(b5);
+        [Params, dat, b5] = UpdateCursorEffort(Params, dat, b5); %b5 = bmi5_mmap(b5);
     end
     if ~Solenoid_open
         b5 = LJJuicer(Params, b5, 'off');
@@ -254,7 +254,7 @@ if dat.OutcomeID == 0 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %     startPause = b5.time_o;
 %     %if dat.FinalCursorPos(2) < b5.UpTarget_pos(2)
 %         while (b5.time_o - startPause) < (Params.InterTrialDelay)
-%             [Params, dat, b5] = CursorScaler(Params, dat, b5); %b5 = bmi5_mmap(b5);
+%             [Params, dat, b5] = UpdateCursorEffort(Params, dat, b5); %b5 = bmi5_mmap(b5);
 %         end
 %     %end
     
@@ -269,21 +269,21 @@ else
     if dat.OutcomeID == 5 %Wrong choice
         startPause = b5.time_o;
         while (b5.time_o - startPause) < (Params.WrongChoiceDelay)
-            [Params, dat, b5] = CursorScaler(Params, dat, b5); %b5 = bmi5_mmap(b5);
+            [Params, dat, b5] = UpdateCursorEffort(Params, dat, b5); %b5 = bmi5_mmap(b5);
         end
     end
     
     if dat.OutcomeID == 4 %Cancel @ reach
         startPause = b5.time_o;
         while (b5.time_o - startPause) < (Params.InterTrialDelay)
-            [Params, dat, b5] = CursorScaler(Params, dat, b5); %b5 = bmi5_mmap(b5);
+            [Params, dat, b5] = UpdateCursorEffort(Params, dat, b5); %b5 = bmi5_mmap(b5);
         end
     end
     
     if (dat.OutcomeID == 1) || (dat.OutcomeID == 2) %Cancel @ start || Cancel @ start hold
         startPause = b5.time_o;
         while (b5.time_o - startPause) < (Params.InterTrialDelay)
-            [Params, dat, b5] = CursorScaler(Params, dat, b5); %b5 = bmi5_mmap(b5);
+            [Params, dat, b5] = UpdateCursorEffort(Params, dat, b5); %b5 = bmi5_mmap(b5);
         end
     end
 
@@ -302,19 +302,4 @@ b5.UpTarget_draw             = DRAW_NONE;
 
 %%% XXX TODO: NEED WAY TO LOG (MORE) INTERESTING TRIAL EVENTS
 
-end
-
-function [Params, dat, b5] = CursorScaler(Params, dat, b5)
-    b5 = bmi5_mmap(b5);
-    [Params, dat, b5] = UpdateCursorOnLine(Params, dat, b5); % syncs b5 twice
-    pos=b5.Cursor_pos;
-    % scale cursor pos based on effort multipliers
-    if (pos(2) > 0) && (Params.BiasingMulti<0.5) % if cursor up top and want to make up harder
-        b5.Cursor_pos(2) = pos(2)*dat.UpEffort;
-    elseif (pos(2)<0) && (Params.BiasingMulti>0.5) % if cursor on bottom and want to make down harder
-        b5.Cursor_pos(2) = pos(2)*dat.DownEffort;
-    end
-
-    % resync and save
-    b5 = bmi5_mmap(b5);
 end

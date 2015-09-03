@@ -194,7 +194,7 @@ b5.DownTarget_color             = b5.UpTarget_color;
 b5.DownTarget_scale             = b5.UpTarget_scale;
 Params.DownTarget_pos           = Params.StartTarget_pos - [0 b5.StartTarget_scale(2)/2+b5.DownTarget_scale(2)/2];
 
-Params.UpTargetProbability      = 0.1; % for joystickTraining mode
+Params.UpTargetProbability      = 0.5; % for joystickTraining mode
 
 % Rewards
 Params.RewardsVector            = 200; %[ms] total reward split over the two targets 
@@ -210,7 +210,7 @@ Params.DownEffort               = [-0.1]; %       reward tracking mode
 Params.BiasingMulti             = 0.5; % for shifting reward or effort
 Params.AdaptToCenterFlag        = false; % true to find indifference point
 Params.TrialsSinceAdapt         = 30;
-Params.BMSequence               = [0.5 0.45 0.5 0.55]; % set sequence of BM values to try
+Params.BMSequence               = [0.5 0.45 0.5 0.55 0.5 0.4 0.5 0.6 0.5]; % set sequence of BM values to try
 Params.BMBlock                  = 40; % how many trials to try each BM value for
 
 %% Other visuals
