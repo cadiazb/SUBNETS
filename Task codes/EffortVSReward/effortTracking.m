@@ -19,8 +19,8 @@ b5.StartTarget_pos = Params.StartTarget_pos;
 % dat.UpEffort            = ((b5.Frame_scale(2)/2 - b5.UpTarget_scale(2)/2) - abs(Params.UpTarget_pos(2)))*(1.0-Params.BiasingMulti);
 % dat.DownEffort          = ((b5.Frame_scale(2)/2 - b5.DownTarget_scale(2)/2) - abs(Params.DownTarget_pos(2)))*(Params.BiasingMulti);
 
-dat.UpEffort            = min(2.0*Params.BiasingMulti,1);
-dat.DownEffort          = min(2.0*(1.0-Params.BiasingMulti),1);
+dat.UpEffort            = max(min(2.0*Params.BiasingMulti,1),0.5);
+dat.DownEffort          = max(min(2.0*(1.0-Params.BiasingMulti),1),0.5);
 
 %% Generate DownTarget position
 % b5.UpTarget_pos 		= Params.UpTarget_pos; % + [0 dat.UpEffort];
