@@ -114,7 +114,7 @@ Params.SessionCount = ct;
 % 5. Reward Tracking. file = rewardTracking.m
 % 6. Effort Tracking. file = effortTracking.m
 
-tmpTrialType = 7;
+tmpTrialType = 6;
 switch tmpTrialType
     case 1
         Params.TrialTypeProbs   = [1 0 0 0 0 0 0];
