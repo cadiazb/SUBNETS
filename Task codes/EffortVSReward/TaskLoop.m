@@ -103,6 +103,15 @@ for itrial = startTrial : Params.NumTrials
 	b5 = bmi5_mmap(b5);
 	Data(trial).TimeStart = b5.time_o; % grab time at start of trial
 	% TRIAL SELECTION
+    if Data(trial).TrialType==7 && Data(trial).BlockNum < 270
+        Data(trial).TrialType = 5;
+    elseif Data(trial).TrialType==7
+        if Data(trial).BlockNum == 270
+                pause(6);
+        end
+        Data(trial).TrialType=6;
+    end
+    
 	switch Data(trial).TrialType
 	case 1
         Params.UseRewardAdaptation          = false;
@@ -133,6 +142,17 @@ for itrial = startTrial : Params.NumTrials
         Params.UseRewardAdaptation          = false;
 		[Params, Data(trial), b5] = ...
         effortTracking( Params, Data(trial), b5, controlWindow);
+%     case 7
+%         Params.UseRewardAdaptation          = false;
+%         if Data(trial).BlockNum < 12
+%             [Params, Data(trial), b5] = rewardTracking( Params, Data(trial), b5, controlWindow);
+%         else
+%             if Data(trial).BlockNum == 12
+%                 pause(6);
+%             end
+%             [Params, Data(trial), b5] = effortTracking(Params, Data(trial), b5, controlWindow);
+%         end
+            
 	otherwise
 		error('Unknown Trial Type');
 	end

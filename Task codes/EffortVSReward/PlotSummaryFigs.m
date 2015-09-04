@@ -39,7 +39,7 @@ if numel(anyChoice)>9
     % plot % choice and multipliers
     figure(20)
     clf  
-    if Data(1).TrialType==5
+    if Data(1).TrialType==5 || Data(1).TrialType==7
         plot(x,choseTop,'b',x,choseBottom,'r',x,BMulti,'c',x,OppMulti,'m')
         title(['Reward tracking'])
         legend({'Chose top target','Chose bottom target', 'Top reward multiplier','Bottom reward multiplier'})

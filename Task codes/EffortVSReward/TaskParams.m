@@ -114,20 +114,22 @@ Params.SessionCount = ct;
 % 5. Reward Tracking. file = rewardTracking.m
 % 6. Effort Tracking. file = effortTracking.m
 
-tmpTrialType = 6;
+tmpTrialType = 7;
 switch tmpTrialType
     case 1
-        Params.TrialTypeProbs   = [1 0 0 0 0 0];
+        Params.TrialTypeProbs   = [1 0 0 0 0 0 0];
     case 2
-        Params.TrialTypeProbs   = [0 1 0 0 0 0];
+        Params.TrialTypeProbs   = [0 1 0 0 0 0 0];
     case 3
-        Params.TrialTypeProbs   = [0 0 1 0 0 0];
+        Params.TrialTypeProbs   = [0 0 1 0 0 0 0];
     case 4
-        Params.TrialTypeProbs   = [0 0 0 1 0 0];
+        Params.TrialTypeProbs   = [0 0 0 1 0 0 0];
     case 5
-        Params.TrialTypeProbs   = [0 0 0 0 1 0];
+        Params.TrialTypeProbs   = [0 0 0 0 1 0 0];
     case 6
-        Params.TrialTypeProbs   = [0 0 0 0 0 1];
+        Params.TrialTypeProbs   = [0 0 0 0 0 1 0];
+    case 7
+        Params.TrialTypeProbs   = [0 0 0 0 0 0 1];
 end
 Params.TrialTypeProbs           = Params.TrialTypeProbs/sum(Params.TrialTypeProbs);
 
@@ -210,8 +212,8 @@ Params.DownEffort               = [-0.1]; %       reward tracking mode
 Params.BiasingMulti             = 0.5; % for shifting reward or effort
 Params.AdaptToCenterFlag        = false; % true to find indifference point
 Params.TrialsSinceAdapt         = 30;
-Params.BMSequence               = [0.5 0.45 0.5 0.55 0.5 0.4 0.5 0.6 0.5]; % set sequence of BM values to try
-Params.BMBlock                  = 40; % how many trials to try each BM value for
+Params.BMSequence               = [0.5,0.888,0.901,0.794,0.716,0.959,0.5,0.398,0.843,0.122,0.212,0.803,0.407,0.960,0.744,0.315,0.622,0.313,0.492];
+Params.BMBlock                  = 45; % how many trials to try each BM value for
 
 %% Other visuals
 % Vertical bar outline
