@@ -212,7 +212,7 @@ Params.DownEffort               = [-0.1]; %       reward tracking mode
 Params.BiasingMulti             = 0.5; % for shifting reward or effort
 Params.AdaptToCenterFlag        = false; % true to find indifference point
 Params.TrialsSinceAdapt         = 30;
-Params.BMSequence               = [0.5,0.888,0.901,0.794,0.716,0.959,0.5,0.398,0.843,0.122,0.212,0.803,0.407,0.960,0.744,0.315,0.622,0.313,0.492];
+Params.BMSequence               = [0.5 0.25 0.45 0.3 0.4 0.35]; %[0.5,0.888,0.901,0.794,0.716,0.959,0.5,0.398,0.843,0.122,0.212,0.803,0.407,0.960,0.744,0.315,0.622,0.313,0.492];
 Params.BMBlock                  = 45; % how many trials to try each BM value for
 
 %% Other visuals
