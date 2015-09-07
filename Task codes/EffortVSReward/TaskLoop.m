@@ -103,10 +103,10 @@ for itrial = startTrial : Params.NumTrials
 	b5 = bmi5_mmap(b5);
 	Data(trial).TimeStart = b5.time_o; % grab time at start of trial
 	% TRIAL SELECTION
-    if Data(trial).TrialType==7 && Data(trial).BlockNum < 270
+    if Data(trial).TrialType==7 && Data(trial).BlockNum < 136
         Data(trial).TrialType = 5;
     elseif Data(trial).TrialType==7
-        if Data(trial).BlockNum == 270
+        if Data(trial).BlockNum == 136
                 pause(6);
         end
         Data(trial).TrialType=6;
