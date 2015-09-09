@@ -8,7 +8,7 @@ PAUSE_FLAG      = false;
 KEYBOARD_FLAG   = false;
 QUIT_FLAG       = false;
 
-NoFigsFlag = false;
+NoFigsFlag = true;
 
 %% Define the fields of the Data structure
 
@@ -19,27 +19,22 @@ dfields = {
 	'TrialNum'
 	'TrialType'
 	'BlockNum'
-	'BlockType'
-	'TotalBlocks'
+    'NumSuccess'
 	'OutcomeID'
 	'OutcomeStr'
-	'ReachDelay'
     'UpReward'
     'DownReward'
     'UpEffort'
     'DownEffort'
-    'UpTargetOn'
     'TrialChoice'
     'TrialChoiceID'
     'RecentAvgChoice'
+    'ActualReward'
+    'ActualEffort'
     'ReactionTime'
     'MovementTime'
-    'AlwaysReward'
-    'ActualEffort'
-    'ActualReward' 
     'FinalCursorPos'
     'ForceTrace'
-    'GoCue_time_o'
     'JuiceON'
     'JuiceOFF'
 };
@@ -59,7 +54,8 @@ b5 = LJJuicer(Params, b5, 'off');
 %% TRIAL LOOP
 
 trial 	= 0;
-done  	= false; 
+done  	= false;
+
 
 startTrial = 1;
 for itrial = startTrial : Params.NumTrials
@@ -71,25 +67,26 @@ for itrial = startTrial : Params.NumTrials
     
     Data(trial).Params          = Params;
     
-	Data(trial).TrialType = DrawFromProbVec(Params.TrialTypeProbs);
-    
+    % update BlockNum & NumSuccess based on outcome of prev trial
     if trial == 1
     	Data(trial).BlockNum 	= 1;
-    	Data(trial).TotalBlocks = 1;
-        Data(trial).TotalPoints = 0;
-        Data(trial).ProbesAdaptationState = Params.DownEffort';
-        Data(trial).ProbesAdaptationState(:,2) = false;
+        Data(trial).NumSuccess  = 0;
     else
-        Data(trial).BlockNum = Data(trial-1).BlockNum;
-        Data(trial).TotalBlocks = Data(trial-1).TotalBlocks;
-        Data(trial).TotalPoints = Data(trial-1).TotalPoints;
-        Data(trial).ProbesAdaptationState = Data(trial-1).ProbesAdaptationState;
         if Data(trial-1).OutcomeID == 0
-            Data(trial).BlockNum = Data(trial).BlockNum + 1;
+            Data(trial).NumSuccess = Data(trial-1).NumSuccess + 1;
+        else
+            Data(trial).NumSuccess = Data(trial-1).NumSuccess;
+        end
+        
+        if Data(trial).NumSuccess>0 && mod(Data(trial).NumSuccess,Params.BlockLength)==0
+            Data(trial).BlockNum = Data(trial-1).BlockNum + 1;
+        else
+            Data(trial).BlockNum = Data(trial-1).BlockNum;
         end
     end
     
-    Data(trial).AlwaysReward = false;
+    Data(trial).TrialType = Params.TrialTypeBlocks(Data(trial).BlockNum);
+    [Params, Data] = AvgChoice(Params,Data,trial);
 
 	fprintf('\nTrial num\t\t%i\n',trial);
 	fprintf('Trial type\t\t%i\n',Data(trial).TrialType);
@@ -103,55 +100,74 @@ for itrial = startTrial : Params.NumTrials
 	b5 = bmi5_mmap(b5);
 	Data(trial).TimeStart = b5.time_o; % grab time at start of trial
 	% TRIAL SELECTION
-    if Data(trial).TrialType==7 && Data(trial).BlockNum < 136
-        Data(trial).TrialType = 5;
-    elseif Data(trial).TrialType==7
-        if Data(trial).BlockNum == 136
-                pause(6);
-        end
-        Data(trial).TrialType=6;
-    end
     
 	switch Data(trial).TrialType
-	case 1
-        Params.UseRewardAdaptation          = false;
-        if trial > 1 && ~isempty(max([Data(~[Data().OutcomeID]).ActualEffort]))
-            b5.DownTarget_pos 		= [0,max([Data(~[Data().OutcomeID]).ActualEffort]) * b5.Frame_scale(2)];
-        else
-            b5.DownTarget_pos 		= [0,0];
-        end
-		[Params, Data(trial), b5] = ...
-        SubjectCallibration( Params, Data(trial), b5 );
-    case 2
-        Params.UseRewardAdaptation          = true;
-		[Params, Data(trial), b5] = ...
-        ProbeOnlyAdaptation( Params, Data(trial), b5 );
-    case 3
-        Params.UseRewardAdaptation          = false;
-		[Params, Data(trial), b5] = ...
-        VerticalFillingBar( Params, Data(trial), b5 );
-    case 4
-        Params.UseRewardAdaptation          = false;
-		[Params, Data(trial), b5] = ...
-        joystickTraining( Params, Data(trial), b5, controlWindow);
-    case 5
-        Params.UseRewardAdaptation          = false;
-		[Params, Data(trial), b5] = ...
-        rewardTracking( Params, Data(trial), b5, controlWindow);
-    case 6
-        Params.UseRewardAdaptation          = false;
-		[Params, Data(trial), b5] = ...
-        effortTracking( Params, Data(trial), b5, controlWindow);
-%     case 7
-%         Params.UseRewardAdaptation          = false;
-%         if Data(trial).BlockNum < 12
-%             [Params, Data(trial), b5] = rewardTracking( Params, Data(trial), b5, controlWindow);
-%         else
-%             if Data(trial).BlockNum == 12
-%                 pause(6);
-%             end
-%             [Params, Data(trial), b5] = effortTracking(Params, Data(trial), b5, controlWindow);
-%         end
+	case 1 % reward adapt to center
+        Data(trial).UpReward                = Params.BiasingMulti*Params.StdReward*2.0;
+        Data(trial).DownReward              =(1.0-Params.BiasingMulti)*Params.StdReward*2.0;
+        Data(trial).UpEffort                = Params.StdEffort;
+        Data(trial).DownEffort              = Params.StdEffort;
+        
+        fprintf('Up Reward\t\t%d \n', Data(trial).UpReward);
+        fprintf('Down Reward\t\t%d \n', Data(trial).DownReward);
+        fprintf('Up Effort\t\t%d \n', Data(trial).UpEffort);
+        fprintf('Down Effort\t\t%d \n', Data(trial).DownEffort);
+        
+        [Params, Data(trial), b5]           = RewardEffortTrial(Params, Data(trial), b5, controlWindow);
+        [Params, Data]                      = AdaptToCenter(Params,Data,trial);
+       
+    case 2 % effort adapt to center
+        Data(trial).UpReward                = Params.StdReward;
+        Data(trial).DownReward              = Params.StdReward;
+        Data(trial).UpEffort                = min(2.0*Params.BiasingMulti,1);
+        Data(trial).DownEffort              = min(2.0*(1.0-Params.BiasingMulti),1);
+        
+        fprintf('Up Reward\t\t%d \n', Data(trial).UpReward);
+        fprintf('Down Reward\t\t%d \n', Data(trial).DownReward);
+        fprintf('Up Effort\t\t%d \n', Data(trial).UpEffort);
+        fprintf('Down Effort\t\t%d \n', Data(trial).DownEffort);
+        
+        [Params, Data(trial), b5]           = RewardEffortTrial(Params, Data(trial), b5, controlWindow);
+        [Params, Data]                      = AdaptToCenter(Params,Data,trial);
+       
+    case 3 % reward tracking w/ fixed effort
+        Data(trial).UpReward                = Params.UpReward(mod(Data(trial).BlockNum,numel(Params.UpReward))+1);
+        Data(trial).DownReward              = Params.DownReward(mod(Data(trial).BlockNum,numel(Params.DownReward))+1);
+        Data(trial).UpEffort                = Params.StdEffort;
+        Data(trial).DownEffort              = Params.StdEffort;
+        
+        fprintf('Up Reward\t\t%d \n', Data(trial).UpReward);
+        fprintf('Down Reward\t\t%d \n', Data(trial).DownReward);
+        fprintf('Up Effort\t\t%d \n', Data(trial).UpEffort);
+        fprintf('Down Effort\t\t%d \n', Data(trial).DownEffort);
+        
+        [Params, Data(trial), b5]           = RewardEffortTrial(Params,Data(trial),b5,controlWindow);
+        
+    case 4 % effort tracking w/ fixed reward
+        Data(trial).UpReward                = Params.StdReward;
+        Data(trial).DownReward              = Params.StdReward;
+        Data(trial).UpEffort                = Params.UpEffort(mod(Data(trial).BlockNum,numel(Params.UpEffort))+1);
+        Data(trial).DownEffort              = Params.DownEffort(mod(Data(trial).BlockNum,numel(Params.DownEffort))+1);
+        
+        fprintf('Up Reward\t\t%d \n', Data(trial).UpReward);
+        fprintf('Down Reward\t\t%d \n', Data(trial).DownReward);
+        fprintf('Up Effort\t\t%d \n', Data(trial).UpEffort);
+        fprintf('Down Effort\t\t%d \n', Data(trial).DownEffort);
+        
+        [Params, Data(trial), b5]           = RewardEffortTrial(Params,Data(trial),b5,controlWindow);
+        
+    case 5 % reward and effort tracking
+        Data(trial).UpReward                = Params.UpReward(mod(Data(trial).BlockNum,numel(Params.UpReward))+1);
+        Data(trial).DownReward              = Params.DownReward(mod(Data(trial).BlockNum,numel(Params.DownReward))+1);
+        Data(trial).UpEffort                = Params.UpEffort(mod(Data(trial).BlockNum,numel(Params.UpEffort))+1);
+        Data(trial).DownEffort              = Params.DownEffort(mod(Data(trial).BlockNum,numel(Params.DownEffort))+1);
+        
+        fprintf('Up Reward\t\t%d \n', Data(trial).UpReward);
+        fprintf('Down Reward\t\t%d \n', Data(trial).DownReward);
+        fprintf('Up Effort\t\t%d \n', Data(trial).UpEffort);
+        fprintf('Down Effort\t\t%d \n', Data(trial).DownEffort);
+        
+        [Params, Data(trial), b5]           = RewardEffortTrial(Params,Data(trial),b5,controlWindow);
             
 	otherwise
 		error('Unknown Trial Type');
@@ -166,21 +182,9 @@ for itrial = startTrial : Params.NumTrials
     
 	%% TRIAL SUMMARY INFO DISPLAY
 	fprintf('Outcome\t\t\t%d (%s)\n',Data(trial).OutcomeID,Data(trial).OutcomeStr);
-    fprintf('Reaction time\t\t%d \n', Data(trial).ReactionTime);
-    fprintf('Movement time\t\t%d \n', Data(trial).MovementTime);
-    fprintf('BiasingMulti\t\t%d \n', Params.BiasingMulti);
-    %fprintf('TrialsSinceAdapt\t\t%d \n', Params.TrialsSinceAdapt);
     
     %Update earned rewards on GUI
     controlWindow.SetEarnedRewards(sum([Data(1:trial).OutcomeID] == 0));
-  
-    %% adapt BiasingMulti to try to find indifference point in reward or effort tracking mode
-    
-    if Params.AdaptToCenterFlag 
-       [Params, Data] = AdaptToCenter(Params,Data,trial);  
-    elseif ~isempty(Params.BMSequence)
-        [Params, Data] = SetSequence(Params,Data,trial);
-    end
     
         %% SUMMARY FIGURES
     if ~NoFigsFlag
@@ -196,8 +200,6 @@ for itrial = startTrial : Params.NumTrials
     end
     
 	% NOTE NOTE NOTE * this overwrites any existing file! * NOTE NOTE NOTE
-    % Save full data structure after each block
-%     if Data(trial).BlockNum == Params.BlockSize
     if done
         DATA = Data;
         DATA(trial+1:end) = []; % kill excess
@@ -280,27 +282,18 @@ function [Params, b5] = DoKeyboard(Params, b5)
     keyboard;
 end
 
-function [Params, Data] = SetSequence(Params,Data,trial)
-    numSuccess = sum([Data.OutcomeID] == 0);
-    % record average choices
-    if ( numSuccess > 9 )
+function [Params, Data] = AvgChoice(Params,Data,trial)
+    if ( Data(trial).NumSuccess > 9 )
         % find 10 most recent & compute local average
         tmpIdx = find([Data.OutcomeID]==0,10,'last');
         Data(trial).RecentAvgChoice=sum([Data(tmpIdx).TrialChoiceID]==1)/10;
     else
         Data(trial).RecentAvgChoice=NaN;
     end
-
-    % get next BM value
-    Params.BiasingMulti = DrawSequentially(Params.BMSequence,ceil((numSuccess+1)/Params.BMBlock));
 end
 
 function [Params,Data] = AdaptToCenter(Params, Data,trial)
     if (sum([Data.OutcomeID] == 0) > 9 )
-        % find 10 most recent & compute local average
-        tmpIdx = find([Data.OutcomeID]==0,10,'last');
-        Data(trial).RecentAvgChoice=sum([Data(tmpIdx).TrialChoiceID]==1)/10;
-
         % don't change anything unless he's working now
         if (Data(trial).OutcomeID==0) && (sum([Data.OutcomeID]==0) > 29)
             tmpIdx = find([Data.OutcomeID]==0,30,'last'); % check stability over a larger window
@@ -308,9 +301,9 @@ function [Params,Data] = AdaptToCenter(Params, Data,trial)
             % adapted, then change BiasingMulti
             if ( std([Data(tmpIdx).RecentAvgChoice]) < 0.2 ) && (Params.TrialsSinceAdapt > 29)
                 if sum([Data(tmpIdx).RecentAvgChoice])/50 > 0.5
-                    Params.BiasingMulti = max(0, 0.85*Params.BiasingMulti);
+                    Params.BiasingMulti = max(0, 0.7*Params.BiasingMulti);
                 elseif sum([Data(tmpIdx).RecentAvgChoice])/50 < 0.5
-                    Params.BiasingMulti = min(1,1.15*Params.BiasingMulti);
+                    Params.BiasingMulti = min(1,1.3*Params.BiasingMulti);
                 end
                 Params.TrialsSinceAdapt = 0;
 

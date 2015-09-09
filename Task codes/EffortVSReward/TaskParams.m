@@ -106,47 +106,32 @@ Params.BMI5FileName = fname;
 Params.SessionCount = ct;
 
 %%  Trial Type Function Selection
-% do not modify
-% 1. SubjectCallibration: Use this task to find max force for each subject
-% 2. Go/NoGo with reward adaptaion. file = ProbeOnlyAdaptation.m
-% 3. Continous reward. file = VerticalFillingBar.m
-% 4. Joystick Traning. file = joystickTraining.m
-% 5. Reward Tracking. file = rewardTracking.m
-% 6. Effort Tracking. file = effortTracking.m
+% 1. Reward adapt to center
+% 2. Effort adapt to center
+% 3. Reward tracking with fixed effort
+% 4. Effort tracking with fixed reward
+% 5. Reward and effort tracking
 
-tmpTrialType = 6;
-switch tmpTrialType
-    case 1
-        Params.TrialTypeProbs   = [1 0 0 0 0 0 0];
-    case 2
-        Params.TrialTypeProbs   = [0 1 0 0 0 0 0];
-    case 3
-        Params.TrialTypeProbs   = [0 0 1 0 0 0 0];
-    case 4
-        Params.TrialTypeProbs   = [0 0 0 1 0 0 0];
-    case 5
-        Params.TrialTypeProbs   = [0 0 0 0 1 0 0];
-    case 6
-        Params.TrialTypeProbs   = [0 0 0 0 0 1 0];
-    case 7
-        Params.TrialTypeProbs   = [0 0 0 0 0 0 1];
-end
-Params.TrialTypeProbs           = Params.TrialTypeProbs/sum(Params.TrialTypeProbs);
-
-clear tmpTrialType
-
-%% Set total number of trials and expected correct trials
+Params.TrialTypeBlocks          = [3 3 4]; % sequence of trial types
+Params.LoopBlocks               = false; % if false, continue with last trial type forever
+Params.BlockLength              =50; % number of successes per block
 Params.NumTrials 				= 100000; % Choose a big number so task doesn't finish before hand
-if Params.TrialTypeProbs(1)
-    Params.NumCorrectTrials     = 20;
-elseif Params.TrialTypeProbs(2)
-    Params.NumCorrectTrials     = 1000; % Go/NoGo correct trials after initial sampling
-elseif Params.TrialTypeProbs(3)
-    Params.NumCorrectTrials     = 1000; % Continuous reward
-else
-    Params.NumCorrectTrials     = 100000; % Joystick training
-end
 
+% extend Params.TrialTypeBlocks to last until we reach NumTrials
+m=ceil(Params.NumTrials/Params.BlockLength);
+if Params.LoopBlocks
+    pattern=Params.TrialTypeBlocks;
+    n=numel(pattern);
+    for i=n+1:n:m-n
+        Params.TrialTypeBlocks(i:i+n-1)=pattern;
+    end
+else
+    n=Params.TrialTypeBlocks(end);
+    for i=numel(Params.TrialTypeBlocks):m
+        Params.TrialTypeBlocks(i)=n;
+    end
+end
+clear m n i pattern
 
 %% DELAYS, PENALTIES and TIMEOUTS [sec]
 % Start trial
@@ -165,7 +150,7 @@ Params.InterTrialDelay 			= 4;  % delay between each trial [sec]
 Params.WrongChoiceDelay         = 5.5; % Delay when wrong target is chosen [sec]
 
 %% Callibrate Load Cell
- [Params, b5]                   = CallibrateLoadCell(Params, b5);
+[Params, b5]                    = CallibrateLoadCell(Params, b5);
 
 %%  WORKSPACE, in mm
 Params.WsBounds             	= [-150 -150 ; 150 150]; % [Xmin Ymin; Xmax Ymax]
@@ -190,30 +175,37 @@ Params.StartTarget_pos          = Params.WsCenter;
 %% Targets
 b5.UpTarget_color               = [0 1 0 1];
 b5.UpTarget_scale               = [320 50];
-Params.UpTarget_pos             = Params.StartTarget_pos + [0 b5.StartTarget_scale(2)/2+b5.UpTarget_scale(2)/2];
+Params.UpTarget_pos             = Params.StartTarget_pos + ...
+                                    [0,0.1 * b5.Frame_scale(2)] ...
+                                    + [0,b5.UpTarget_scale(2)/2];
 
 b5.DownTarget_color             = b5.UpTarget_color;
 b5.DownTarget_scale             = b5.UpTarget_scale;
-Params.DownTarget_pos           = Params.StartTarget_pos - [0 b5.StartTarget_scale(2)/2+b5.DownTarget_scale(2)/2];
+Params.DownTarget_pos           = Params.StartTarget_pos + ...
+                                    [0,-0.1 * b5.Frame_scale(2)] ...
+                                    + [0,-b5.DownTarget_scale(2)/2];
 
 Params.UpTargetProbability      = 0.5; % for joystickTraining mode
 
 % Rewards
-Params.RewardsVector            = 200; %[ms] total reward split over the two targets 
+Params.StdReward                = 100; %[ms]
+% multipliers for StdReward
+Params.UpReward                 = [ 0.25 0.75 ]; 
+Params.DownReward               = [ 0.75 0.25 ];
 
 
 % Effort
 Params.LoadCellMax              = 50;
 Params.MaxForce                 = 10; % Measured max force per subject [N]
-Params.UpEffort                 = [0.1]; % set positions for targets in 
-Params.DownEffort               = [-0.1]; %       reward tracking mode
+Params.StdEffort                = 1.0;
+% 0.5 effort multiplier means he has to push 2x as hard, so keep values in [0.5 1]
+Params.UpEffort                 = [0.755 0.721 0.998 0.888 0.576 0.850 0.780 0.860 0.814 0.848 0.988 0.843 0.718 0.683 0.512 0.505 0.907 0.716 0.817 0.926]; 
+Params.DownEffort               = [0.561 0.877 0.504 0.776 0.910 0.662 0.647 0.905 0.918 0.796 0.878 0.832 0.990 0.722 0.522 0.920 0.578 0.998 0.689]; 
 
 % Changing rewards & effort
 Params.BiasingMulti             = 0.5; % for shifting reward or effort
-Params.AdaptToCenterFlag        = false; % true to find indifference point
 Params.TrialsSinceAdapt         = 30;
-Params.BMSequence               = [0.5 0.75 0.6 0.25 0.65 0.45 0.3 0.5 0.7 0.4 0.55 0.35];
-Params.BMBlock                  = 45; % how many trials to try each BM value for
+Params.RandDist                 = makedist('Normal',0,1.0);
 
 %% Other visuals
 % Vertical bar outline
@@ -244,29 +236,11 @@ b5.WrongWay_scale               = [1000 100];
 b5.WrongWay_pos                 = Params.WsCenter; % in joysticTraining.m we will move it on each trial
 b5.WrongWay_draw                = DRAW_NONE; % default is don't draw
 
-%% FOR CONVENIENCE DEFINE BLOCKSIZE HERE
-% Params.BlockSize 				= 35;
-Params.BlockSize 				=1000;
-
 %% LJJuicer parameters
 Params.Solenoid = 'off'; % Global variable for bypass
 
 Params.LJJuicerDOUT = 1; % Which digital output connected to solenoid [1-2]
 b5 = LJJuicer(Params, b5, 'off');
-
-%% OTHER
-% Params.UseCorrectionTrials          = false; % { both of these
-% Params.UseAdaptiveProbability       = false; % { cannot be true
-% Params.AdaptiveLookbackLength       = 10;    % num trials to look back
-% Params.FixedTrialLength             = false;
-% Params.AllowEarlyReach              = true; % { allow subject to start
-%                                            % { reach before end of delay
-% Params.OpeningSound.Enable          = true;
-% Params.OpeningSound.Next            = 0;
-% Params.OpeningSound.Counter         = 0;
-% Params.OpeningSound.Repeats         = 5;
-% Params.OpeningSound.Intervals         = [10 20]; %(1) wait between repeats [s], (2) wait between groups of repeats [min]
-% 
 
 %% BLOCKS OF TRIALS
 % Params.BlockTypes = {'string names' };
