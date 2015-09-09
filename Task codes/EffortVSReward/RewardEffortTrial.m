@@ -102,7 +102,6 @@ if ~dat.OutcomeID
     b5.StartTarget_draw             = DRAW_NONE;
     b5.xSensitivity_draw       = DRAW_BOTH;
     b5.ySensitivity_draw       = DRAW_BOTH;
-    b5.SolenoidOpen_draw       = DRAW_NONE;
     b5.UpTarget_draw         = DRAW_BOTH;
     b5.DownTarget_draw      = DRAW_BOTH;
     

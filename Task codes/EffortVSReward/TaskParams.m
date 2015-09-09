@@ -30,7 +30,6 @@ bmi5_cmd('make open_square BarOutline 0.03');
 bmi5_cmd('make square xSensitivity');
 bmi5_cmd('make square ySensitivity');
 bmi5_cmd('make circle Cursor');
-bmi5_cmd('make circle SolenoidOpen');
 
 bmi5_cmd('make labjack isometric 4 2 2');
 bmi5_cmd('make store int 1 Trial');
@@ -112,7 +111,7 @@ Params.SessionCount = ct;
 % 4. Effort tracking with fixed reward
 % 5. Reward and effort tracking
 
-Params.TrialTypeBlocks          = [3 3 4]; % sequence of trial types
+Params.TrialTypeBlocks          = [3 3 3 4]; % sequence of trial types
 Params.LoopBlocks               = false; % if false, continue with last trial type forever
 Params.BlockLength              =50; % number of successes per block
 Params.NumTrials 				= 100000; % Choose a big number so task doesn't finish before hand
@@ -174,7 +173,7 @@ Params.StartTarget_pos          = Params.WsCenter;
 
 %% Targets
 b5.UpTarget_color               = [0 1 0 1];
-b5.UpTarget_scale               = [320 50];
+b5.UpTarget_scale               = [300 50];
 Params.UpTarget_pos             = Params.StartTarget_pos + ...
                                     [0,0.1 * b5.Frame_scale(2)] ...
                                     + [0,b5.UpTarget_scale(2)/2];
@@ -190,8 +189,8 @@ Params.UpTargetProbability      = 0.5; % for joystickTraining mode
 % Rewards
 Params.StdReward                = 100; %[ms]
 % multipliers for StdReward
-Params.UpReward                 = [ 0.25 0.75 ]; 
-Params.DownReward               = [ 0.75 0.25 ];
+Params.UpReward                 = [ 0.5 0.25 0.75 ]; 
+Params.DownReward               = [ 0.5 0.75 0.25 ];
 
 
 % Effort
@@ -204,7 +203,9 @@ Params.DownEffort               = [0.561 0.877 0.504 0.776 0.910 0.662 0.647 0.9
 
 % Changing rewards & effort
 Params.BiasingMulti             = 0.5; % for shifting reward or effort
-Params.TrialsSinceAdapt         = 30;
+Params.AvgOver                  = 10;
+Params.AdaptStep                = 15; % can't be smaller than Params.AvgOver
+Params.TrialsSinceAdapt         = 2*Params.AdaptStep;
 Params.RandDist                 = makedist('Normal',0,1.0);
 
 %% Other visuals
@@ -224,11 +225,6 @@ b5.xSensitivity_color           = [1 1 0 0.05];
 b5.xSensitivity_scale           = b5.Frame_scale .* [1, 0.1];
 b5.xSensitivity_pos             = Params.WsCenter - [0, 0] + ...
                                     [b5.xSensitivity_scale(1)/2,0];                
-
-% Solenoid Open
-b5.SolenoidOpen_color			= [0 0 1 0.2];
-b5.SolenoidOpen_scale 			= [20 20];
-b5.SolenoidOpen_pos 			= Params.WsBounds(2,:);
 
 % % Wrong way
 b5.WrongWay_color               = [1 0 0 0.5];

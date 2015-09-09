@@ -103,8 +103,8 @@ for itrial = startTrial : Params.NumTrials
     
 	switch Data(trial).TrialType
 	case 1 % reward adapt to center
-        Data(trial).UpReward                = Params.BiasingMulti*Params.StdReward*2.0;
-        Data(trial).DownReward              =(1.0-Params.BiasingMulti)*Params.StdReward*2.0;
+        Data(trial).UpReward                = 2*Params.BiasingMulti*Params.StdReward;
+        Data(trial).DownReward              =2*(1.0-Params.BiasingMulti)*Params.StdReward;
         Data(trial).UpEffort                = Params.StdEffort;
         Data(trial).DownEffort              = Params.StdEffort;
         
@@ -119,8 +119,8 @@ for itrial = startTrial : Params.NumTrials
     case 2 % effort adapt to center
         Data(trial).UpReward                = Params.StdReward;
         Data(trial).DownReward              = Params.StdReward;
-        Data(trial).UpEffort                = min(2.0*Params.BiasingMulti,1);
-        Data(trial).DownEffort              = min(2.0*(1.0-Params.BiasingMulti),1);
+        Data(trial).UpEffort                = min(2.0*Params.BiasingMulti,1)*Params.StdEffort;
+        Data(trial).DownEffort              = min(2.0*(1.0-Params.BiasingMulti),1)*Params.StdEffort;
         
         fprintf('Up Reward\t\t%d \n', Data(trial).UpReward);
         fprintf('Down Reward\t\t%d \n', Data(trial).DownReward);
@@ -131,8 +131,8 @@ for itrial = startTrial : Params.NumTrials
         [Params, Data]                      = AdaptToCenter(Params,Data,trial);
        
     case 3 % reward tracking w/ fixed effort
-        Data(trial).UpReward                = Params.UpReward(mod(Data(trial).BlockNum,numel(Params.UpReward))+1);
-        Data(trial).DownReward              = Params.DownReward(mod(Data(trial).BlockNum,numel(Params.DownReward))+1);
+        Data(trial).UpReward                = Params.UpReward(mod(Data(trial).BlockNum,numel(Params.UpReward))+1)*Params.StdReward;
+        Data(trial).DownReward              = Params.DownReward(mod(Data(trial).BlockNum,numel(Params.DownReward))+1)*Params.StdReward;
         Data(trial).UpEffort                = Params.StdEffort;
         Data(trial).DownEffort              = Params.StdEffort;
         
@@ -146,8 +146,8 @@ for itrial = startTrial : Params.NumTrials
     case 4 % effort tracking w/ fixed reward
         Data(trial).UpReward                = Params.StdReward;
         Data(trial).DownReward              = Params.StdReward;
-        Data(trial).UpEffort                = Params.UpEffort(mod(Data(trial).BlockNum,numel(Params.UpEffort))+1);
-        Data(trial).DownEffort              = Params.DownEffort(mod(Data(trial).BlockNum,numel(Params.DownEffort))+1);
+        Data(trial).UpEffort                = Params.UpEffort(mod(Data(trial).BlockNum,numel(Params.UpEffort))+1)*Params.StdEffort;
+        Data(trial).DownEffort              = Params.DownEffort(mod(Data(trial).BlockNum,numel(Params.DownEffort))+1)*Params.StdEffort;
         
         fprintf('Up Reward\t\t%d \n', Data(trial).UpReward);
         fprintf('Down Reward\t\t%d \n', Data(trial).DownReward);
@@ -157,10 +157,10 @@ for itrial = startTrial : Params.NumTrials
         [Params, Data(trial), b5]           = RewardEffortTrial(Params,Data(trial),b5,controlWindow);
         
     case 5 % reward and effort tracking
-        Data(trial).UpReward                = Params.UpReward(mod(Data(trial).BlockNum,numel(Params.UpReward))+1);
-        Data(trial).DownReward              = Params.DownReward(mod(Data(trial).BlockNum,numel(Params.DownReward))+1);
-        Data(trial).UpEffort                = Params.UpEffort(mod(Data(trial).BlockNum,numel(Params.UpEffort))+1);
-        Data(trial).DownEffort              = Params.DownEffort(mod(Data(trial).BlockNum,numel(Params.DownEffort))+1);
+        Data(trial).UpReward                = Params.UpReward(mod(Data(trial).BlockNum,numel(Params.UpReward))+1)*Params.StdReward;
+        Data(trial).DownReward              = Params.DownReward(mod(Data(trial).BlockNum,numel(Params.DownReward))+1)*Params.StdReward;
+        Data(trial).UpEffort                = Params.UpEffort(mod(Data(trial).BlockNum,numel(Params.UpEffort))+1)*Params.StdEffort;
+        Data(trial).DownEffort              = Params.DownEffort(mod(Data(trial).BlockNum,numel(Params.DownEffort))+1)*Params.StdEffort;
         
         fprintf('Up Reward\t\t%d \n', Data(trial).UpReward);
         fprintf('Down Reward\t\t%d \n', Data(trial).DownReward);
@@ -283,35 +283,30 @@ function [Params, b5] = DoKeyboard(Params, b5)
 end
 
 function [Params, Data] = AvgChoice(Params,Data,trial)
-    if ( Data(trial).NumSuccess > 9 )
-        % find 10 most recent & compute local average
-        tmpIdx = find([Data.OutcomeID]==0,10,'last');
-        Data(trial).RecentAvgChoice=sum([Data(tmpIdx).TrialChoiceID]==1)/10;
+    if ( Data(trial).NumSuccess >= Params.AvgOver )
+        tmpIdx = find([Data.OutcomeID]==0,Params.AvgOver,'last');
+        Data(trial).RecentAvgChoice=sum([Data(tmpIdx).TrialChoiceID]==1)/Params.AvgOver;
     else
         Data(trial).RecentAvgChoice=NaN;
     end
 end
 
 function [Params,Data] = AdaptToCenter(Params, Data,trial)
-    if (sum([Data.OutcomeID] == 0) > 9 )
-        % don't change anything unless he's working now
-        if (Data(trial).OutcomeID==0) && (sum([Data.OutcomeID]==0) > 29)
-            tmpIdx = find([Data.OutcomeID]==0,30,'last'); % check stability over a larger window
-            % if recent average seems stable & it's been a while since we
-            % adapted, then change BiasingMulti
-            if ( std([Data(tmpIdx).RecentAvgChoice]) < 0.2 ) && (Params.TrialsSinceAdapt > 29)
-                if sum([Data(tmpIdx).RecentAvgChoice])/50 > 0.5
-                    Params.BiasingMulti = max(0, 0.7*Params.BiasingMulti);
-                elseif sum([Data(tmpIdx).RecentAvgChoice])/50 < 0.5
-                    Params.BiasingMulti = min(1,1.3*Params.BiasingMulti);
-                end
+    if (Data(trial).OutcomeID==0) && (Data(trial).NumSuccess >= Params.AdaptStep)
+        tmpIdx = find([Data.OutcomeID]==0,Params.AdaptStep,'last'); 
+        
+        if Params.TrialsSinceAdapt >= 2*Params.AdaptStep
+            if sum([Data(tmpIdx).RecentAvgChoice])/Params.AdaptStep > 0.55
+                Params.BiasingMulti = max(0, 0.8*Params.BiasingMulti);
                 Params.TrialsSinceAdapt = 0;
-
-            else
-                Params.TrialsSinceAdapt = Params.TrialsSinceAdapt + 1;
+            elseif sum([Data(tmpIdx).RecentAvgChoice])/Params.AdaptStep < 0.45
+                Params.BiasingMulti = min(1,1.2*Params.BiasingMulti);
+                Params.TrialsSinceAdapt = 0;
             end
+            
+        else
+            Params.TrialsSinceAdapt = Params.TrialsSinceAdapt + 1;
         end
-    else
-        Data(trial).RecentAvgChoice=NaN;
     end
+
 end
