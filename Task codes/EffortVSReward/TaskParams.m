@@ -198,8 +198,8 @@ Params.LoadCellMax              = 50;
 Params.MaxForce                 = 10; % Measured max force per subject [N]
 Params.StdEffort                = 1.0;
 % 0.5 effort multiplier means he has to push 2x as hard, so keep values in [0.5 1]
-Params.UpEffort                 = [0.755 0.721 0.998 0.888 0.576 0.850 0.780 0.860 0.814 0.848 0.988 0.843 0.718 0.683 0.512 0.505 0.907 0.716 0.817 0.926]; 
-Params.DownEffort               = [0.561 0.877 0.504 0.776 0.910 0.662 0.647 0.905 0.918 0.796 0.878 0.832 0.990 0.722 0.522 0.920 0.578 0.998 0.689]; 
+Params.UpEffort                 = [ 1.0 0.5 1.0 0.75 0.75 0.50 0.60 0.6 0.60 0.80 0.90 0.90 0.8];
+Params.DownEffort               = [ 1.0 1.0 0.5 0.50 0.75 0.75 0.95 0.8 0.55 0.55 0.55 0.65 0.9];
 
 % Changing rewards & effort
 Params.BiasingMulti             = 0.5; % for shifting reward or effort
