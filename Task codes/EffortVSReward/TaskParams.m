@@ -173,7 +173,7 @@ Params.StartTarget_pos          = Params.WsCenter;
 
 %% Targets
 b5.UpTarget_color               = [0 1 0 1];
-b5.UpTarget_scale               = [300 50];
+b5.UpTarget_scale               = [270 50];
 Params.UpTarget_pos             = Params.StartTarget_pos + ...
                                     [0,0.1 * b5.Frame_scale(2)] ...
                                     + [0,b5.UpTarget_scale(2)/2];
@@ -189,8 +189,8 @@ Params.UpTargetProbability      = 0.5; % for joystickTraining mode
 % Rewards
 Params.StdReward                = 100; %[ms]
 % multipliers for StdReward
-Params.UpReward                 = [ 0.5 0.25 0.75 ]; 
-Params.DownReward               = [ 0.5 0.75 0.25 ];
+Params.UpReward                 = [ 0.5 0.25 0.75 ]*2; 
+Params.DownReward               = [ 0.5 0.75 0.25 ]*2;
 
 
 % Effort

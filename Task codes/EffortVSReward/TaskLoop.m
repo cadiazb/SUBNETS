@@ -78,7 +78,7 @@ for itrial = startTrial : Params.NumTrials
             Data(trial).NumSuccess = Data(trial-1).NumSuccess;
         end
         
-        if Data(trial).NumSuccess>0 && mod(Data(trial).NumSuccess,Params.BlockLength)==0
+        if Data(trial-1).OutcomeID == 0 && mod(Data(trial).NumSuccess,Params.BlockLength)==0
             Data(trial).BlockNum = Data(trial-1).BlockNum + 1;
         else
             Data(trial).BlockNum = Data(trial-1).BlockNum;
