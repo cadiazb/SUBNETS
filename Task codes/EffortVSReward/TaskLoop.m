@@ -69,7 +69,7 @@ for itrial = startTrial : Params.NumTrials
     
     % update BlockNum & NumSuccess based on outcome of prev trial
     if trial == 1
-    	Data(trial).BlockNum 	= 0;
+    	Data(trial).BlockNum 	= 1;
         Data(trial).NumSuccess  = 0;
     else
         if Data(trial-1).OutcomeID == 0
