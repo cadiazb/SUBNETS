@@ -5,8 +5,8 @@ system('cp --update --recursive /home/motorlab/Data/SUBNETS/EffortVSReward/ /hom
 
 %% Copy to minnie
 % mount minnie if not mounted already. Need CIN login
-% system('sudo mount.cifs //minnie.cin.ucsf.edu/data1/ /home/motorlab/minnie/ -o username=cadiaz, domain=KECK-CENTER, uid=motorlab, gid=motorlab')
-system('sudo cp --update --recursive /home/motorlab/Data/SUBNETS/EffortVSReward/ /home/motorlab/minnie/Camilo/SUBNETS/task2go_Data/')
+%system('sudo mount.cifs //minnie.cin.ucsf.edu/data4/ /home/motorlab/minnie/ -o username=kderosier, domain=KECK-CENTER, uid=motorlab, gid=motorlab')
+system('sudo cp --update --recursive /home/motorlab/Data/SUBNETS/inCage/ /home/motorlab/minnie/kderosier/')
 
 %% Move to trasferedData folder to avoid copying several copy in servers
 system('mv -u /home/motorlab/Data/SUBNETS/EffortVSReward/* -t /home/motorlab/txData/SUBNETS/EffortVSReward/')

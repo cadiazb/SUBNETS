@@ -111,9 +111,9 @@ Params.SessionCount = ct;
 % 4. Effort tracking with fixed reward
 % 5. Reward and effort tracking
 
-Params.TrialTypeBlocks          = [5 5 5 5 5 4 4 4 4 4 5 5 5 5 5 3 3 3 3 3 ]; % sequence of trial types
-Params.LoopBlocks               = true; % if false, continue with last trial type forever
-Params.BlockLength              =50; % number of successes per block
+Params.TrialTypeBlocks          = [3 3 3 3 3 3 3 3 3 3 3 3 3 3 3 5]; % sequence of trial types
+Params.LoopBlocks               = false; % if false, continue with last trial type forever
+Params.BlockLength              =45; % number of successes per block
 Params.NumTrials 				= 100000; % Choose a big number so task doesn't finish before hand
 
 % extend Params.TrialTypeBlocks to last until we reach NumTrials
@@ -141,7 +141,7 @@ Params.StartTarget.Hold       	= 0.6; %0.5
 Params.ReactionTimeDelay      	= 2; % Max time to initiate movement
 
 % Go/NoGo
-Params.TimeoutReachTarget       = 1.5; % max time to reach reaching target
+Params.TimeoutReachTarget       = 1.6; % max time to reach reaching target
 
 % Other
 Params.TrialLength              = 2;   % Fixed trial length [s]
@@ -173,7 +173,7 @@ Params.StartTarget_pos          = Params.WsCenter;
 
 %% Targets
 b5.UpTarget_color               = [0 1 0 1];
-b5.UpTarget_scale               = [250 50];
+b5.UpTarget_scale               = [230 50];
 Params.UpTarget_pos             = Params.StartTarget_pos + ...
                                     [0,0.1 * b5.Frame_scale(2)] ...
                                     + [0,b5.UpTarget_scale(2)/2];
