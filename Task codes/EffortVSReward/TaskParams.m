@@ -111,7 +111,7 @@ Params.SessionCount = ct;
 % 4. Effort tracking with fixed reward
 % 5. Reward and effort tracking
 
-Params.TrialTypeBlocks          = [3 3 3 3 3 3 3 3 3 3 3 3 3 3 3 5]; % sequence of trial types
+Params.TrialTypeBlocks          = [3 3 3 3 3 3 3 3 3 3 5 5 5 5 5 4 ]; % sequence of trial types
 Params.LoopBlocks               = false; % if false, continue with last trial type forever
 Params.BlockLength              =45; % number of successes per block
 Params.NumTrials 				= 100000; % Choose a big number so task doesn't finish before hand
@@ -173,7 +173,7 @@ Params.StartTarget_pos          = Params.WsCenter;
 
 %% Targets
 b5.UpTarget_color               = [0 1 0 1];
-b5.UpTarget_scale               = [230 50];
+b5.UpTarget_scale               = [200 50];
 Params.UpTarget_pos             = Params.StartTarget_pos + ...
                                     [0,0.1 * b5.Frame_scale(2)] ...
                                     + [0,b5.UpTarget_scale(2)/2];
@@ -187,7 +187,7 @@ Params.DownTarget_pos           = Params.StartTarget_pos + ...
 Params.UpTargetProbability      = 0.5; % for joystickTraining mode
 
 % Rewards
-Params.StdReward                = 100; %[ms]
+Params.StdReward                = 150; %[ms]
 % multipliers for StdReward
 Params.UpReward                 = rand(1,20); 
 Params.DownReward               = 1.0-Params.UpReward;
@@ -200,8 +200,9 @@ Params.LoadCellMax              = 50;
 Params.MaxForce                 = 10; % Measured max force per subject [N]
 Params.StdEffort                = 1.0;
 % 0.5 effort multiplier means he has to push 2x as hard, so keep values in [0.5 1]
-Params.UpEffort                 = [ 1.0 0.5 1.0 0.75 0.75 0.50 0.60 0.6 0.60 0.80 0.90 0.90 0.8 1.0];
-Params.DownEffort               = [ 1.0 1.0 0.5 0.50 0.75 0.75 0.95 0.8 0.55 0.55 0.55 0.65 0.9];
+Params.UpEffort                 = rand(1,20);
+Params.DownEffort               = (1.0-Params.UpEffort)*0.5 + 0.5;
+Params.UpEffort                 = Params.UpEffort*0.5+0.5;
 
 % Changing rewards & effort
 Params.BiasingMulti             = 0.5; % for shifting reward or effort
