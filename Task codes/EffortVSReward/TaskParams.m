@@ -111,7 +111,7 @@ Params.SessionCount = ct;
 % 4. Effort tracking with fixed reward
 % 5. Reward and effort tracking
 
-Params.TrialTypeBlocks          = [3 3 3 3 3 3 3 3 3 3 5 5 5 5 5 ]; % sequence of trial types
+Params.TrialTypeBlocks          = [3 3 3 3 3 3 3 3 3 3 5 5 5 3 3 3 3 3]; % sequence of trial types
 Params.LoopBlocks               = true; % if false, continue with last trial type forever
 Params.BlockLength              =40; % number of successes per block
 Params.NumTrials 				= 100000; % Choose a big number so task doesn't finish before hand
@@ -173,7 +173,7 @@ Params.StartTarget_pos          = Params.WsCenter;
 
 %% Targets
 b5.UpTarget_color               = [0 1 0 1];
-b5.UpTarget_scale               = [180 50];
+b5.UpTarget_scale               = [160 50];
 Params.UpTarget_pos             = Params.StartTarget_pos + ...
                                     [0,0.1 * b5.Frame_scale(2)] ...
                                     + [0,b5.UpTarget_scale(2)/2];
@@ -201,8 +201,8 @@ Params.MaxForce                 = 10; % Measured max force per subject [N]
 Params.StdEffort                = 1.0;
 % 0.5 effort multiplier means he has to push 2x as hard, so keep values in [0.5 1]
 Params.UpEffort                 = rand(1,20);
-Params.DownEffort               = (1.0-Params.UpEffort)*0.5 + 0.5;
-Params.UpEffort                 = Params.UpEffort*0.5+0.5;
+Params.DownEffort               = (1.0-Params.UpEffort)*(1/3) + (2/3);
+Params.UpEffort                 = Params.UpEffort*0.6+0.4;
 
 % Changing rewards & effort
 Params.BiasingMulti             = 0.5; % for shifting reward or effort
