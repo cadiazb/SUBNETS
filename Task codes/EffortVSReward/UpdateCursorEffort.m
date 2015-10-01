@@ -30,6 +30,7 @@ function [Params, dat, b5] = UpdateCursorEffort(Params, dat, b5)
     newForce(1) =  sign(tmpSmoothTrace(tmpIndex+1,2))*(log(1+abs(tmpSmoothTrace(tmpIndex+1,2))/tao)*1/log(1+1/tao));
     newForce(2) =  sign(tmpSmoothTrace(tmpIndex+1,3))*(log(1+abs(tmpSmoothTrace(tmpIndex+1,3))/tao)*1/log(1+1/tao));
     
+    
     % calculate cursor position
     newPosX = min((b5.Frame_scale(1))*newForce(1)*(Params.LoadCellMax/Params.MaxForce) + b5.StartTarget_pos(1), ...
         b5.Frame_scale(1) + b5.StartTarget_pos(1));
