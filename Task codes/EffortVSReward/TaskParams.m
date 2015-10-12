@@ -190,7 +190,7 @@ Params.UpTargetProbability      = 0.5; % for joystickTraining mode
 % Rewards
 Params.StdReward                = 100; %[ms]
 % multipliers for StdReward
-Params.UpReward                 = rand(1,20); 
+Params.UpReward                 = rand(1,100); 
 Params.DownReward               = 1.0-Params.UpReward;
 Params.UpReward=2*Params.UpReward;
 Params.DownReward=2*Params.DownReward;
@@ -201,9 +201,9 @@ Params.LoadCellMax              = 50;
 Params.MaxForce                 = 10; % Measured max force per subject 
 Params.StdEffort                = 1.0;
 % 0.5 effort multiplier means he has to push 2x as hard, so keep values in [0.5 1]
-Params.UpEffort                 = rand(1,20);
-Params.DownEffort               = (1.0-Params.UpEffort)*(1/3) + (2/3);
-Params.UpEffort                 = Params.UpEffort*0.6+0.4;
+Params.UpEffort                 = round(rand(1,100));
+Params.DownEffort               = (1.0-Params.UpEffort)*(0.5) + (0.5);
+Params.UpEffort                 = Params.UpEffort*0.5+0.5;
 
 % Changing rewards & effort
 Params.BiasingMulti             = 0.5; % for shifting reward or effort
