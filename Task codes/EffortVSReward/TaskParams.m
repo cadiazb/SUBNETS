@@ -111,7 +111,7 @@ Params.SessionCount = ct;
 % 4. Effort tracking with fixed reward
 % 5. Reward and effort tracking
 
-Params.TrialTypeBlocks          = [3 3 3 3 3 3 3 3 3 3 5 4 5]; % sequence of trial types
+Params.TrialTypeBlocks          = [3 3 3 3 3 3 3 3 3 3 5 4 4 4 5]; % sequence of trial types
 Params.LoopBlocks               = true; % if false, continue with last trial type forever
 Params.BlockLength              =30; % number of successes per block
 Params.NumTrials 				= 100000; % Choose a big number so task doesn't finish before hand
@@ -166,7 +166,7 @@ b5.Cursor_scale 				= [35 17.5];        % [mm] % note: diameter!
 
 %% Start Target
 b5.StartTarget_color			= [0 1 0 1];
-b5.StartTarget_scale 			= [90 40];
+b5.StartTarget_scale 			= [0.25*b5.Frame_scale(1) 40];
 Params.StartTarget.Win  		= 0.5*b5.StartTarget_scale; % [75 30]; % radius
 Params.StartTarget_pos          = Params.WsCenter;
 % Params.StartTarget.Locations 	= {Params.WsCenter + [-40 -40]}; % cell array of locations
