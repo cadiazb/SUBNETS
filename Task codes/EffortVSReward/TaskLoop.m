@@ -144,8 +144,8 @@ for itrial = startTrial : Params.NumTrials
         [Params, Data(trial), b5]           = RewardEffortTrial(Params,Data(trial),b5,controlWindow);
         
     case 4 % effort tracking w/ fixed reward
-        Data(trial).UpReward                = 0.85*Params.StdReward;
-        Data(trial).DownReward              = 1.15*Params.StdReward;
+        Data(trial).UpReward                = 0.9*Params.StdReward;
+        Data(trial).DownReward              = 1.1*Params.StdReward;
         Data(trial).UpEffort                = Params.UpEffort(mod(Data(trial).BlockNum,numel(Params.UpEffort))+1)*Params.StdEffort;
         Data(trial).DownEffort              = Params.DownEffort(mod(Data(trial).BlockNum,numel(Params.DownEffort))+1)*Params.StdEffort;
         
