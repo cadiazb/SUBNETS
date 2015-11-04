@@ -13,8 +13,8 @@ DRAW_BOTH     = 3;
 b5.StartTarget_pos = Params.StartTarget_pos;
 
 %% Add some noise to effort
-dat.ActualEffort(1)     = dat.UpEffort + 0.001*random(Params.RandDist);
-dat.ActualEffort(2)     = dat.DownEffort + 0.001*random(Params.RandDist);
+dat.ActualEffort(1)     = dat.UpEffort + 0.0001*random(Params.RandDist);
+dat.ActualEffort(2)     = dat.DownEffort + 0.0001*random(Params.RandDist);
 
 %% Generate DownTarget position
 b5.UpTarget_pos 		= Params.UpTarget_pos;
