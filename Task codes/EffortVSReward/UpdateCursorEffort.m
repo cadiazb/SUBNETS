@@ -45,6 +45,9 @@ function [Params, dat, b5] = UpdateCursorEffort(Params, dat, b5)
         newPosY = newPosY*dat.ActualEffort(2);
     end
     
+    %% Scale horizontal position (for helping MP learn to hold)
+    newPosX = 0.5*newPosX;
+    
     
     %% Update cursor position
     if abs(newPosX - b5.Cursor_pos(1)) > ZeroBalance
