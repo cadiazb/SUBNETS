@@ -139,14 +139,15 @@ Params.StartTarget.Hold       	= 0.6; %0.5
 
 % Reaching phase
 Params.ReactionTimeDelay      	= 2; % Max time to initiate movement
+Params.HoldTarget               = 0.1; % required min hold time
 
 % Go/NoGo
 Params.TimeoutReachTarget       = 1.6; % max time to reach reaching target
 
 % Other
 Params.TrialLength              = 2;   % Fixed trial length [s]
-Params.InterTrialDelay 			= 4;  % delay between each trial [sec]
-Params.WrongChoiceDelay         = 5.5; % Delay when wrong target is chosen [sec]
+Params.InterTrialDelay 			= 3.75;  % delay between each trial [sec]
+Params.WrongChoiceDelay         = 5; % Delay when wrong target is chosen [sec]
 
 %% Callibrate Load Cell
 [Params, b5]                    = CallibrateLoadCell(Params, b5);
