@@ -65,8 +65,8 @@ while ~done
         %Show features on screen when MP lets go
         b5.StartTarget_draw             = DRAW_BOTH;
         b5.BarOutline_draw              = DRAW_BOTH;
-        b5.xSensitivity_draw            = DRAW_BOTH;
-        b5.ySensitivity_draw            = DRAW_BOTH;
+        b5.xSensitivity_draw            = DRAW_NONE;
+        b5.ySensitivity_draw            = DRAW_NONE;
         
         if (b5.time_o - starthold) > Params.StartTarget.Hold
             done = true;   % Reach to start target OK
@@ -100,8 +100,8 @@ if ~dat.OutcomeID
     b5.BarOutline_draw          = DRAW_BOTH;
     b5.Cursor_draw              = DRAW_BOTH;
     b5.StartTarget_draw             = DRAW_NONE;
-    b5.xSensitivity_draw       = DRAW_BOTH;
-    b5.ySensitivity_draw       = DRAW_BOTH;
+    b5.xSensitivity_draw       = DRAW_NONE;
+    b5.ySensitivity_draw       = DRAW_NONE;
     b5.UpTarget_draw         = DRAW_BOTH;
     b5.DownTarget_draw      = DRAW_BOTH;
     
