@@ -46,10 +46,6 @@ function [Params, dat, b5] = UpdateCursorEffort(Params, dat, b5)
         newPosY = newPosY*dat.ActualEffort(2);
     end
     
-   
-    
-    
-    
     %% Update cursor position
     if abs(newPosX - b5.Cursor_pos(1)) > ZeroBalance
         b5.Cursor_pos(1) = newPosX;

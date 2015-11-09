@@ -111,7 +111,7 @@ Params.SessionCount = ct;
 % 4. Effort tracking with fixed reward
 % 5. Reward and effort tracking
 
-Params.TrialTypeBlocks          = [3 3 3 3 3 3 3 3 3 3 5 4 4 4 5]; % sequence of trial types
+Params.TrialTypeBlocks          = [3 3 3 3 3 5 5 5 5 5]; % sequence of trial types
 Params.LoopBlocks               = true; % if false, continue with last trial type forever
 Params.BlockLength              =30; % number of successes per block
 Params.NumTrials 				= 100000; % Choose a big number so task doesn't finish before hand
@@ -139,7 +139,7 @@ Params.StartTarget.Hold       	= 0.6; %0.5
 
 % Reaching phase
 Params.ReactionTimeDelay      	= 2; % Max time to initiate movement
-Params.HoldTarget               = 0.1; % required min hold time
+Params.HoldTarget               = 0.16; % required min hold time
 
 % Go/NoGo
 Params.TimeoutReachTarget       = 1.6; % max time to reach reaching target
@@ -191,7 +191,7 @@ Params.UpTargetProbability      = 0.5; % for joystickTraining mode
 % Rewards
 Params.StdReward                = 100; %[ms]
 % multipliers for StdReward
-Params.UpReward                 = rand(1,100); 
+Params.UpReward                 = rand(1,100)*0.8+0.1; 
 Params.DownReward               = 1.0-Params.UpReward;
 Params.UpReward=2*Params.UpReward;
 Params.DownReward=2*Params.DownReward;
