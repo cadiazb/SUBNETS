@@ -136,8 +136,8 @@ if ~dat.OutcomeID
             gotTarget=true;
         end
         
-        if ~isempty(dat.ReactionTime) && (posDownOk)   && ...
-                (abs(pos(1) - b5.StartTarget_pos(1)) < Params.StartTarget.Win(1))
+        if ~isempty(dat.ReactionTime) && (posDownOk)  % && ...
+%                (abs(pos(1) - b5.StartTarget_pos(1)) < Params.StartTarget.Win(1))
             dat.TrialChoice = 'Down';
             dat.TrialChoiceID = 0; %0 means reached down
             if (b5.time_o - targethold) > Params.HoldTarget
@@ -148,8 +148,8 @@ if ~dat.OutcomeID
             end            
         end
         
-        if ~isempty(dat.ReactionTime) && (posUpOk) && ...
-                (abs(pos(1) - b5.StartTarget_pos(1)) < Params.StartTarget.Win(1))
+         if ~isempty(dat.ReactionTime) && (posUpOk) % && ...
+%                 (abs(pos(1) - b5.StartTarget_pos(1)) < Params.StartTarget.Win(1))
                         dat.TrialChoice = 'Up';
             dat.TrialChoiceID = 1; %1 means reached up
             if (b5.time_o - targethold) > Params.HoldTarget
@@ -161,7 +161,7 @@ if ~dat.OutcomeID
         end
         
         % check if lost target
-        if gotTarget && ~done && ~(posDownOk ||posUpOk)
+        if gotTarget && ~done && ~(posDownOk || posUpOk)
             dat.OutcomeID = 6;
             dat.OutcomeStr = 'Failed to hold target';
             done = true;
