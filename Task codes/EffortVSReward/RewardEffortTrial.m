@@ -165,9 +165,10 @@ if ~dat.OutcomeID
             dat.OutcomeID = 6;
             dat.OutcomeStr = 'Failed to hold target';
             done = true;
+            gotTarget = false;
         end
         
-        if QUIT_FLAG || ((b5.time_o - t_start) > Params.ReactionTimeDelay)
+        if QUIT_FLAG || (((b5.time_o - t_start) > Params.ReactionTimeDelay) && ~gotTarget)
             dat.ReactionTime = b5.time_o - t_start;
             dat.TrialChoice = '';
             dat.MovementTime = NaN;

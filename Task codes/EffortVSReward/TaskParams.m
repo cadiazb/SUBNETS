@@ -138,8 +138,9 @@ Params.TimeoutReachStartTarget  = 2; % max time to acquire start target
 Params.StartTarget.Hold       	= 0.6; %0.5
 
 % Reaching phase
-Params.ReactionTimeDelay      	= 2; % Max time to initiate movement
 Params.HoldTarget               = 0.2; % required min hold time
+Params.ReactionTimeDelay      	= 2; % Max time to initiate movement
+
 
 % Go/NoGo
 Params.TimeoutReachTarget       = 1.6; % max time to reach reaching target
