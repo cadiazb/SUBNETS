@@ -140,7 +140,7 @@ if ~dat.OutcomeID
 %                (abs(pos(1) - b5.StartTarget_pos(1)) < Params.StartTarget.Win(1))
             dat.TrialChoice = 'Down';
             dat.TrialChoiceID = 0; %0 means reached down
-            if (b5.time_o - targethold) > Params.HoldTarget
+            if (b5.time_o - targethold) > Params.HoldDown
                 done = true;   % Reach to target OK
                 dat.MovementTime = b5.time_o - t_start - dat.ReactionTime;
                 dat.OutcomeID 	= 0;
@@ -152,7 +152,7 @@ if ~dat.OutcomeID
 %                 (abs(pos(1) - b5.StartTarget_pos(1)) < Params.StartTarget.Win(1))
                         dat.TrialChoice = 'Up';
             dat.TrialChoiceID = 1; %1 means reached up
-            if (b5.time_o - targethold) > Params.HoldTarget
+            if (b5.time_o - targethold) > Params.HoldUp
                 done = true;   % Reach to target OK
                 dat.MovementTime = b5.time_o - t_start - dat.ReactionTime;
                 dat.OutcomeID 	= 0;
