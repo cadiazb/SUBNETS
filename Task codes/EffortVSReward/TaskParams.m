@@ -138,8 +138,8 @@ Params.TimeoutReachStartTarget  = 2; % max time to acquire start target
 Params.StartTarget.Hold       	= 0.6; %0.5
 
 % Reaching phase
-Params.HoldDown                 = 0.4; % required min hold time
-Params.HoldUp                   = 0.13;
+Params.HoldDown                 = 0.3; % required min hold time
+Params.HoldUp                   = 0.1;
 Params.ReactionTimeDelay      	= 2; % Max time to initiate movement
 
 
@@ -193,7 +193,7 @@ Params.UpTargetProbability      = 0.5; % for joystickTraining mode
 % Rewards
 Params.StdReward                = 100; %[ms]
 % multipliers for StdReward
-Params.UpReward                 = [0.9 0.9 0.8 0.9 0.6 0.7 0.8 0.9 0.9, rand(1,100)*0.8+0.1]; 
+Params.UpReward                 = [rand(1,100)*0.8+0.1]; 
 Params.DownReward               = 1.0-Params.UpReward;
 Params.UpReward=2*Params.UpReward;
 Params.DownReward=2*Params.DownReward;
