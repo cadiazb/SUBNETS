@@ -183,7 +183,6 @@ Params.UpTarget_pos             = Params.StartTarget_pos + ...
 
 b5.DownTarget_color             = b5.UpTarget_color;
 b5.DownTarget_scale             = b5.UpTarget_scale;
-% Params.DownTarget_pos           = Params.UpTarget_pos;
 Params.DownTarget_pos           = Params.StartTarget_pos + ...
                                     [0,-0.1 * b5.Frame_scale(2)] ...
                                     + [0,-b5.DownTarget_scale(2)/2];
@@ -191,9 +190,9 @@ Params.DownTarget_pos           = Params.StartTarget_pos + ...
 Params.UpTargetProbability      = 0.5; % for joystickTraining mode
 
 % Rewards
-Params.StdReward                = 150; %[ms]
+Params.StdReward                = 200; %[ms]
 % multipliers for StdReward
-Params.UpReward                 = [0.7 0.5 rand(1,100)*0.8+0.1]; 
+Params.UpReward                 = [0.9 0.7 0.5 rand(1,100)*0.8+0.1]; 
 Params.DownReward               = 1.0-Params.UpReward;
 Params.UpReward=2*Params.UpReward;
 Params.DownReward=2*Params.DownReward;
