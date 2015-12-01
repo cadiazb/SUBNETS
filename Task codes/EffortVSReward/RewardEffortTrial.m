@@ -150,7 +150,7 @@ if ~dat.OutcomeID
         
          if ~isempty(dat.ReactionTime) && (posUpOk) % && ...
 %                 (abs(pos(1) - b5.StartTarget_pos(1)) < Params.StartTarget.Win(1))
-                        dat.TrialChoice = 'Up';
+            dat.TrialChoice = 'Up';
             dat.TrialChoiceID = 1; %1 means reached up
             if (b5.time_o - targethold) > Params.HoldUp
                 done = true;   % Reach to target OK
