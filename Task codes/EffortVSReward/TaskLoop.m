@@ -101,80 +101,94 @@ for itrial = startTrial : Params.NumTrials
 	Data(trial).TimeStart = b5.time_o; % grab time at start of trial
 	% TRIAL SELECTION
     
-	switch Data(trial).TrialType
-	case 1 % reward adapt to center
-        Data(trial).UpReward                = 2*Params.BiasingMulti*Params.StdReward;
-        Data(trial).DownReward              =2*(1.0-Params.BiasingMulti)*Params.StdReward;
-        Data(trial).UpEffort                = Params.StdEffort;
-        Data(trial).DownEffort              = Params.StdEffort;
-        
-        fprintf('Up Reward\t\t%d \n', Data(trial).UpReward);
-        fprintf('Down Reward\t\t%d \n', Data(trial).DownReward);
-        fprintf('Up Effort\t\t%d \n', Data(trial).UpEffort);
-        fprintf('Down Effort\t\t%d \n', Data(trial).DownEffort);
-        
-        [Params, Data(trial), b5]           = RewardEffortTrial(Params, Data(trial), b5, controlWindow);
-        [Params, Data]                      = AdaptToCenter(Params,Data,trial);
-       
-    case 2 % effort adapt to center
-        Data(trial).UpReward                = Params.StdReward;
-        Data(trial).DownReward              = Params.StdReward;
-        Data(trial).UpEffort                = min(2.0*Params.BiasingMulti,1)*Params.StdEffort;
-        Data(trial).DownEffort              = min(2.0*(1.0-Params.BiasingMulti),1)*Params.StdEffort;
-        
-        fprintf('Up Reward\t\t%d \n', Data(trial).UpReward);
-        fprintf('Down Reward\t\t%d \n', Data(trial).DownReward);
-        fprintf('Up Effort\t\t%d \n', Data(trial).UpEffort);
-        fprintf('Down Effort\t\t%d \n', Data(trial).DownEffort);
-        
-        [Params, Data(trial), b5]           = RewardEffortTrial(Params, Data(trial), b5, controlWindow);
-        [Params, Data]                      = AdaptToCenter(Params,Data,trial);
-       
-    case 3 % reward tracking w/ fixed effort
-        Data(trial).UpReward                = Params.UpReward(mod(Data(trial).BlockNum,numel(Params.UpReward))+1)*Params.StdReward;
-        Data(trial).DownReward              = Params.DownReward(mod(Data(trial).BlockNum,numel(Params.DownReward))+1)*Params.StdReward;
-        Data(trial).UpEffort                = Params.StdEffort;
-        Data(trial).DownEffort              = Params.StdEffort;
-        
-        fprintf('Up Reward\t\t%d \n', Data(trial).UpReward);
-        fprintf('Down Reward\t\t%d \n', Data(trial).DownReward);
-        fprintf('Up Effort\t\t%d \n', Data(trial).UpEffort);
-        fprintf('Down Effort\t\t%d \n', Data(trial).DownEffort);
-        
-        [Params, Data(trial), b5]           = RewardEffortTrial(Params,Data(trial),b5,controlWindow);
-        
-    case 4 % effort tracking w/ fixed reward
-        Data(trial).UpReward                = Params.StdReward;
-        Data(trial).DownReward              = Params.StdReward;
-        Data(trial).UpEffort                = Params.UpEffort(mod(Data(trial).BlockNum,numel(Params.UpEffort))+1)*Params.StdEffort;
-        Data(trial).DownEffort              = Params.DownEffort(mod(Data(trial).BlockNum,numel(Params.DownEffort))+1)*Params.StdEffort;
-        
-        fprintf('Up Reward\t\t%d \n', Data(trial).UpReward);
-        fprintf('Down Reward\t\t%d \n', Data(trial).DownReward);
-        fprintf('Up Effort\t\t%d \n', Data(trial).UpEffort);
-        fprintf('Down Effort\t\t%d \n', Data(trial).DownEffort);
-        
-        [Params, Data(trial), b5]           = RewardEffortTrial(Params,Data(trial),b5,controlWindow);
-        
-    case 5 % reward and effort tracking
-        Data(trial).UpReward                = Params.UpReward(mod(Data(trial).BlockNum,numel(Params.UpReward))+1)*Params.StdReward;
-        Data(trial).DownReward              = Params.DownReward(mod(Data(trial).BlockNum,numel(Params.DownReward))+1)*Params.StdReward;
-        Data(trial).UpEffort                = Params.UpEffort(mod(Data(trial).BlockNum,numel(Params.UpEffort))+1)*Params.StdEffort;
-        Data(trial).DownEffort              = Params.DownEffort(mod(Data(trial).BlockNum,numel(Params.DownEffort))+1)*Params.StdEffort;
-        
-        fprintf('Up Reward\t\t%d \n', Data(trial).UpReward);
-        fprintf('Down Reward\t\t%d \n', Data(trial).DownReward);
-        fprintf('Up Effort\t\t%d \n', Data(trial).UpEffort);
-        fprintf('Down Effort\t\t%d \n', Data(trial).DownEffort);
-        
-        [Params, Data(trial), b5]           = RewardEffortTrial(Params,Data(trial),b5,controlWindow);
+    switch Data(trial).TrialType
+        case 1 % reward adapt to center
+            Data(trial).UpReward                = 2*Params.BiasingMulti*Params.StdReward;
+            Data(trial).DownReward              =2*(1.0-Params.BiasingMulti)*Params.StdReward;
+            Data(trial).UpEffort                = Params.StdEffort;
+            Data(trial).DownEffort              = Params.StdEffort;
             
-	otherwise
-		error('Unknown Trial Type');
-	end
+            fprintf('Up Reward\t\t%d \n', Data(trial).UpReward);
+            fprintf('Down Reward\t\t%d \n', Data(trial).DownReward);
+            fprintf('Up Effort\t\t%d \n', Data(trial).UpEffort);
+            fprintf('Down Effort\t\t%d \n', Data(trial).DownEffort);
+            
+            [Params, Data(trial), b5]           = RewardEffortTrial(Params, Data(trial), b5, controlWindow);
+            [Params, Data]                      = AdaptToCenter(Params,Data,trial);
+            
+        case 2 % effort adapt to center
+            Data(trial).UpReward                = Params.StdReward;
+            Data(trial).DownReward              = Params.StdReward;
+            Data(trial).UpEffort                = min(2.0*Params.BiasingMulti,1)*Params.StdEffort;
+            Data(trial).DownEffort              = min(2.0*(1.0-Params.BiasingMulti),1)*Params.StdEffort;
+            
+            fprintf('Up Reward\t\t%d \n', Data(trial).UpReward);
+            fprintf('Down Reward\t\t%d \n', Data(trial).DownReward);
+            fprintf('Up Effort\t\t%d \n', Data(trial).UpEffort);
+            fprintf('Down Effort\t\t%d \n', Data(trial).DownEffort);
+            
+            [Params, Data(trial), b5]           = RewardEffortTrial(Params, Data(trial), b5, controlWindow);
+            [Params, Data]                      = AdaptToCenter(Params,Data,trial);
+            
+        case 3 % reward tracking w/ fixed effort
+            Data(trial).UpReward                = Params.UpReward(mod(Data(trial).BlockNum,numel(Params.UpReward)))*Params.StdReward;
+            Data(trial).DownReward              = Params.DownReward(mod(Data(trial).BlockNum,numel(Params.DownReward)))*Params.StdReward;
+            Data(trial).UpEffort                = Params.StdEffort;
+            Data(trial).DownEffort              = Params.StdEffort;
+            
+            fprintf('Up Reward\t\t%d \n', Data(trial).UpReward);
+            fprintf('Down Reward\t\t%d \n', Data(trial).DownReward);
+            fprintf('Up Effort\t\t%d \n', Data(trial).UpEffort);
+            fprintf('Down Effort\t\t%d \n', Data(trial).DownEffort);
+            
+            [Params, Data(trial), b5]           = RewardEffortTrial(Params,Data(trial),b5,controlWindow);
+            
+        case 4 % effort tracking w/ fixed reward
+            Data(trial).UpReward                = Params.StdReward;
+            Data(trial).DownReward              = Params.StdReward;
+            Data(trial).UpEffort                = Params.UpEffort(mod(Data(trial).BlockNum,numel(Params.UpEffort)))*Params.StdEffort;
+            Data(trial).DownEffort              = Params.DownEffort(mod(Data(trial).BlockNum,numel(Params.DownEffort)))*Params.StdEffort;
+            
+            fprintf('Up Reward\t\t%d \n', Data(trial).UpReward);
+            fprintf('Down Reward\t\t%d \n', Data(trial).DownReward);
+            fprintf('Up Effort\t\t%d \n', Data(trial).UpEffort);
+            fprintf('Down Effort\t\t%d \n', Data(trial).DownEffort);
+            
+            [Params, Data(trial), b5]           = RewardEffortTrial(Params,Data(trial),b5,controlWindow);
+            
+        case 5 % reward and effort tracking
+            Data(trial).UpReward                = Params.UpReward(mod(Data(trial).BlockNum,numel(Params.UpReward)))*Params.StdReward;
+            Data(trial).DownReward              = Params.DownReward(mod(Data(trial).BlockNum,numel(Params.DownReward)))*Params.StdReward;
+            Data(trial).UpEffort                = Params.UpEffort(mod(Data(trial).BlockNum,numel(Params.UpEffort)))*Params.StdEffort;
+            Data(trial).DownEffort              = Params.DownEffort(mod(Data(trial).BlockNum,numel(Params.DownEffort)))*Params.StdEffort;
+            
+            fprintf('Up Reward\t\t%d \n', Data(trial).UpReward);
+            fprintf('Down Reward\t\t%d \n', Data(trial).DownReward);
+            fprintf('Up Effort\t\t%d \n', Data(trial).UpEffort);
+            fprintf('Down Effort\t\t%d \n', Data(trial).DownEffort);
+            
+            [Params, Data(trial), b5]           = RewardEffortTrial(Params,Data(trial),b5,controlWindow);
+            
+        case 6
+            Data(trial).UpReward                = Params.StdReward;
+            Data(trial).DownReward              = Params.StdReward;
+            Data(trial).UpEffort                = Params.StdEffort;
+            Data(trial).DownEffort              = Params.StdEffort;
+            
+            fprintf('Up Reward\t\t%d \n', Data(trial).UpReward);
+            fprintf('Down Reward\t\t%d \n', Data(trial).DownReward);
+            fprintf('Up Effort\t\t%d \n', Data(trial).UpEffort);
+            fprintf('Down Effort\t\t%d \n', Data(trial).DownEffort);
+            
+            [Params, Data(trial), b5]           = OneTargetTrial(Params,Data(trial),b5,controlWindow);
+            
+        otherwise
+            error('Unknown Trial Type');
+    end
 	b5 = bmi5_mmap(b5);
 	Data(trial).TimeEnd = b5.time_o; % grab time at end of trial
-	%%  - - - - - - END TRIAL  - - - - - - 
+	
+    %  - - - - - - END TRIAL  - - - - - - 
     
     %% Clean remaining of force trace
     Data(trial).ForceTrace(isnan(Data(trial).ForceTrace(:,1)),:) = [];

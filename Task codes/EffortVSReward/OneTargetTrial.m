@@ -12,13 +12,24 @@ DRAW_BOTH     = 3;
 %% Generate a StartTarget position
 b5.StartTarget_pos = Params.StartTarget_pos;
 
-%% Add some noise to effort
+%% store effort
 dat.ActualEffort(1)     = dat.UpEffort;
 dat.ActualEffort(2)     = dat.DownEffort;
 
 %% Generate DownTarget position
-b5.UpTarget_pos 		= Params.UpTarget_pos;
-b5.DownTarget_pos 		= Params.DownTarget_pos;
+
+% choose which target to draw and assign position to OneTarget and WrongWay
+dat.TrialChoiceID       = randi([0 1]);
+if dat.TrialChoiceID==0 % 0 means down
+    b5.OneTarget_pos 		= Params.DownTarget_pos;
+    b5.WrongWay_pos         = b5.StartTarget_pos + [0 (b5.StartTarget_scale(2)+b5.WrongWay_scale(2))/2];
+    TargetHoldTime          = Params.HoldDown;
+else
+    b5.OneTarget_pos 		= Params.UpTarget_pos;
+    b5.WrongWay_pos         = b5.StartTarget_pos - [0 (b5.StartTarget_scale(2)+b5.WrongWay_scale(2))/2];
+    TargetHoldTime          = Params.HoldUp;
+end
+
 
 %% Misc stuff
 dat.OutcomeID 	= 0;
@@ -31,6 +42,8 @@ b5.BarOutline_draw              = DRAW_NONE;
 b5.Cursor_draw                  = DRAW_NONE;
 b5.DownTarget_draw              = DRAW_NONE;
 b5.UpTarget_draw                = DRAW_NONE;
+b5.OneTarget_draw               = DRAW_NONE;
+b5.WrongWay_draw                = DRAW_NONE;
 
 
 b5 = bmi5_mmap(b5);
@@ -102,8 +115,8 @@ if ~dat.OutcomeID
     b5.StartTarget_draw             = DRAW_NONE;
 %     b5.xSensitivity_draw       = DRAW_NONE;
 %     b5.ySensitivity_draw       = DRAW_NONE;
-    b5.UpTarget_draw         = DRAW_BOTH;
-    b5.DownTarget_draw      = DRAW_BOTH;
+    b5.OneTarget_draw           = DRAW_BOTH;
+    b5.WrongWay_draw            = DRAW_NONE;
     
 
 	done            = false;
@@ -114,58 +127,62 @@ if ~dat.OutcomeID
     
 	t_start = b5.time_o;
 
-	while ~done
+    while ~done
         drawnow;
         [Params, dat, b5] = UpdateCursorEffort(Params, dat, b5); % syncs b5 twice
         pos = b5.Cursor_pos;
-        dat.FinalCursorPos = [0,pos(2)];          
+        dat.FinalCursorPos = [0,pos(2)];
         
         b5 = bmi5_mmap(b5);
         
-		% Check for acquisition of a reach target
+        % Check for acquisition of a reach target
         posOk = TrialInBox(pos,b5.Cursor_scale,b5.StartTarget_pos,Params.StartTarget.Win);
-        posUpOk = TrialInBox(pos,b5.Cursor_scale,b5.UpTarget_pos,b5.UpTarget_scale/2);
-        posDownOk = TrialInBox(pos,b5.Cursor_scale,b5.DownTarget_pos,b5.DownTarget_scale/2);
-          
+        posTargetOk = TrialInBox(pos,b5.Cursor_scale,b5.OneTarget_pos,b5.OneTarget_scale/2);
+        posWrongWay = TrialInBox(pos,b5.Cursor_scale,b5.WrongWay_pos,b5.WrongWay_scale/2);
+        
         if ~posOk && isempty(dat.ReactionTime)
             dat.ReactionTime = b5.time_o - t_start;
         end
         
-        if ~gotTarget && (posUpOk || posDownOk)
+        if ~gotTarget && (posTargetOk)
             targethold = b5.time_o;
             gotTarget=true;
         end
         
-        if ~isempty(dat.ReactionTime) && (posDownOk)  % && ...
-%                (abs(pos(1) - b5.StartTarget_pos(1)) < Params.StartTarget.Win(1))
+        % check if lost target
+        if gotTarget && ~done && ~(posTargetOk)
+            dat.OutcomeID = 6;
+            dat.OutcomeStr = 'Failed to hold target';
+            done = true;
+            gotTarget = false;
+        end
+        
+        % check if wrong way
+        if posWrongWay
+            dat.OutcomeID = 5;
+            dat.OutcomeStr = 'Wrong way';
+            done = true;
+            gotTarget = false;
+        end
+        
+        if ~isempty(dat.ReactionTime) && (dat.TrialChoiceID==0) && (posTargetOk)
             dat.TrialChoice = 'Down';
-            dat.TrialChoiceID = 0; %0 means reached down
-            if (b5.time_o - targethold) > Params.HoldDown
+            if (b5.time_o - targethold) > TargetHoldTime
                 done = true;   % Reach to target OK
                 dat.MovementTime = b5.time_o - t_start - dat.ReactionTime;
                 dat.OutcomeID 	= 0;
                 dat.OutcomeStr 	= 'Success';
-            end            
+            end
         end
         
-         if ~isempty(dat.ReactionTime) && (posUpOk) % && ...
-%                 (abs(pos(1) - b5.StartTarget_pos(1)) < Params.StartTarget.Win(1))
+        if ~isempty(dat.ReactionTime) && (dat.TrialChoiceID==1) && (posTargetOk)
             dat.TrialChoice = 'Up';
-            dat.TrialChoiceID = 1; %1 means reached up
-            if (b5.time_o - targethold) > Params.HoldUp
+            if (b5.time_o - targethold) > TargetHoldTime
                 done = true;   % Reach to target OK
                 dat.MovementTime = b5.time_o - t_start - dat.ReactionTime;
                 dat.OutcomeID 	= 0;
                 dat.OutcomeStr 	= 'Succes';
             end
-        end
-        
-        % check if lost target
-        if gotTarget && ~done && ~(posDownOk || posUpOk)
-            dat.OutcomeID = 6;
-            dat.OutcomeStr = 'Failed to hold target';
-            done = true;
-            gotTarget = false;
         end
         
         if QUIT_FLAG || (((b5.time_o - t_start) > Params.ReactionTimeDelay) && ~gotTarget)
@@ -266,7 +283,7 @@ b5 = bmi5_mmap(b5);
 % b5.Frame_draw                   = DRAW_NONE;
 % b5.BarOutline_draw              = DRAW_NONE;
 b5.Cursor_draw                  = DRAW_NONE;
-b5.DownTarget_draw             = DRAW_NONE;
-b5.UpTarget_draw             = DRAW_NONE;
+b5.OneTarget_draw             = DRAW_NONE;
+b5.WrongWay_draw             = DRAW_NONE;
 
 end

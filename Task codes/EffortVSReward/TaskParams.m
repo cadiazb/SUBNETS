@@ -24,11 +24,12 @@ bmi5_cmd('delete_all');
 % Common objects to both tasks
 bmi5_cmd('make square DownTarget');
 bmi5_cmd('make square UpTarget');
+bmi5_cmd('make square OneTarget');
 bmi5_cmd('make square StartTarget');
 bmi5_cmd('make open_square Frame 0.01');
 bmi5_cmd('make open_square BarOutline 0.03');
-bmi5_cmd('make square xSensitivity');
-bmi5_cmd('make square ySensitivity');
+% bmi5_cmd('make square xSensitivity');
+% bmi5_cmd('make square ySensitivity');
 bmi5_cmd('make circle Cursor');
 
 bmi5_cmd('make labjack isometric 4 2 2');
@@ -110,9 +111,10 @@ Params.SessionCount = ct;
 % 3. Reward tracking with fixed effort
 % 4. Effort tracking with fixed reward
 % 5. Reward and effort tracking
+% 6. One target (@ stdR & stdE)
 
-Params.TrialTypeBlocks          = [3 3 3 3 3 5 5 5 5 5 ]; % sequence of trial types
-Params.LoopBlocks               = true; % if false, continue with last trial type forever
+Params.TrialTypeBlocks          = [5 6 6 6 5 5]; % sequence of trial types
+Params.LoopBlocks               = false; % if false, continue with last trial type forever
 Params.BlockLength              =30; % number of successes per block
 Params.NumTrials 				= 100000; % Choose a big number so task doesn't finish before hand
 
@@ -138,8 +140,8 @@ Params.TimeoutReachStartTarget  = 2; % max time to acquire start target
 Params.StartTarget.Hold       	= 0.6; %0.5
 
 % Reaching phase
-Params.HoldDown                 = 0.65; % required min hold time
-Params.HoldUp                   = 0.33;
+Params.HoldDown                 = 0.6; % required min hold time
+Params.HoldUp                   = 0.3;
 Params.ReactionTimeDelay      	= 2; % Max time to initiate movement
 
 
@@ -148,8 +150,8 @@ Params.TimeoutReachTarget       = 1.6; % max time to reach reaching target
 
 % Other
 Params.TrialLength              = 2;   % Fixed trial length [s]
-Params.InterTrialDelay 			= 3.75;  % delay between each trial [sec]
-Params.WrongChoiceDelay         = 5; % Delay when wrong target is chosen [sec]
+Params.InterTrialDelay 			= 4;  % delay between each trial [sec]
+Params.WrongChoiceDelay         = 4; % Delay when wrong target is chosen [sec]
 
 %% Callibrate Load Cell
 [Params, b5]                    = CallibrateLoadCell(Params, b5);
@@ -214,28 +216,34 @@ Params.AdaptStep                = 15; % can't be smaller than Params.AvgOver
 Params.TrialsSinceAdapt         = 2*Params.AdaptStep;
 Params.RandDist                 = makedist('Normal',0,1.0);
 
+% For one target trials
+b5.OneTarget_color              = [0 1 0 1];
+b5.OneTarget_scale              = b5.UpTarget_scale;
+b5.OneTarget_pos                = Params.WsCenter;  % in one target trials we will move it on each trial
+b5.OneTarget_draw               = DRAW_NONE;
+
 %% Other visuals
 % Vertical bar outline
-b5.BarOutline_color             = [0 0 1 1];
+b5.BarOutline_color             = [0 0 1 0.75];
 b5.BarOutline_scale             = b5.Frame_scale.* [0.25, 1];
 b5.BarOutline_pos               = Params.WsCenter;
                 
-% ySensitivity
-b5.ySensitivity_color           = [1 1 0 0.05];
-b5.ySensitivity_scale           = b5.Frame_scale .* [0.25, 1];
-b5.ySensitivity_pos             = Params.WsCenter - [0, 0] + ...
-                                    [0, b5.ySensitivity_scale(2)/2];     
-                
-% ySensitivity
-b5.xSensitivity_color           = [1 1 0 0.05];
-b5.xSensitivity_scale           = b5.Frame_scale .* [1, 0.1];
-b5.xSensitivity_pos             = Params.WsCenter - [0, 0] + ...
-                                    [b5.xSensitivity_scale(1)/2,0];                
+% % ySensitivity
+% b5.ySensitivity_color           = [1 1 0 0.05];
+% b5.ySensitivity_scale           = b5.Frame_scale .* [0.25, 1];
+% b5.ySensitivity_pos             = Params.WsCenter - [0, 0] + ...
+%                                     [0, b5.ySensitivity_scale(2)/2];     
+%                 
+% % ySensitivity
+% b5.xSensitivity_color           = [1 1 0 0.05];
+% b5.xSensitivity_scale           = b5.Frame_scale .* [1, 0.1];
+% b5.xSensitivity_pos             = Params.WsCenter - [0, 0] + ...
+%                                     [b5.xSensitivity_scale(1)/2,0];                
 
 % % Wrong way
 b5.WrongWay_color               = [1 0 0 0.5];
 b5.WrongWay_scale               = [1000 100];
-b5.WrongWay_pos                 = Params.WsCenter; % in joysticTraining.m we will move it on each trial
+b5.WrongWay_pos                 = Params.WsCenter; % in one target trials we will move it on each trial
 b5.WrongWay_draw                = DRAW_NONE; % default is don't draw
 
 %% LJJuicer parameters
