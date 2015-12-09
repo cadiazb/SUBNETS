@@ -113,8 +113,8 @@ Params.SessionCount = ct;
 % 5. Reward and effort tracking
 % 6. One target (@ stdR & stdE)
 
-Params.TrialTypeBlocks          = [5 6 6 6 5 5]; % sequence of trial types
-Params.LoopBlocks               = false; % if false, continue with last trial type forever
+Params.TrialTypeBlocks          = [6 5]; % sequence of trial types
+Params.LoopBlocks               = true; % if false, continue with last trial type forever
 Params.BlockLength              =30; % number of successes per block
 Params.NumTrials 				= 100000; % Choose a big number so task doesn't finish before hand
 
@@ -140,8 +140,8 @@ Params.TimeoutReachStartTarget  = 2; % max time to acquire start target
 Params.StartTarget.Hold       	= 0.6; %0.5
 
 % Reaching phase
-Params.HoldDown                 = 0.6; % required min hold time
-Params.HoldUp                   = 0.3;
+Params.HoldDown                 = 0.65; % required min hold time
+Params.HoldUp                   = 0.33;
 Params.ReactionTimeDelay      	= 2; % Max time to initiate movement
 
 
@@ -192,9 +192,9 @@ Params.DownTarget_pos           = Params.StartTarget_pos + ...
 Params.UpTargetProbability      = 0.5; % for joystickTraining mode
 
 % Rewards
-Params.StdReward                = 120; %[ms]
+Params.StdReward                = 150; %[ms]
 % multipliers for StdReward
-Params.UpReward                 = [0.5 rand(1,100)*0.8+0.1]; 
+Params.UpReward                 = [rand(1,100)*0.8+0.1]; 
 Params.DownReward               = 1.0-Params.UpReward;
 Params.UpReward=2*Params.UpReward;
 Params.DownReward=2*Params.DownReward;
@@ -206,8 +206,8 @@ Params.MaxForce                 = 10; % Measured max force per subject
 Params.StdEffort                = 1.0;
 % 0.5 effort multiplier means he has to push 2x as hard, so keep values in [0.5 1]
 Params.UpEffort                 = round(rand(1,100));
-Params.DownEffort               = [1 ((1.0-Params.UpEffort)*(0.25) + (0.75))];
-Params.UpEffort                 = [1 Params.UpEffort*0.25+0.75];
+Params.DownEffort               = [((1.0-Params.UpEffort)*(0.25) + (0.75))];
+Params.UpEffort                 = [Params.UpEffort*0.25+0.75];
 
 % Changing rewards & effort
 Params.BiasingMulti             = 0.5; % for shifting reward or effort
