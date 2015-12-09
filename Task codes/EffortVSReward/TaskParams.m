@@ -141,7 +141,7 @@ Params.StartTarget.Hold       	= 0.6; %0.5
 
 % Reaching phase
 Params.HoldDown                 = 0.65; % required min hold time
-Params.HoldUp                   = 0.33;
+Params.HoldUp                   = 0.35;
 Params.ReactionTimeDelay      	= 2; % Max time to initiate movement
 
 
