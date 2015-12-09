@@ -136,7 +136,7 @@ clear m n i pattern
 
 %% DELAYS, PENALTIES and TIMEOUTS [sec]
 % Start trial
-Params.TimeoutReachStartTarget  = 2; % max time to acquire start target
+Params.TimeoutReachStartTarget  = 2.5; % max time to acquire start target
 Params.StartTarget.Hold       	= 0.6; %0.5
 
 % Reaching phase
@@ -150,7 +150,7 @@ Params.TimeoutReachTarget       = 1.6; % max time to reach reaching target
 
 % Other
 Params.TrialLength              = 2;   % Fixed trial length [s]
-Params.InterTrialDelay 			= 4;  % delay between each trial [sec]
+Params.InterTrialDelay 			= 3.5;  % delay between each trial [sec]
 Params.WrongChoiceDelay         = 4; % Delay when wrong target is chosen [sec]
 
 %% Callibrate Load Cell
