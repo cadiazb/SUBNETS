@@ -181,6 +181,7 @@ for itrial = startTrial : Params.NumTrials
             fprintf('Down Effort\t\t%d \n', Data(trial).DownEffort);
             
             [Params, Data(trial), b5]           = OneTargetTrial(Params,Data(trial),b5,controlWindow);
+            [Params, Data]                      = AdaptUpHold(Params,Data);
             
         otherwise
             error('Unknown Trial Type');
@@ -294,6 +295,22 @@ function [Params, b5] = DoKeyboard(Params, b5)
     beep; pause(0.1); beep; pause(0.1); beep;
     disp('Adjust Params or b5 and type ''return''');
     keyboard;
+end
+
+function [Params, Data] = AdaptUpHold(Params,Data)
+attempt=Data([Data.OutcomeID]==0 | [Data.OutcomeID]==6); % get all attempts
+n=length(attempt);
+if n<30
+    return
+end
+attempt = attempt(n-29:end); % pull out just last 30
+success=attempt([attempt.OutcomeID]==0); % how many of those were successes
+if ((length(success)/30)>0.6) && (Params.HoldUp<=1.0)
+    Params.HoldUp = 0.02+Params.HoldUp;
+elseif ((length(success)/30)<0.1)
+    Params.HoldUp = -0.01+Params.HoldUp;
+end
+
 end
 
 function [Params, Data] = AvgChoice(Params,Data,trial)
