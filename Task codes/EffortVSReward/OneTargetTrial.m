@@ -19,8 +19,8 @@ dat.ActualEffort(2)     = dat.DownEffort;
 %% Generate DownTarget position
 
 % choose which target to draw and assign position to OneTarget and WrongWay
-%dat.TrialChoiceID       = randi([0 1]);
-dat.TrialChoiceID           =1;
+dat.TrialChoiceID       = randi([0 1]);
+%dat.TrialChoiceID           =1;
 
 if dat.TrialChoiceID==0 % 0 means down
     b5.OneTarget_pos 		= Params.DownTarget_pos;

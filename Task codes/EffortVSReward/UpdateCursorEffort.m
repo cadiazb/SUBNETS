@@ -34,16 +34,17 @@ function [Params, dat, b5] = UpdateCursorEffort(Params, dat, b5)
     % calculate cursor position
     newPosX = min((b5.Frame_scale(1))*newForce(1)*(Params.LoadCellMax/Params.MaxForce) + b5.StartTarget_pos(1), ...
         b5.Frame_scale(1) + b5.StartTarget_pos(1));
-    
-    newPosY = min((b5.Frame_scale(2))*newForce(2)*(Params.LoadCellMax/Params.MaxForce) + b5.StartTarget_pos(2), ...
-        b5.Frame_scale(2) + b5.StartTarget_pos(2));
+     
+%     newPosY = min((b5.Frame_scale(2))*newForce(2)*(Params.LoadCellMax/Params.MaxForce) + b5.StartTarget_pos(2), ...
+%         b5.Frame_scale(2) + b5.StartTarget_pos(2));
+    newPosY = min((b5.Frame_scale(2))*newForce(2)*(Params.LoadCellMax/Params.MaxForce), b5.Frame_scale(2));
     
     %% Scale vertical position
-    if (newPosY > 0) % if cursor up top and want to make up harder
-        newPosY = newPosY*dat.ActualEffort(1);
+    if (newPosY > -1*b5.StartTarget_pos(2)) % if cursor up top and want to make up harder
+        newPosY = newPosY*1.2*dat.ActualEffort(1) + b5.StartTarget_pos(2);
         newPosX = 0.4*newPosX;  % Scale horizontal position (for helping MP learn to hold)
-    elseif (newPosY<0) % if cursor on bottom and want to make down harder
-        newPosY = newPosY*dat.ActualEffort(2);
+    else %(newPosY<0) % if cursor on bottom and want to make down harder
+        newPosY = newPosY*dat.ActualEffort(2) + b5.StartTarget_pos(2);
     end
     
     %% Update cursor position

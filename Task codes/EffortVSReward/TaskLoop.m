@@ -181,7 +181,7 @@ for itrial = startTrial : Params.NumTrials
             fprintf('Down Effort\t\t%d \n', Data(trial).DownEffort);
             
             [Params, Data(trial), b5]           = OneTargetTrial(Params,Data(trial),b5,controlWindow);
-            [Params, Data]                      = AdaptUpHold(Params,Data);
+            %[Params, Data]                      = AdaptUpHold(Params,Data);
             
         otherwise
             error('Unknown Trial Type');
@@ -301,14 +301,19 @@ function [Params, Data] = AdaptUpHold(Params,Data)
 attempt=Data([Data.OutcomeID]==0 | [Data.OutcomeID]==6); % get all attempts
 n=length(attempt);
 if n<30
-    return
-end
-attempt = attempt(n-29:end); % pull out just last 30
-success=attempt([attempt.OutcomeID]==0); % how many of those were successes
-if ((length(success)/30)>0.6) && (Params.HoldUp<=1.0)
-    Params.HoldUp = 0.02+Params.HoldUp;
-elseif ((length(success)/30)<0.1)
-    Params.HoldUp = -0.01+Params.HoldUp;
+    Params.TrialsSinceAdapt = 1+Params.TrialsSinceAdapt;
+elseif Params.TrialsSinceAdapt>=10
+    attempt = attempt(n-29:end); % pull out just last 30
+    m=length(attempt([attempt.OutcomeID]==0)); % how many of those were successes
+    if ((m/30)>0.6) && (Params.HoldUp<=1.0)
+        Params.HoldUp = 0.02+Params.HoldUp;
+        Params.TrialsSinceAdapt=0;
+    elseif ((m/30)<0.1) && (Params.HoldUp>0.3)
+        Params.HoldUp = -0.01+Params.HoldUp;
+        Params.TrialsSinceAdapt=0;
+    end
+else
+    Params.TrialsSinceAdapt=1+Params.TrialsSinceAdapt;
 end
 
 end
