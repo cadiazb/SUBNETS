@@ -14,29 +14,40 @@ NoFigsFlag = true;
 
 dfields = {
 	'Params'
-	'TimeStart'
-	'TimeEnd'
 	'TrialNum'
 	'TrialType'
 	'BlockNum'
     'NumSuccess'
-	'OutcomeID'
-	'OutcomeStr'
     'UpReward'
     'DownReward'
     'UpEffort'
     'DownEffort'
+	'OutcomeID'
+	'OutcomeStr'
     'TrialChoice'
     'TrialChoiceID'
     'RecentAvgChoice'
     'ActualReward'
     'ActualEffort'
-    'ReactionTime'
-    'MovementTime'
     'FinalCursorPos'
     'ForceTrace'
-    'JuiceON'
-    'JuiceOFF'
+    'TimeStart'
+    'TimeStartDraw'
+    'TimeStartGet'
+    'TimeStartCancel'
+    'TimeStartHoldMet'
+    'TimeStartHoldCancel'
+    'TimeReachDraw'
+    'TimeReact'
+    'TimeReactCancel'
+    'TimeReachGet'
+    'TimeReachCancel'
+    'TimeReachHoldMet'
+    'TimeReachHoldCancel'
+    'TimeBlank'
+    'TimeRewardStart'
+    'TimeRewardEnd'
+    'TimeEnd'
 };
 dinit = cell(size(dfields));
 dtmp  = cell2struct(dinit,dfields,1);
@@ -88,7 +99,7 @@ for itrial = startTrial : Params.NumTrials
     Data(trial).TrialType = Params.TrialTypeBlocks(Data(trial).BlockNum);
     [Params, Data] = AvgChoice(Params,Data,trial);
 
-	fprintf('\nTrial num\t\t%i\n',trial);
+	%fprintf('\nTrial num\t\t%i\n',trial);
 	fprintf('Trial type\t\t%i\n',Data(trial).TrialType);
 	fprintf('Total Blocks\t\t%i\n',Data(trial).BlockNum);
     

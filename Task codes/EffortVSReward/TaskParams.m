@@ -113,7 +113,7 @@ Params.SessionCount = ct;
 % 5. Reward and effort tracking
 % 6. One target (@ stdR & stdE)
 
-Params.TrialTypeBlocks          = [5 6]; % sequence of trial types
+Params.TrialTypeBlocks          = [5 ]; % sequence of trial types
 Params.LoopBlocks               = true; % if false, continue with last trial type forever
 Params.BlockLength              =30; % number of successes per block
 Params.NumTrials 				= 100000; % Choose a big number so task doesn't finish before hand
@@ -143,9 +143,6 @@ Params.StartTarget.Hold       	= 0.6; %0.5
 Params.HoldDown                 = 0.65; % required min hold time
 Params.HoldUp                   = 0.35;
 Params.ReactionTimeDelay      	= 2; % Max time to initiate movement
-
-
-% Go/NoGo
 Params.TimeoutReachTarget       = 1.6; % max time to reach reaching target
 
 % Other
@@ -224,7 +221,7 @@ b5.OneTarget_draw               = DRAW_NONE;
 
 %% Other visuals
 % Vertical bar outline
-b5.BarOutline_color             = [0 0 1 0.75];
+b5.BarOutline_color             = [0 0 1 0.5];
 b5.BarOutline_scale             = b5.Frame_scale.* [0.25, 1];
 b5.BarOutline_pos               = Params.WsCenter;
                 
