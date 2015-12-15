@@ -40,6 +40,7 @@ dfields = {
     'TimeReachDraw'
     'TimeReact'
     'TimeReactCancel'
+    'TimeWrongWay'
     'TimeReachGet'
     'TimeReachCancel'
     'TimeReachHoldMet'

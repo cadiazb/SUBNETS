@@ -29,6 +29,7 @@ t_starthold_cancel    = NaN;
 t_reach_draw          = NaN;
 t_react               = NaN;
 t_react_cancel        = NaN;
+t_wrongway            = NaN;
 t_reach_get           = NaN;
 t_reach_cancel        = NaN;
 t_reachhold_met       = NaN;
