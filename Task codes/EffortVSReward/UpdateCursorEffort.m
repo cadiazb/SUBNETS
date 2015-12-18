@@ -41,7 +41,7 @@ function [Params, dat, b5] = UpdateCursorEffort(Params, dat, b5)
     
     %% Scale vertical position
     if (newPosY > -1*b5.StartTarget_pos(2)) % if cursor up top and want to make up harder
-        newPosY = newPosY*1.5*dat.ActualEffort(1) + b5.StartTarget_pos(2);
+        newPosY = newPosY*1.52*dat.ActualEffort(1) + b5.StartTarget_pos(2);
         newPosX = 0.4*newPosX;  % Scale horizontal position (for helping MP learn to hold)
     else %(newPosY<0) % if cursor on bottom and want to make down harder
         newPosY = newPosY*dat.ActualEffort(2) + b5.StartTarget_pos(2);
