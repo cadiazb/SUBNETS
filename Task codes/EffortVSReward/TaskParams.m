@@ -201,7 +201,8 @@ Params.DownReward=2*Params.DownReward;
 Params.LoadCellMax              = 50;
 Params.MaxForce                 = 10; % Measured max force per subject 
 Params.StdEffort                = 1.0;
-% 0.5 effort multiplier means he has to push 2x as hard, so keep values in [0.5 1]
+Params.UpEScale                 = 1.56;
+Params.DownEScale               = 1;
 Params.UpEffort                 = round(rand(1,100));
 Params.DownEffort               = [((1.0-Params.UpEffort)*(0.25) + (0.75))];
 Params.UpEffort                 = [Params.UpEffort*0.25+0.75];
