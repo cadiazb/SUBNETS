@@ -2,7 +2,7 @@
 
 % task2go
 %% Screen
-system('xrandr --output DP1 --left-of eDP1')
+system('xrandr --output DP1 --right-of eDP1')
 % system('xrandr --output DP1 --mode 1280x1024')
 %%
 system('xbacklight -dec 10')

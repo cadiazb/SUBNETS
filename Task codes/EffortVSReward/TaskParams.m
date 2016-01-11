@@ -140,8 +140,8 @@ Params.TimeoutReachStartTarget  = 2.5; % max time to acquire start target
 Params.StartTarget.Hold       	= 0.6; %0.5
 
 % Reaching phase
-Params.HoldDown                 = 0.74; % required min hold time
-Params.HoldUp                   = 0.39;
+Params.HoldDown                 = 0.76; % required min hold time
+Params.HoldUp                   = 0.40;
 Params.ReactionTimeDelay      	= 2; % Max time to initiate movement
 Params.TimeoutReachTarget       = 1.6; % max time to reach reaching target
 
@@ -201,7 +201,7 @@ Params.DownReward=2*Params.DownReward;
 Params.LoadCellMax              = 50;
 Params.MaxForce                 = 10; % Measured max force per subject 
 Params.StdEffort                = 1.0;
-Params.UpEScale                 = 1.56;
+Params.UpEScale                 = 2.0;
 Params.DownEScale               = 1;
 Params.UpEffort                 = round(rand(1,100));
 Params.DownEffort               = [((1.0-Params.UpEffort)*(0.25) + (0.75))];
