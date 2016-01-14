@@ -141,7 +141,7 @@ Params.StartTarget.Hold       	= 0.6; %0.5
 
 % Reaching phase
 Params.HoldDown                 = 0.76; % required min hold time
-Params.HoldUp                   = 0.42;
+Params.HoldUp                   = 0.44;
 Params.ReactionTimeDelay      	= 2; % Max time to initiate movement
 Params.TimeoutReachTarget       = 1.6; % max time to reach reaching target
 
@@ -191,7 +191,7 @@ Params.UpTargetProbability      = 0.5; % for joystickTraining mode
 % Rewards
 Params.StdReward                = 120; %[ms]
 % multipliers for StdReward
-Params.UpReward                 = [0.8 0.9 rand(1,100)*0.8+0.1]; 
+Params.UpReward                 = [0.8 0.9 0.7 rand(1,100)*0.8+0.1]; 
 Params.DownReward               = 1.0-Params.UpReward;
 Params.UpReward=2*Params.UpReward;
 Params.DownReward=2*Params.DownReward;
@@ -222,7 +222,7 @@ b5.OneTarget_draw               = DRAW_NONE;
 
 %% Other visuals
 % Vertical bar outline
-b5.BarOutline_color             = [0 0 1 0.5];
+b5.BarOutline_color             = [0 0 1 0.25];
 b5.BarOutline_scale             = b5.Frame_scale.* [0.25, 1];
 b5.BarOutline_pos               = Params.WsCenter;
                 
