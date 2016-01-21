@@ -36,8 +36,10 @@ t_reachhold_met       = NaN;
 t_reachhold_cancel    = NaN;
 t_rewardstart         = NaN;
 t_rewardend           = NaN;
+t_blank               = NaN;
 
 %% Hide all screen objects
+
 b5.StartTarget_draw             = DRAW_NONE;
 b5.Frame_draw                   = DRAW_NONE;
 b5.BarOutline_draw              = DRAW_NONE;
@@ -47,7 +49,9 @@ b5.UpTarget_draw                = DRAW_NONE;
 
 b5 = bmi5_mmap(b5);
 
+
 %% 1. ACQUIRE START TARGET
+
 b5.StartTarget_draw = DRAW_BOTH;
 b5.Cursor_draw      = DRAW_BOTH;
 b5.BarOutline_draw  = DRAW_NONE;
@@ -102,6 +106,7 @@ end
 
 %% 2. CHECK FOR Y-AXIS MOVEMENT ON LOAD CELL
 if ~dat.OutcomeID
+    
     b5.BarOutline_draw          = DRAW_BOTH;
     b5.Cursor_draw              = DRAW_BOTH;
     b5.StartTarget_draw         = DRAW_NONE;
@@ -110,6 +115,9 @@ if ~dat.OutcomeID
     
     b5 = bmi5_mmap(b5);
     t_reach_draw = b5.time_o;
+    if dat.Working==1
+        sound(Params.goCue.Y, Params.goCue.Fs); % play go cue
+    end
     
     
     done = false;
@@ -169,12 +177,19 @@ if ~dat.OutcomeID
             gotTarget = false;
             t_reachhold_cancel = timecheck;
             
-        elseif QUIT_FLAG || (((timecheck - t_reach_draw) > Params.ReactionTimeDelay) && isnan(t_react))
+        elseif QUIT_FLAG || (((timecheck - t_reach_draw) > Params.ReactionTimeDelay) && isnan(t_react) && dat.Working==1)
             dat.TrialChoice = '';
             done            = true;
             dat.OutcomeID 	= 3;
             dat.OutcomeStr 	= 'Cancel @ reaction';
             t_react_cancel = timecheck;
+            
+        elseif (dat.Working==0) && ((timecheck - dat.TimeStart) > Params.TrialLength)
+            dat.TrialChoice     = ' ';
+            done                = true;
+            dat.OutcomeID       = 3;
+            dat.OutcomeStr      = 'Not working timeout';
+            t_react_cancel      = timecheck;
             
         elseif ~gotTarget && ((timecheck-t_react)>Params.TimeoutReachTarget)
             dat.TrialChoice     = ' ';
@@ -229,22 +244,29 @@ if dat.OutcomeID == 0 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
     fprintf('Choice\t\t\t%s \n',dat.TrialChoice);
     %fprintf('Trial reward\t\t%.0f [ms]\n',dat.ActualReward);
     
-else
+elseif dat.OutcomeID ~= 3 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
     % Turn objects on screen off
     b5 = b5ObjectsOff(b5);
     b5 = bmi5_mmap(b5);
     t_blank = b5.time_o;
+    if dat.OutcomeID==2 %|| OutcomeID==6
+        sound(Params.badCue.Y, Params.badCue.Fs); % play error sound
+    end
     
-    % Pause after fail reach
-    if dat.OutcomeID == 5 %Wrong choice
-        while (b5.time_o - t_blank) < (Params.WrongChoiceDelay)
-            [Params, dat, b5] = UpdateCursorEffort(Params, dat, b5);
+    backToStart = false;
+    % cancel @ start, start hold, react, reach, reach hold
+    while (b5.time_o - t_blank) < (Params.InterTrialDelay)
+        [Params, dat, b5] = UpdateCursorEffort(Params, dat, b5);
+        inStart = TrialInBox(b5.Cursor_pos,b5.Cursor_scale,b5.StartTarget_pos,Params.StartTarget.Win);
+        if (~backToStart) && (inStart)
+            backToStart = true;
         end
-    else % cancel @ start, start hold, react, reach, reach hold
-        while (b5.time_o - t_blank) < (Params.InterTrialDelay)
-            [Params, dat, b5] = UpdateCursorEffort(Params, dat, b5);
+        if (backToStart) && (~inStart)
+            sound(Params.badCue.Y, Params.badCue.Fs); % play error sound
+            backToStart=false;
         end
     end
+    
 end
 
 b5 = bmi5_mmap(b5);

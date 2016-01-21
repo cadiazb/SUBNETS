@@ -18,6 +18,7 @@ dfields = {
 	'TrialType'
 	'BlockNum'
     'NumSuccess'
+    'Working'
     'UpReward'
     'DownReward'
     'UpEffort'
@@ -99,6 +100,17 @@ for itrial = startTrial : Params.NumTrials
     
     Data(trial).TrialType = Params.TrialTypeBlocks(Data(trial).BlockNum);
     [Params, Data] = AvgChoice(Params,Data,trial);
+    
+    % decide if subject is currently working
+    if trial == 1
+        Data(trial).Working     = 1;
+    elseif trial <=3
+        Data(trial).Working     = Data(trial-1).Working;
+    elseif [Data(trial-3:trial-1).OutcomeID] == [3 3 3]
+        Data(trial).Working     = 0;
+    else
+        Data(trial).Working     = 1;
+    end
 
 	%fprintf('\nTrial num\t\t%i\n',trial);
 	fprintf('Trial type\t\t%i\n',Data(trial).TrialType);

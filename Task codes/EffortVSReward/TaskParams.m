@@ -15,6 +15,7 @@ ExperimentConfig;
 PathAdder('Lib');
 PathAdder('Lib/Quest');
 PathAdder('Lib/ThresholdFinder');
+PathAdder('Lib/Sounds')
 
 %% First, we connect to BMI5 and create the necessary objects
 % We'll populate their values below
@@ -146,7 +147,7 @@ Params.ReactionTimeDelay      	= 2; % Max time to initiate movement
 Params.TimeoutReachTarget       = 1.6; % max time to reach reaching target
 
 % Other
-Params.TrialLength              = 2;   % Fixed trial length [s]
+Params.TrialLength              = 15;   % Fixed trial length [s]
 Params.InterTrialDelay 			= 3.5;  % delay between each trial [sec]
 Params.WrongChoiceDelay         = 4; % Delay when wrong target is chosen [sec]
 
@@ -191,7 +192,7 @@ Params.UpTargetProbability      = 0.5; % for joystickTraining mode
 % Rewards
 Params.StdReward                = 120; %[ms]
 % multipliers for StdReward
-Params.UpReward                 = [0.8 0.9 0.7 rand(1,100)*0.8+0.1]; 
+Params.UpReward                 = [0.7 0.9 rand(1,100)*0.8+0.1]; 
 Params.DownReward               = 1.0-Params.UpReward;
 Params.UpReward=2*Params.UpReward;
 Params.DownReward=2*Params.DownReward;
@@ -244,24 +245,15 @@ b5.WrongWay_scale               = [1000 100];
 b5.WrongWay_pos                 = Params.WsCenter; % in one target trials we will move it on each trial
 b5.WrongWay_draw                = DRAW_NONE; % default is don't draw
 
+%% Sounds
+[Params.goCue.Y,Params.goCue.Fs] = audioread(fullfile('Lib/Sounds/beep.wav'));
+[Params.badCue.Y,Params.badCue.Fs] = audioread(fullfile('Lib/Sounds/buzz.wav'));
+
 %% LJJuicer parameters
 Params.Solenoid = 'off'; % Global variable for bypass
 
 Params.LJJuicerDOUT = 1; % Which digital output connected to solenoid [1-2]
 b5 = LJJuicer(Params, b5, 'off');
-
-%% BLOCKS OF TRIALS
-% Params.BlockTypes = {'string names' };
-% Params.DoSequentialBlocks       = true; % 0 - Probabalistic; 1 - Sequential
-% Params.BlockSequence            = [1 ]; % overflows to start
-% Params.BlockProbs 				= [0 0 1 0]; % make sure these add to 1 exactly
-% 
-% % this option forces the first block to be type-1 (irrespective of prob)
-% Params.FirstBlockIsType1 		= false;
-
-% This triggers a keyboard at the end of a block so that paramters can
-% be adjusted (will also play an alarm to notify the operator)
-% Params.KeyboardAtBlockEnd 		= true;
 
 %% SYNC
 b5 = bmi5_mmap(b5);
