@@ -148,7 +148,7 @@ Params.TimeoutReachTarget       = 1.6; % max time to reach reaching target
 
 % Other
 Params.TrialLength              = 15;   % Fixed trial length [s]
-Params.InterTrialDelay 			= 3.5;  % delay between each trial [sec]
+Params.InterTrialDelay 			= 3;  % delay between each trial [sec]
 Params.WrongChoiceDelay         = 4; % Delay when wrong target is chosen [sec]
 
 %% Callibrate Load Cell
@@ -190,7 +190,7 @@ Params.DownTarget_pos           = Params.StartTarget_pos + ...
 Params.UpTargetProbability      = 0.5; % for joystickTraining mode
 
 % Rewards
-Params.StdReward                = 200; %[ms]
+Params.StdReward                = 180; %[ms]
 % multipliers for StdReward
 Params.UpReward                 = [rand(1,100)*0.8+0.1]; 
 Params.DownReward               = 1.0-Params.UpReward;
