@@ -142,7 +142,7 @@ Params.StartTarget.Hold       	= 0.6; %0.5
 
 % Reaching phase
 Params.HoldDown                 = 0.5; % required min hold time
-Params.HoldUp                   = 0.5;
+Params.HoldUp                   = 0.48;
 Params.ReactionTimeDelay      	= 2; % Max time to initiate movement
 Params.TimeoutReachTarget       = 1.6; % max time to reach reaching target
 
@@ -223,7 +223,7 @@ b5.OneTarget_draw               = DRAW_NONE;
 
 %% Other visuals
 % Vertical bar outline
-b5.BarOutline_color             = [0 0 1 0.1];
+b5.BarOutline_color             = [0 0 1 0];
 b5.BarOutline_scale             = b5.Frame_scale.* [0.25, 1];
 b5.BarOutline_pos               = Params.WsCenter;
                 
