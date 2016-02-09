@@ -190,9 +190,9 @@ Params.DownTarget_pos           = Params.StartTarget_pos + ...
 Params.UpTargetProbability      = 0.5; % for joystickTraining mode
 
 % Rewards
-Params.StdReward                = 200; %[ms]
+Params.StdReward                = 2; %[ms]
 % multipliers for StdReward
-Params.UpReward                 = [0.7 0.9 rand(1,100)*0.8+0.1]; 
+Params.UpReward                 = [0.95 0.8 0.9 0.85 0.9 rand(1,100)*0.8+0.1]; 
 Params.DownReward               = 1.0-Params.UpReward;
 Params.UpReward=2*Params.UpReward;
 Params.DownReward=2*Params.DownReward;
@@ -202,7 +202,7 @@ Params.DownReward=2*Params.DownReward;
 Params.LoadCellMax              = 50;
 Params.MaxForce                 = 10; % Measured max force per subject 
 Params.StdEffort                = 1.0;
-Params.UpEScale                 = 2.0;
+Params.UpEScale                 = 2.5;
 Params.DownEScale               = 1;
 Params.UpEffort                 = round(rand(1,100));
 Params.DownEffort               = [((1.0-Params.UpEffort)*(0.25) + (0.75))];
