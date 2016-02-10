@@ -255,7 +255,7 @@ elseif dat.OutcomeID ~= 3 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
     
     backToStart = false;
     % cancel @ start, start hold, react, reach, reach hold
-    while (b5.time_o - t_blank) < (Params.InterTrialDelay)
+    while (b5.time_o - t_blank) < (Params.InterTrialDelay + rand())
         [Params, dat, b5] = UpdateCursorEffort(Params, dat, b5);
         inStart = TrialInBox(b5.Cursor_pos,b5.Cursor_scale,b5.StartTarget_pos,Params.StartTarget.Win);
         if (~backToStart) && (inStart)
