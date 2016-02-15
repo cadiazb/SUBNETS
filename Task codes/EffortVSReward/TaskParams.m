@@ -176,7 +176,7 @@ Params.StartTarget_pos          = Params.WsCenter;
 
 %% Targets
 b5.UpTarget_color               = [0 1 0 1];
-b5.UpTarget_scale               = [120 60];
+b5.UpTarget_scale               = [120 50];
 Params.UpTarget_pos             = Params.StartTarget_pos + ...
                                     [0,0.1 * b5.Frame_scale(2)] ...
                                     + [0,b5.UpTarget_scale(2)/2];
@@ -201,9 +201,9 @@ Params.DownReward=2*Params.DownReward;
 % Effort
 Params.LoadCellMax              = 50;
 Params.MaxForce                 = 10; % Measured max force per subject 
-Params.StdEffort                = 1.0;
+Params.StdEffort                = 0.9;
 Params.UpEScale                 = 2.25;
-Params.DownEScale               = 1;
+Params.DownEScale               = 1.0;
 Params.UpEffort                 = round(rand(1,100));
 Params.DownEffort               = [((1.0-Params.UpEffort)*(0.25) + (0.75))];
 Params.UpEffort                 = [Params.UpEffort*0.25+0.75];
