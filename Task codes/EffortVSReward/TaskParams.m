@@ -116,7 +116,7 @@ Params.SessionCount = ct;
 
 Params.TrialTypeBlocks          = [3 5 ]; % sequence of trial types
 Params.LoopBlocks               = true; % if false, continue with last trial type forever
-Params.BlockLength              =30; % number of successes per block
+Params.BlockLength              =3; %0; % number of successes per block
 Params.NumTrials 				= 100000; % Choose a big number so task doesn't finish before hand
 
 % extend Params.TrialTypeBlocks to last until we reach NumTrials
@@ -143,6 +143,7 @@ Params.StartTarget.Hold       	= 0.6; %0.5
 % Reaching phase
 Params.HoldDown                 = 0.5; % required min hold time
 Params.HoldUp                   = 0.40;
+Params.HoldUpVector             = [0.4:0.015:0.5, ones(1,100)*0.5]; 
 Params.ReactionTimeDelay      	= 2; % Max time to initiate movement
 Params.TimeoutReachTarget       = 1.6; % max time to reach reaching target
 

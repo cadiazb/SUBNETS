@@ -247,7 +247,7 @@ if dat.OutcomeID == 0 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
         t_rewardstart = b5.time_o;
         
         posUpOk=true;
-        while posUpOk && (b5.time_o - t_rewardstart) < 0.3 % give him up to 0.3s of reward why not
+        while posUpOk && (b5.time_o - t_rewardstart) < 0.2 % give him up to 0.2s of reward why not
             [Params, dat, b5] = UpdateCursorEffort(Params, dat, b5); %b5 = bmi5_mmap(b5);
             posUpOk = TrialInBox(pos,b5.Cursor_scale,b5.UpTarget_pos,b5.UpTarget_scale/2);
         end

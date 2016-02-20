@@ -160,6 +160,9 @@ for itrial = startTrial : Params.NumTrials
             Data(trial).UpEffort                = Params.StdEffort;
             Data(trial).DownEffort              = Params.StdEffort;
             
+            % GET RID OF THIS LINE WHEN NOT DOING CTS REWARD
+            Params.HoldUp = Params.HoldUpVector(mod(Data(trial).BlockNum,numel(Params.HoldUpVector)));
+            
             fprintf('Up Reward\t\t%d \n', Data(trial).UpReward);
             fprintf('Down Reward\t\t%d \n', Data(trial).DownReward);
             fprintf('Up Effort\t\t%d \n', Data(trial).UpEffort);
@@ -185,6 +188,9 @@ for itrial = startTrial : Params.NumTrials
             Data(trial).DownReward              = Params.DownReward(mod(Data(trial).BlockNum,numel(Params.DownReward)))*Params.StdReward;
             Data(trial).UpEffort                = Params.UpEffort(mod(Data(trial).BlockNum,numel(Params.UpEffort)))*Params.StdEffort;
             Data(trial).DownEffort              = Params.DownEffort(mod(Data(trial).BlockNum,numel(Params.DownEffort)))*Params.StdEffort;
+            
+            % GET RID OF THIS LINE WHEN NOT DOING CTS REWARD
+            Params.HoldUp = Params.HoldUpVector(mod(Data(trial).BlockNum,numel(Params.HoldUpVector)));
             
             fprintf('Up Reward\t\t%d \n', Data(trial).UpReward);
             fprintf('Down Reward\t\t%d \n', Data(trial).DownReward);
