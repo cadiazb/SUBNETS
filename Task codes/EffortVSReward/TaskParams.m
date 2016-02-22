@@ -116,7 +116,7 @@ Params.SessionCount = ct;
 
 Params.TrialTypeBlocks          = [3 5 ]; % sequence of trial types
 Params.LoopBlocks               = true; % if false, continue with last trial type forever
-Params.BlockLength              =3; %0; % number of successes per block
+Params.BlockLength              =30; % number of successes per block
 Params.NumTrials 				= 100000; % Choose a big number so task doesn't finish before hand
 
 % extend Params.TrialTypeBlocks to last until we reach NumTrials
