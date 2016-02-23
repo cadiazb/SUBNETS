@@ -215,7 +215,7 @@ end
 %% Trial outcome and variable adaptation
 
 if dat.OutcomeID == 0 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-    if dat.TrialChoiceID==0
+%     if dat.TrialChoiceID==0
         % Turn objects on screen off
         b5 = b5ObjectsOff(b5);
         b5 = bmi5_mmap(b5);
@@ -238,31 +238,31 @@ if dat.OutcomeID == 0 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
         if ~Solenoid_open
             b5 = LJJuicer(Params, b5, 'off');
         end
-    else
-        % try to convince him to stay up as long as possible
-        
-        % don't blank screen yet
-        b5 = LJJuicer(Params, b5, 'on');
-        [Params, dat, b5] = UpdateCursorEffort(Params, dat, b5); %b5 = bmi5_mmap(b5);
-        t_rewardstart = b5.time_o;
-        
-        posUpOk=true;
-        while posUpOk && (b5.time_o - t_rewardstart) < 0.2 % give him up to 0.2s of reward why not
-            [Params, dat, b5] = UpdateCursorEffort(Params, dat, b5); %b5 = bmi5_mmap(b5);
-            posUpOk = TrialInBox(pos,b5.Cursor_scale,b5.UpTarget_pos,b5.UpTarget_scale/2);
-        end
-        if ~Solenoid_open
-            b5 = LJJuicer(Params, b5, 'off');
-        end
-        
-        dat.ActualReward = (b5.time_o-t_rewardstart)*1000;
-        
-        % Turn objects on screen off
-        b5 = b5ObjectsOff(b5);
-        b5 = bmi5_mmap(b5);
-        t_blank = b5.time_o;
-        
-    end
+%     else
+%         % try to convince him to stay up as long as possible
+%         
+%         % don't blank screen yet
+%         b5 = LJJuicer(Params, b5, 'on');
+%         [Params, dat, b5] = UpdateCursorEffort(Params, dat, b5); %b5 = bmi5_mmap(b5);
+%         t_rewardstart = b5.time_o;
+%         
+%         posUpOk=true;
+%         while posUpOk && (b5.time_o - t_rewardstart) < 0.2 % give him up to 0.2s of reward why not
+%             [Params, dat, b5] = UpdateCursorEffort(Params, dat, b5); %b5 = bmi5_mmap(b5);
+%             posUpOk = TrialInBox(pos,b5.Cursor_scale,b5.UpTarget_pos,b5.UpTarget_scale/2);
+%         end
+%         if ~Solenoid_open
+%             b5 = LJJuicer(Params, b5, 'off');
+%         end
+%         
+%         dat.ActualReward = (b5.time_o-t_rewardstart)*1000;
+%         
+%         % Turn objects on screen off
+%         b5 = b5ObjectsOff(b5);
+%         b5 = bmi5_mmap(b5);
+%         t_blank = b5.time_o;
+%         
+%     end
     
     t_rewardend = b5.time_o;
     controlWindow.message(['Last reward ' datestr(now)]);

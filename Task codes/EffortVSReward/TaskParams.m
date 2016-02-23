@@ -114,9 +114,9 @@ Params.SessionCount = ct;
 % 5. Reward and effort tracking
 % 6. One target (@ stdR & stdE)
 
-Params.TrialTypeBlocks          = [3 5 ]; % sequence of trial types
+Params.TrialTypeBlocks          = [4 ]; % sequence of trial types
 Params.LoopBlocks               = true; % if false, continue with last trial type forever
-Params.BlockLength              =30; % number of successes per block
+Params.BlockLength              =1; % number of successes per block
 Params.NumTrials 				= 100000; % Choose a big number so task doesn't finish before hand
 
 % extend Params.TrialTypeBlocks to last until we reach NumTrials
@@ -141,9 +141,9 @@ Params.TimeoutReachStartTarget  = 2.5; % max time to acquire start target
 Params.StartTarget.Hold       	= 0.6; %0.5
 
 % Reaching phase
-Params.HoldDown                 = 0.5; % required min hold time
-Params.HoldUp                   = 0.40;
-Params.HoldUpVector             = [0.4:0.015:0.5, ones(1,100)*0.5]; 
+Params.HoldDown                 = 0.45; % required min hold time
+Params.HoldUp                   = 0.45;
+%Params.HoldUpVector             = [0.4:0.015:0.5, ones(1,100)*0.5]; 
 Params.ReactionTimeDelay      	= 2; % Max time to initiate movement
 Params.TimeoutReachTarget       = 1.6; % max time to reach reaching target
 
@@ -177,7 +177,7 @@ Params.StartTarget_pos          = Params.WsCenter;
 
 %% Targets
 b5.UpTarget_color               = [0 1 0 1];
-b5.UpTarget_scale               = [120 50];
+b5.UpTarget_scale               = [120 40];
 Params.UpTarget_pos             = Params.StartTarget_pos + ...
                                     [0,0.1 * b5.Frame_scale(2)] ...
                                     + [0,b5.UpTarget_scale(2)/2];
@@ -203,11 +203,15 @@ Params.DownReward=2*Params.DownReward;
 Params.LoadCellMax              = 50;
 Params.MaxForce                 = 10; % Measured max force per subject 
 Params.StdEffort                = 0.9;
-Params.UpEScale                 = 2.25;
-Params.DownEScale               = 0.85;
-Params.UpEffort                 = round(rand(1,100));
-Params.DownEffort               = [((1.0-Params.UpEffort)*(0.25) + (0.75))];
-Params.UpEffort                 = [Params.UpEffort*0.25+0.75];
+Params.UpEScale                 = 1; %2.25;
+Params.DownEScale               = 1; %0.85;
+a=3.7-0.9;
+b=a+(0.9);
+Params.UpEffort                 = [zeros(1,100), sin([1:100]*pi*2/60), zeros(1,100), sin([1:100]*pi*2/50), zeros(1,100), sin([1:100]*pi*2/40), zeros(1,100), sin([1:100]*pi*2/30), zeros(1,100), sin([1:100]*pi*2/20) ]*a + b;
+a=1.8-0.6;
+b=a+(0.6);
+Params.DownEffort               = [sin([1:100]*pi*2/60), zeros(1,100), sin([1:100]*pi*2/50), zeros(1,100), sin([1:100]*pi*2/40), zeros(1,100), sin([1:100]*pi*2/30), zeros(1,100),sin([1:100]*pi*2/20), zeros(1,100) ]*a + b;
+clear a b
 
 % Changing rewards & effort
 Params.BiasingMulti             = 0.5; % for shifting reward or effort
