@@ -190,9 +190,10 @@ Params.DownTarget_pos           = Params.StartTarget_pos + ...
 
 Params.UpTargetProbability      = 0.5; % for joystickTraining mode
 
+%% Reward & effort parameters
+
 % Rewards
-Params.StdReward                = 150; %[ms]
-% multipliers for StdReward
+Params.StdReward                = 180; %[ms]
 Params.UpReward                 = [0.9 0.9 0.9 rand(1,100)*0.8+0.1]; 
 Params.DownReward               = 1.0-Params.UpReward;
 Params.UpReward=2*Params.UpReward;
@@ -200,18 +201,23 @@ Params.DownReward=2*Params.DownReward;
 
 
 % Effort
-Params.LoadCellMax              = 50;
-Params.MaxForce                 = 10; % Measured max force per subject 
-Params.StdEffort                = 0.9;
-Params.UpEScale                 = 1; %2.25;
+Params.LoadCellMax              = 50; % to turn load cell voltage to lbs
+Params.MaxForce                 = 10; % how many lbs to reach top of screen 
+Params.StdEffort                = 0.9; % multiplier for fixed effort trials
+Params.UpEScale                 = 1; %2.25; % multipliers for setting effort equivalence point
 Params.DownEScale               = 1; %0.85;
-a=0.92;
-b=3.67;
-c=0.61;
-d=1.8;
-Params.UpEffort                 = [zeros(1,100), sin([1:100]*pi*2/60), zeros(1,100), sin([1:100]*pi*2/50), zeros(1,100), sin([1:100]*pi*2/40), zeros(1,100), sin([1:100]*pi*2/30), zeros(1,100), sin([1:100]*pi*2/20) ]*((a-b)/2) + ((a+b)/2);
-Params.DownEffort               = [sin([1:100]*pi*2/60), zeros(1,100), sin([1:100]*pi*2/50), zeros(1,100), sin([1:100]*pi*2/40), zeros(1,100), sin([1:100]*pi*2/30), zeros(1,100),sin([1:100]*pi*2/20), zeros(1,100) ]*((c-d)/2) + ((c+d)/2);
-clear a b c d
+
+% for sine wave stuff
+f                               = [ 0.5     2.0   ;  
+                                    1.0     3.0   ]; % set sine wave max and min for up and down
+
+upSine                          = [sin([1:100]*pi*2/45),  sin([1:100]*pi*2/50), sin([1:100]*pi*2/60), sin([1:100]*pi*2/75), sin([1:100]*pi*2/55) ];
+downSine                        = [sin([1:100]*pi*2/60),  sin([1:100]*pi*2/75),  sin([1:100]*pi*2/35), sin([1:100]*pi*2/43), sin([1:100]*pi*2/60) ];
+upSine                          = upSine*0.5*(f(1,2)-f(1,1))+((f(1,2)+f(1,1))/2 );
+downSine                        = downSine*0.5*(f(2,2)-f(2,1))+((f(2,2)+f(2,1))/2);
+Params.UpEffort                 = (ones(size(upSine))*Params.UpTarget_pos(2)) ./ ((b5.Frame_scale(2)/Params.MaxForce)*upSine) ;
+Params.DownEffort               = (ones(size(downSine))*Params.UpTarget_pos(2)) ./ ((b5.Frame_scale(2)/Params.MaxForce)*downSine) ;
+%clear f upSine downSine
 
 % Changing rewards & effort
 Params.BiasingMulti             = 0.5; % for shifting reward or effort
