@@ -191,7 +191,7 @@ Params.DownTarget_pos           = Params.StartTarget_pos + ...
 Params.UpTargetProbability      = 0.5; % for joystickTraining mode
 
 % Rewards
-Params.StdReward                = 100; %[ms]
+Params.StdReward                = 150; %[ms]
 % multipliers for StdReward
 Params.UpReward                 = [0.9 0.9 0.9 rand(1,100)*0.8+0.1]; 
 Params.DownReward               = 1.0-Params.UpReward;
@@ -205,13 +205,13 @@ Params.MaxForce                 = 10; % Measured max force per subject
 Params.StdEffort                = 0.9;
 Params.UpEScale                 = 1; %2.25;
 Params.DownEScale               = 1; %0.85;
-a=3.7-0.9;
-b=a+(0.9);
-Params.UpEffort                 = [zeros(1,100), sin([1:100]*pi*2/60), zeros(1,100), sin([1:100]*pi*2/50), zeros(1,100), sin([1:100]*pi*2/40), zeros(1,100), sin([1:100]*pi*2/30), zeros(1,100), sin([1:100]*pi*2/20) ]*a + b;
-a=1.8-0.6;
-b=a+(0.6);
-Params.DownEffort               = [sin([1:100]*pi*2/60), zeros(1,100), sin([1:100]*pi*2/50), zeros(1,100), sin([1:100]*pi*2/40), zeros(1,100), sin([1:100]*pi*2/30), zeros(1,100),sin([1:100]*pi*2/20), zeros(1,100) ]*a + b;
-clear a b
+a=0.92;
+b=3.67;
+c=0.61;
+d=1.8;
+Params.UpEffort                 = [zeros(1,100), sin([1:100]*pi*2/60), zeros(1,100), sin([1:100]*pi*2/50), zeros(1,100), sin([1:100]*pi*2/40), zeros(1,100), sin([1:100]*pi*2/30), zeros(1,100), sin([1:100]*pi*2/20) ]*((a-b)/2) + ((a+b)/2);
+Params.DownEffort               = [sin([1:100]*pi*2/60), zeros(1,100), sin([1:100]*pi*2/50), zeros(1,100), sin([1:100]*pi*2/40), zeros(1,100), sin([1:100]*pi*2/30), zeros(1,100),sin([1:100]*pi*2/20), zeros(1,100) ]*((c-d)/2) + ((c+d)/2);
+clear a b c d
 
 % Changing rewards & effort
 Params.BiasingMulti             = 0.5; % for shifting reward or effort
