@@ -203,7 +203,7 @@ Params.DownReward=2*Params.DownReward;
 % Effort
 Params.LoadCellMax              = 50; % to turn load cell voltage to lbs
 Params.MaxForce                 = 10; % how many lbs to reach top of screen 
-Params.StdEffort                = 0.9; % multiplier for fixed effort trials
+Params.StdEffort                = 1; % multiplier for fixed effort trials
 Params.UpEScale                 = 1; %2.25; % multipliers for setting effort equivalence point
 Params.DownEScale               = 1; %0.85;
 
@@ -211,8 +211,8 @@ Params.DownEScale               = 1; %0.85;
 f                               = [ 0.5     2.0   ;  
                                     1.0     3.0   ]; % set sine wave max and min for up and down
 
-upSine                          = [sin([1:100]*pi*2/45),  sin([1:100]*pi*2/50), sin([1:100]*pi*2/60), sin([1:100]*pi*2/75), sin([1:100]*pi*2/55) ];
-downSine                        = [sin([1:100]*pi*2/60),  sin([1:100]*pi*2/75),  sin([1:100]*pi*2/35), sin([1:100]*pi*2/43), sin([1:100]*pi*2/60) ];
+upSine                          = [sin([0:99]*pi*2/45),  sin([0:99]*pi*2/50), sin([0:99]*pi*2/60), sin([0:99]*pi*2/75), sin([0:99]*pi*2/55) ];
+downSine                        = [sin([0:99]*pi*2/60),  sin([0:99]*pi*2/75),  sin([0:99]*pi*2/35), sin([0:99]*pi*2/43), sin([0:99]*pi*2/60) ];
 upSine                          = upSine*0.5*(f(1,2)-f(1,1))+((f(1,2)+f(1,1))/2 );
 downSine                        = downSine*0.5*(f(2,2)-f(2,1))+((f(2,2)+f(2,1))/2);
 Params.UpEffort                 = (ones(size(upSine))*Params.UpTarget_pos(2)) ./ ((b5.Frame_scale(2)/Params.MaxForce)*upSine) ;
