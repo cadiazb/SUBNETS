@@ -149,7 +149,7 @@ Params.TimeoutReachTarget       = 1.6; % max time to reach reaching target
 
 % Other
 Params.TrialLength              = 15;   % Fixed trial length [s]
-Params.InterTrialDelay 			= 3;  % delay between each trial [sec]
+Params.InterTrialDelay 			= 0; %3;  % delay between each trial [sec]
 Params.WrongChoiceDelay         = 4; % Delay when wrong target is chosen [sec]
 
 %% Callibrate Load Cell
