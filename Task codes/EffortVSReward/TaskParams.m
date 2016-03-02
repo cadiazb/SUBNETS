@@ -149,7 +149,7 @@ Params.TimeoutReachTarget       = 1.6; % max time to reach reaching target
 
 % Other
 Params.TrialLength              = 15;   % Fixed trial length [s]
-Params.InterTrialDelay 			= 0; %3;  % delay between each trial [sec]
+Params.InterTrialDelay 			= 3;  % delay between each trial [sec]
 Params.WrongChoiceDelay         = 4; % Delay when wrong target is chosen [sec]
 
 %% Callibrate Load Cell
@@ -211,8 +211,8 @@ Params.DownEScale               = 1; %0.85;
 f                               = [ 0.5     2.0   ;  
                                     2.0     4.0   ]; % set sine wave max and min for up and down
 
-upSine                          = [sin([0:99]*pi*2/45),  sin([0:99]*pi*2/50), sin([0:99]*pi*2/60), sin([0:99]*pi*2/75), sin([0:99]*pi*2/55) ];
-downSine                        = [sin([0:99]*pi*2/60),  sin([0:99]*pi*2/75),  sin([0:99]*pi*2/35), sin([0:99]*pi*2/43), sin([0:99]*pi*2/60) ];
+upSine                          = [sin([0:99]*pi*2/200),  sin([0:99]*pi*2/100), sin([0:99]*pi*2/150), sin([0:99]*pi*2/140), sin([0:99]*pi*2/260) ];
+downSine                        = [sin([0:99]*pi*2/160),  sin([0:99]*pi*2/130),  sin([0:99]*pi*2/100), sin([0:99]*pi*2/120), sin([0:99]*pi*2/150) ];
 upSine                          = upSine*0.5*(f(1,2)-f(1,1))+((f(1,2)+f(1,1))/2 );
 downSine                        = downSine*0.5*(f(2,2)-f(2,1))+((f(2,2)+f(2,1))/2);
 Params.UpEffort                 = (ones(size(upSine))*Params.UpTarget_pos(2)) ./ ((b5.Frame_scale(2)/Params.MaxForce)*upSine) ;
