@@ -208,8 +208,8 @@ Params.UpEScale                 = 1; %2.25; % multipliers for setting effort equ
 Params.DownEScale               = 1; %0.85;
 
 % for sine wave stuff
-f                               = [ 0.5     2.0   ;  
-                                    2.0     4.0   ]; % set sine wave max and min for up and down
+f                               = [ 0.5     1.0   ;  
+                                    0.5     3.0   ]; % set sine wave max and min for up and down
 
 upSine                          = [sin([0:99]*pi*2/200),  sin([0:99]*pi*2/100), sin([0:99]*pi*2/150), sin([0:99]*pi*2/140), sin([0:99]*pi*2/260) ];
 downSine                        = [sin([0:99]*pi*2/160),  sin([0:99]*pi*2/130),  sin([0:99]*pi*2/100), sin([0:99]*pi*2/120), sin([0:99]*pi*2/150) ];
