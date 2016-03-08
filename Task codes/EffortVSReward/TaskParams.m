@@ -145,7 +145,7 @@ Params.HoldDown                 = 0.45; % required min hold time
 Params.HoldUp                   = 0.45;
 %Params.HoldUpVector             = [0.4:0.015:0.5, ones(1,100)*0.5]; 
 Params.ReactionTimeDelay      	= 2; % Max time to initiate movement
-Params.TimeoutReachTarget       = 1.6; % max time to reach reaching target
+Params.TimeoutReachTarget       = 1.7; % max time to reach reaching target
 
 % Other
 Params.TrialLength              = 15;   % Fixed trial length [s]
@@ -177,7 +177,7 @@ Params.StartTarget_pos          = Params.WsCenter;
 
 %% Targets
 b5.UpTarget_color               = [0 1 0 1];
-b5.UpTarget_scale               = [110 40];
+b5.UpTarget_scale               = [105 40];
 Params.UpTarget_pos             = Params.StartTarget_pos + ...
                                     [0,0.1 * b5.Frame_scale(2)] ...
                                     + [0,b5.UpTarget_scale(2)/2];
@@ -193,7 +193,7 @@ Params.UpTargetProbability      = 0.5; % for joystickTraining mode
 %% Reward & effort parameters
 
 % Rewards
-Params.StdReward                = 200; %[ms]
+Params.StdReward                = 400; %[ms]
 Params.UpReward                 = [rand(1,100)*0.8+0.1]; 
 Params.DownReward               = 1.0-Params.UpReward;
 Params.UpReward=2*Params.UpReward;
@@ -208,8 +208,8 @@ Params.UpEScale                 = 1; %2.25; % multipliers for setting effort equ
 Params.DownEScale               = 1; %0.85;
 
 % for sine wave stuff
-f                               = [ 0.5     1.5   ;  
-                                    0.5     2.0   ]; % set sine wave max and min for up and down
+f                               = [ 0.25     1.0   ;  
+                                    0.5     1.5   ]; % set sine wave max and min for up and down
 
 upSine                          = [sin([0:99]*pi*2/200),  sin([0:99]*pi*2/100), sin([0:99]*pi*2/150), sin([0:99]*pi*2/140), sin([0:99]*pi*2/260) ];
 downSine                        = [sin([0:99]*pi*2/160),  sin([0:99]*pi*2/130),  sin([0:99]*pi*2/100), sin([0:99]*pi*2/120), sin([0:99]*pi*2/150) ];
