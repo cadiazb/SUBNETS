@@ -114,7 +114,7 @@ Params.SessionCount = ct;
 % 5. Reward and effort tracking
 % 6. One target (@ stdR & stdE)
 
-Params.TrialTypeBlocks          = [4 ]; % sequence of trial types
+Params.TrialTypeBlocks          = [5 ]; % sequence of trial types
 Params.LoopBlocks               = true; % if false, continue with last trial type forever
 Params.BlockLength              =1; % number of successes per block
 Params.NumTrials 				= 100000; % Choose a big number so task doesn't finish before hand
@@ -193,11 +193,11 @@ Params.UpTargetProbability      = 0.5; % for joystickTraining mode
 %% Reward & effort parameters
 
 % Rewards
-Params.StdReward                = 400; %[ms]
-Params.UpReward                 = [rand(1,100)*0.8+0.1]; 
-Params.DownReward               = 1.0-Params.UpReward;
-Params.UpReward=2*Params.UpReward;
-Params.DownReward=2*Params.DownReward;
+Params.StdReward                = 100; %[ms]
+Params.UpReward                 = [ones(1,10000)]; 
+Params.DownReward               = [ones(1,10000)];
+Params.UpReward=4*Params.UpReward;
+Params.DownReward=3*Params.DownReward;
 
 
 % Effort
@@ -208,7 +208,7 @@ Params.UpEScale                 = 1; %2.25; % multipliers for setting effort equ
 Params.DownEScale               = 1; %0.85;
 
 % for sine wave stuff
-f                               = [ 0.25     1.0   ;  
+f                               = [ 0.25     0.75   ;  
                                     0.5     1.5   ]; % set sine wave max and min for up and down
 
 upSine                          = [sin([0:99]*pi*2/200),  sin([0:99]*pi*2/100), sin([0:99]*pi*2/150), sin([0:99]*pi*2/140), sin([0:99]*pi*2/260) ];
