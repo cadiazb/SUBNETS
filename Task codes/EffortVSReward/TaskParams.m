@@ -177,7 +177,7 @@ Params.StartTarget_pos          = Params.WsCenter;
 
 %% Targets
 b5.UpTarget_color               = [0 1 0 1];
-b5.UpTarget_scale               = [105 40];
+b5.UpTarget_scale               = [100 40];
 Params.UpTarget_pos             = Params.StartTarget_pos + ...
                                     [0,0.1 * b5.Frame_scale(2)] ...
                                     + [0,b5.UpTarget_scale(2)/2];
