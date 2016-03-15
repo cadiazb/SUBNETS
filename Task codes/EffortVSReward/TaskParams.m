@@ -209,7 +209,7 @@ Params.DownEScale               = 1; %0.85;
 
 % for sine wave stuff
 f                               = [ 0.25     0.75   ;  
-                                    0.5     1.5   ]; % set sine wave max and min for up and down
+                                    0.75     1.5   ]; % set sine wave max and min for up and down
 
 upSine                          = [sin([0:99]*pi*2/200),  sin([0:99]*pi*2/100), sin([0:99]*pi*2/150), sin([0:99]*pi*2/140), sin([0:99]*pi*2/260) ];
 downSine                        = [sin([0:99]*pi*2/160),  sin([0:99]*pi*2/130),  sin([0:99]*pi*2/100), sin([0:99]*pi*2/120), sin([0:99]*pi*2/150) ];
