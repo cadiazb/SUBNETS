@@ -196,8 +196,8 @@ Params.UpTargetProbability      = 0.5; % for joystickTraining mode
 Params.StdReward                = 100; %[ms]
 Params.UpReward                 = [ones(1,10000)]; 
 Params.DownReward               = [ones(1,10000)];
-Params.UpReward=4*Params.UpReward;
-Params.DownReward=3*Params.DownReward;
+Params.UpReward=5*Params.UpReward;
+Params.DownReward=2*Params.DownReward;
 
 
 % Effort
@@ -209,7 +209,7 @@ Params.DownEScale               = 1; %0.85;
 
 % for sine wave stuff
 f                               = [ 0.25     0.75   ;  
-                                    0.75     1.5   ]; % set sine wave max and min for up and down
+                                    0.1     2.0   ]; % set sine wave max and min for up and down
 
 upSine                          = [sin([0:99]*pi*2/200),  sin([0:99]*pi*2/100), sin([0:99]*pi*2/150), sin([0:99]*pi*2/140), sin([0:99]*pi*2/260) ];
 downSine                        = [sin([0:99]*pi*2/160),  sin([0:99]*pi*2/130),  sin([0:99]*pi*2/100), sin([0:99]*pi*2/120), sin([0:99]*pi*2/150) ];
