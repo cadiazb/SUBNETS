@@ -114,7 +114,7 @@ Params.SessionCount = ct;
 % 5. Reward and effort tracking
 % 6. One target (@ stdR & stdE)
 
-Params.TrialTypeBlocks          = [5 ]; % sequence of trial types
+Params.TrialTypeBlocks          = [3 ]; % sequence of trial types
 Params.LoopBlocks               = true; % if false, continue with last trial type forever
 Params.BlockLength              =1; % number of successes per block
 Params.NumTrials 				= 100000; % Choose a big number so task doesn't finish before hand
@@ -193,11 +193,11 @@ Params.UpTargetProbability      = 0.5; % for joystickTraining mode
 %% Reward & effort parameters
 
 % Rewards
-Params.StdReward                = 100; %[ms]
-Params.UpReward                 = [ones(1,10000)]; 
-Params.DownReward               = [ones(1,10000)];
-Params.UpReward=5*Params.UpReward;
-Params.DownReward=2*Params.DownReward;
+Params.StdReward                = 200; %[ms]
+Params.UpReward                 = rand(1,10000); 
+Params.DownReward               = 1-Params.UpReward;
+%Params.UpReward=5*Params.UpReward;
+%Params.DownReward=2*Params.DownReward;
 
 
 % Effort
