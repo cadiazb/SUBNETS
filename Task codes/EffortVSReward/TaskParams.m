@@ -193,7 +193,7 @@ Params.UpTargetProbability      = 0.5; % for joystickTraining mode
 %% Reward & effort parameters
 
 % Rewards
-Params.StdReward                = 200; %[ms]
+Params.StdReward                = 400; %[ms]
 Params.UpReward                 = rand(1,10000); 
 Params.DownReward               = 1-Params.UpReward;
 %Params.UpReward=5*Params.UpReward;
@@ -204,7 +204,7 @@ Params.DownReward               = 1-Params.UpReward;
 Params.LoadCellMax              = 50; % to turn load cell voltage to lbs
 Params.MaxForce                 = 10; % how many lbs to reach top of screen 
 Params.StdEffort                = 1; % multiplier for fixed effort trials
-Params.UpEScale                 = 1; %2.25; % multipliers for setting effort equivalence point
+Params.UpEScale                 = 1.5; %2.25; % multipliers for setting effort equivalence point
 Params.DownEScale               = 1; %0.85;
 
 % for sine wave stuff
