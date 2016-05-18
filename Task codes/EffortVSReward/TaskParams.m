@@ -116,7 +116,7 @@ Params.SessionCount = ct;
 
 Params.TrialTypeBlocks          = [3 ]; % sequence of trial types
 Params.LoopBlocks               = true; % if false, continue with last trial type forever
-Params.BlockLength              =1; % number of successes per block
+Params.BlockLength              =15; % number of successes per block
 Params.NumTrials 				= 100000; % Choose a big number so task doesn't finish before hand
 
 % extend Params.TrialTypeBlocks to last until we reach NumTrials
@@ -204,7 +204,7 @@ Params.DownReward=0.4*Params.DownReward+0.6;
 Params.LoadCellMax              = 50; % to turn load cell voltage to lbs
 Params.MaxForce                 = 10; % how many lbs to reach top of screen 
 Params.StdEffort                = 1; % multiplier for fixed effort trials
-Params.UpEScale                 = 1.5; %2.25; % multipliers for setting effort equivalence point
+Params.UpEScale                 = 2; %2.25; % multipliers for setting effort equivalence point
 Params.DownEScale               = 1; %0.85;
 
 % for sine wave stuff
