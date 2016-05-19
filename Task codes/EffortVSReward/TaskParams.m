@@ -196,8 +196,8 @@ Params.UpTargetProbability      = 0.5; % for joystickTraining mode
 Params.StdReward                = 500; %[ms]
 Params.UpReward                 = rand(1,10000); 
 Params.DownReward               = 1-Params.UpReward;
-Params.UpReward=0.4*Params.UpReward+0.6;
-Params.DownReward=0.4*Params.DownReward+0.6;
+Params.UpReward=0.8*Params.UpReward+0.1;
+Params.DownReward=0.8*Params.DownReward+0.1;
 
 
 % Effort
